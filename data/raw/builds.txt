@@ -1,0 +1,3371 @@
+﻿Introduction
+Prospecting! Build Guide
+Credits: Autumn (@spxxd), bosnia123123 (@CzystyWegiel), Finnlay (@finnlaey), Martika14 (@Martika14), PPatel (@301manmeet), em_miaou (@emmaalu), softlyhollowed (@kamipaci)
+Game update: Desert (part 1)
+Warning: this guide is subject to change without warning. If you’re using a particular build, consider making a screenshot of it for your reference.
+Please use these guides as a starting point. Don’t be afraid to experiment! Your playstyle is unique to you, so what works for someone else might not be ideal for you.
+The game stage classifications are meant as a rough guide. Feel free to adapt whichever build suits your fancy, even if you don’t consider yourself to be in that game stage.
+Stage V. - Desert: Highest location is Sunscorched Desert.
+Stage IV. - Meteor Valley: Highest location is Meteor Valley.
+IV.A: No Ascended equipment
+IV.B: Have both Ring of Champions and Ring of the Stars 
+Stage III. - Swamp: Highest location is Timelocked Sanctuary.
+Stage II. - Overgrown Caves: Highest location is Enchanted Ruins/Abyssal Depths.
+Stage I. - Snowy Isle: Highest location is Frozen Peak.
+Stage 0 - Caldera: Highest location is Infernal Heart.
+Bonus Builds: these builds are not really part of the game progression, but you might find them useful (or fun).
+A note about the torturer Dredge Master: the Dredge Master’s Ring blueprint can theoretically be obtained by players of almost any level, and the materials to craft it can be found without access to the Swamp. The build guides nevertheless only list it for stage III and up. If you have a DMR, feel free to substitute it for an Umbrite Ring, Vortex Ring, Ring of Thorns, or Mythril Ring.
+You might hear about “Sandshaking technique”, as in, “use sandshaking technique for maximum efficiency”. This is a playstyle that tries to minimize the amount of time you spend switching between digging and shaking. It involves arcane magic standing very near the shore and timing your clicking with non-human precision.
+You might also hear about “sandshaking tech”. Despite appearances, this is not some miraculous artifact you can equip or buy (unfortunately for those of us who possess neither arcane magic nor non-human precision): it’s just a mistake from people who don’t know that “tech” is short for “technology”, not for “technique”.  
+Stage V.: Desert
+Stage V. Builds - Desert
+Highest location is Sunscorched Desert
+At this game stage, all equipment is assumed to be six-star and at least 95% quality. All equipment should have the Prismatic mutation.
+Five rune slots are assumed, period. (Really. If you can't manage five rune slots, you definitely can't manage 1-in-100-billion-odds ores.)
+You must have Ring of Champions ("RoC") and Ring of the Stars ("RoS") for most of these builds, and Dredge Master’s Ring ("DMR") is HIGHLY recommended.
+
+
+Builds in this stage:
+* Luck Efficiency V.
+* Hybrid V.
+* Summer Hybrid V.
+* Size Boost V.
+* Items Farming V.
+
+
+Luck Efficiency V.
+Luck Efficiency V.
+Highest average rerolls.
+* If you do NOT have a Prismatic RoC, get that first, as it is a requirement for this build. RoS & DMR are also HIGHLY recommended! 
+* This is a one-tap build. If you’re not filling your pan with one dig, the efficiency drastically decreases: adjust your equipment, or change some ores in your museum to Mutated LDM.
+   * To see if your build 1-taps, use the formula below (while in totems):
+Dig Strength × 1.5 >= Capacity
+* This build is designed to be used with Luck, Strength, and Luminant totems. You can also use a Friendship totem, but in that case, do not equip the Solitude rune.
+* ‡ Treasured isn’t possible for the marked ores. For those, use Mutated.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+Museum
+	Modifier: Treasured 2L (fallback Mutated LDM or Iridescent L); except ‡ Mutated LDM (fallback Scorching D)
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	L Key of Life‡ | Vineheart‡ 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara‡ 20
+	+L-W Flarebloom 20
+	
+
+	Legendary
+	L Diamond 20
+	P Specterite 10
+	A Rose Gold 40
+	Epic
+	L Emerald 20
+	A Mercury 80
+	C Golden Pearl 20 | Ammonite Fossil 50
+	Rare
+	L Peridot 20
+	P Silver Clamshell 20
+	A Ruby 20 | Meteoric Iron 40 
+	Uncommon
+	C pick 2: Coral 10 | Topaz 20 | Nickel 40
+	A Neodymium 40 | Smoky Quartz 20
+	Common
+	C Pyrite 60 | Seashell 20
+	P Pearl 20 | Silver 40
+	S Amethyst‡ 20 | Platinum | Blue Ice 40
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	
+
+	 Neck  
+	Guardian Pendant
+	
+
+	 Rings  
+	1× Ring of Champions
+	
+
+	1× Ring of the Stars
+	fallback: Accretion Disk
+	2× Accretion Disk
+	
+
+	2×/0× Sun’s Gift
+	
+
+	1× Dredge Master’s Ring
+	fallback: Vortex Ring
+	1× Vortex Ring
+	⚠ Replace with Purifying Ring for Fungal Marsh
+	 Runes  
+	Mountain Climber, Summit Seeker, Speed I/Solitude, Purity, Sunblessed/Abyssal
+	  Pan  
+	Pharaoh’s
+	enchant: Devouring; trinket: Mass Reactor
+	 Shovel  
+	Pharaoh’s
+	enchant: Mythical (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel) & PPatel772 (@301manmeet)
+Hybrid V.
+Hybrid V.
+Combination of high efficiency, size boost, and modifier boost. 
+* This build requires all three of RoC, RoS, and DMR. If you do not have one of them, refer to the Stage IV. builds instead.
+* This is a 1-tap build. If you need more than 1 dig to fill the pan, the efficiency drastically decreases.
+* Conversely, if you have too much dig strength (Dig Strength × 1.5 >= Capacity), change some museum ores to  Perfect LCW (or Irradiated M).
+* This build is designed to be used with Luck, Strength, and Luminant totems, as well as Solar Magnifiers. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* Optimal size boost is 1700+. Optimal modifier boost is 3000+.
+Museum
+	Modifier: Mutated LDM; fallback: Perfect LCW or Irradiated M
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	M Adamantine 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	W Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	M pick 2: Uranium | Radium 60 | Peppermint Prism 20
+	W Dragon Bone 60 | Cinnabar | Volcanic Key | Fire Opal 20
+	Epic
+	M Glowmoss 60
+	P Opal 20 | Selenite 30 | Moonstone 50 
+	W+ Osmium 80
+	Rare
+	W Candy Cane 40
+	 M pick 2: Diopside 20 | Onyx 30 | Jade 40
+	Uncommon
+	W Zircon 20
+	A Neodymium 40 | Smoky Quartz 20
+	W Rock Candy 60
+	Common
+	P Silver 40
+	W Obsidian 30 | Copper 60
+	P Pearl 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Lunar Mask
+	
+
+	 Neck  
+	Guardian Pendant
+	
+
+	 Rings  
+	1× Ring of Champions
+	
+
+	1× Ring of the Stars
+	
+
+	1× Dredge Master’s Ring
+	
+
+	1× Ring of Thorns
+	For this build, Prismatic RoT is preferable over Festive
+	1× Accretion Disk
+	
+
+	3×/1× Sun’s Gift
+	⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	Runes  
+	Bunny, Sunblessed/Abyssal, Summit Seeker, Mountain Climber, Speed I/Solitude/Eternity
+	 Pan  
+	Pharaoh’s
+	enchant: Irregular; trinket: Mass Reactor
+	 Shovel  
+	Pharaoh’s
+	enchant: Mastered
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 rings, second # is for 6 rings
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel), & PPatel (@301manmeet)   
+Summer Hybrid V.
+Summertime Hybrid V.
+Combination of high efficiency, size boost, and modifier boost; †requires limited equipment
+* If you do NOT have a Prismatic RoC & RoS, get those items first, as they are a requirement for this build. DMR is also HIGHLY recommended!
+* This is a 1-tap build. If you have too much Dig Strength, change some museum ores to Perfect LCW. (You want Dig Strength × 1.5 to be slightly more than Capacity.) 
+* This build is designed to be used with Luck, Strength, and Luminant totems, as well as Solar Magnifiers. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* Optimal size boost is 1700+. Optimal modifier boost is 4500+.
+* †IF YOU DO NOT HAVE BOTH OF THE LIMITED ITEMS, YOU CANNOT USE THIS BUILD. Use the Regular Hybrid V. build instead.
+Museum
+	Modifier: Mutated LDM; fallback: Perfect LCW or Irradiated M
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	M Adamantine 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	W Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	M Uranium 60
+	M Peppermint Prism 20
+	M Radium 60
+	Epic
+	M Glowmoss 60
+	L Emerald 20
+	W+ Osmium 80
+	Rare
+	M Diopside 20
+	 M Onyx 30
+	M Jade 40
+	Uncommon
+	W Zircon 20
+	M Malachite 20
+	W Rock Candy 60
+	Common
+	W Copper 60 
+	S Amethyst 20 | Platinum | Blue Ice 40
+	W Obsidian 30
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Lunar Mask
+	
+
+	 Neck  
+	Waverider†
+	
+
+	 Rings  
+	1× Ring of Champions
+	
+
+	1× Ring of the Stars
+	
+
+	1× Dredge Master’s Ring
+	
+
+	1× Ring of Thorns
+	⚠ Replace with Purifying Ring for Fungal Marsh
+For this build, Prismatic RoT is preferable over Festive
+	2× Accretion Disk
+	
+
+	2×/0× Sun’s Gift
+	
+
+	Runes  
+	Bunny, Sunblessed/Abyssal, Summit Seeker, Mountain Climber, Speed I/Solitude/Eternity
+	 Pan  
+	Pharaoh’s
+	enchant: Irregular; trinket: Beach Umbrella†
+	 Shovel  
+	Pharaoh’s
+	enchant: Mastered
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 rings, second # is for 6 rings
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	  
+bosnia123123 (@CzystyWegiel) & PPatel (@301manmeet) 
+Size Boost V.
+Size Boost
+Highest possible size boost; †limited equipment (optional)
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* For best results, use Luck, Strength, and Luminant totems, as well as Solar Magnifiers. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+* ♠If you have the Toughened Candy Cane shovel, use it to trigger the 🍪 XP Cookie effect for an extra size boost. Otherwise/in addition, you can use the consumable item to trigger the effect. (Do not use the Gingerbread pan, though, because it doesn’t have a size boost passive ability.)
+* If your Bloodstone in the Exotic slot has a Perfect LCW or Crystalline W modifier, it matches Solarium without these modifiers. However, if Solarium has any of the modifiers listed, it is better.
+* Buy Stardust Shake potion from Meteor Valley to increase your Size Boost even further.
+Museum
+	Modifier: Perfect LCW; fallback: Crystalline W
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W Solarium | Bloodstone 40
+	
+
+	
+
+	Mythic
+	W pick 2: Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	W pick 3: Cinnabar | Fire Opal | Volcanic Key 20 | Dragon Bone 50
+	Epic
+	W+ Osmium 80
+	W Ashvein 20
+	W Bone 50
+	Rare
+	A Meteoric Iron 40 | Ruby 20
+	L Peridot 20
+	W Candy Cane 40
+	Uncommon
+	A Neodymium 40 | Smoky Quartz 20
+	W Rock Candy 60
+	W Zircon 20
+	Common
+	S Amethyst 20 | Platinum | Blue Ice 40
+	W Copper 60
+	W Obsidian 30
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Clockwork
+	fallback: Pumpkin Lord† | Helm of the Round
+	 Neck  
+	Waverider†
+	fallback: Meteor Core
+	 Rings  
+	1× Ring of Champions
+	fallback: Sun’s Gift
+	1× Ring of the Stars
+	fallback: Sun’s Gift
+	1× Dredge Master’s Ring
+	fallback: Sun’s Gift
+	5×/3× Sun’s Gift
+	⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	Runes  
+	Mountain Climber, Summit Seeker, Speed I, Sunblessed/Abyssal, Volcanic/Solitude
+	 Pan  
+	Pharaoh’s
+	enchant: Cursed
+	 Shovel  
+	Candy Cane†♠ | Pharaoh’s
+	enchant: Non-Euclidean (♠Toughened for Candy Cane, Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one꙳ of the ores or equipment listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Items Farming V.
+Items Farming
+Optimized amount per minute, suitable for torturer Dredge Master quests.
+* This build is designed to be used with Strength and Luminant totems. ‡If you don’t have those totems, use the Critical I and II runes.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* Use the Maximum Luck setting to reduce your luck for Common, Uncommon, Rare, and possibly Epic ores. Experiment to find the best setting for each ore.
+* Use Rain Stones/Infernal Idols/Snow Globes if appropriate.
+* All equipment should be Prismatic; Excavating shovel enchant is optional but recommended.
+* ‡If you need more than 1 dig to fill the pan, change some of the modifiers to Mutated LDM.
+Museum
+	Modifier: Cosmic CA ‡see note
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	DA Starpiercer 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	D Frostshard 20
+	
+
+	Legendary
+	A Rose Gold 40
+	P Specterite 10
+	S Aetherite | Aquamarine | Gloomcap | Lost Soul 20 | Bismuth 80
+	Epic
+	A Mercury 80
+	pick 2: S Aurorite 30 | Borealite | Lightshard 20 | Cobalt | Iridium 40
+	Rare
+	A Ruby 20
+	A Meteoric Iron 40
+	S Glacial Quartz | Gloomberry 40 | Lapis Lazuli | Azuralite 30
+	Uncommon
+	A Smoky Quartz 20
+	A Neodymium 40
+	S Titanium 40 | S Sapphire 20
+	Common
+	P Silver 40 | Pearl 20
+	pick 2: S Platinum 40 | Blue Ice 40 | Amethyst 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	
+
+	 Neck  
+	Meteor Core
+	
+
+	 Rings  
+	1× Ring of Champions
+	
+
+	3× Accretion Disk
+	
+
+	1× Dredge Master’s Ring 
+	fallback: Vortex Ring
+	3×/1× Vortex Ring
+	⚠Replace 1 with Purifying Ring for Fungal Marsh
+	Runes  
+	Summit Seeker, Mountain Climber, Speed I, Eternity/Critical I, Critical II ‡
+	 Pan  
+	Pharaoh’s
+	enchant: Hyperspeed
+	 Shovel  
+	Pharaoh’s
+	enchant: Excavating (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Stage IV.: Meteor
+Stage IV. Builds - Meteor Valley
+Highest location is Meteor Valley
+At this game stage, all equipment is assumed to be six-star and at least 95% quality. All or almost all should be Prismatic mutation (or Festive if appropriate).
+Five rune slots are assumed. If you don’t have that many yet, go back to the swamp and level up equip the runes in the order listed.
+
+
+Builds in this stage:
+* Luck Efficiency IV.B
+* Luck Efficiency IV.A
+* Summertime Hybrid IV.B
+* Hybrid IV.B
+* Hybrid IV.A
+* Size Boost IV.
+* Items Farming IV.
+Luck Efficiency IV.B
+Luck Efficiency IV.B (with Ascended Equipment)
+Highest average rerolls.
+* This is a one-tap build. If you’re not filling your pan with one dig, the efficiency drastically decreases: adjust your equipment, or change some ores in your museum to Mutated LDM.
+   * To see if your build 1-taps, use the formula below (while in totems):
+Dig Strength × 1.5 >= Capacity
+* This build is designed to be used with Luck, Strength, and Luminant totems. You can also use a Friendship totem, but in that case, do not equip the Solitude rune.
+* ‡ Treasured isn’t possible for the marked ores. For those, use Mutated.
+* All equipment should be Prismatic.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+Museum
+	Modifier: Treasured 2L (fallback Mutated LDM or Iridescent L); except ‡ Mutated LDM (fallback Scorching D)
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	L Vineheart‡ 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara‡ 20
+	+L-W Flarebloom 20
+	
+
+	Legendary
+	L Diamond 20
+	P Specterite 10
+	C Catseye 20 | Firefly Stone‡ 60 | Luminum 40
+	Epic
+	L Emerald 20
+	A Mercury 80
+	P Moonstone 50 | Opal 20
+	Rare
+	L Peridot 20
+	A Ruby 20
+	A Meteoric Iron 40
+	Uncommon
+	C pick 2: Coral 10 | Topaz 20 | Nickel 40
+	A Neodymium 40 | Smoky Quartz 20
+	Common
+	P Pearl 20
+	P Silver 40
+	S Amethyst‡ 20 | Platinum | Blue Ice 40
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	
+
+	 Neck  
+	Venomshank
+	
+
+	 Rings  
+	1× Ring of Champions
+	
+
+	1× Ring of the Stars
+	fallback: Accretion Disk
+	1× Accretion Disk
+	
+
+	4×/3× Umbrite Ring
+	⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	1×/0× Vortex Ring
+	
+
+	 Runes  
+	Mountain Climber, Summit Seeker, Speed I/Solitude, Purity, Sunblessed/Abyssal
+	  Pan  
+	Nebula
+	enchant: Devouring; trinket: Mass Reactor
+	 Shovel  
+	Starcrusher
+	enchant: Mythical (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+Luck Efficiency IV.A
+Luck Efficiency IV.A (no Ascended equipment)
+Highest average rerolls.
+* This is a one-tap build. If you’re not filling your pan with one dig, the efficiency drastically decreases: adjust your equipment, or change some ores in your museum to Mutated LDM.
+   * To see if your build 1-taps, use the formula below (while in totems):
+Dig Strength × 1.5 >= Capacity
+* This build is designed to be used with Luck, Strength, and Luminant totems. You can also use a Friendship totem, but in that case, do not equip the Solitude rune.
+* ‡ Treasured isn’t possible for the marked ores. For those, use one of the fallback modifiers.
+* All equipment should be Prismatic.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+Museum
+	Modifier
+	8 ring slots: Treasured 2L; fallback: Mutated LDM or Iridescent L
+	6 ring slots: Treasured 2L; fallback: Perfect LCW or Voidtorn LC
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	L Vineheart‡ 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara‡ 20
+	+L-W Flarebloom 20
+	
+
+	Legendary
+	L Diamond 20
+	P Specterite 10
+	A Rose Gold 40
+	Epic
+	L Emerald 20
+	A Mercury 80
+	P Moonstone 50 | Opal 20
+	Rare
+	L Peridot 20
+	A Ruby 20
+	A Meteoric Iron 40
+	Uncommon
+	C Coral 10
+	C Topaz 20
+	C Nickel 40
+	Common
+	P Pearl 20
+	P Silver 40
+	C Seashell 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	
+
+	 Neck  
+	Venomshank
+	
+
+	 Rings  
+	3×/3× Umbrite Ring
+	⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	3×/1× Vortex Ring
+	
+
+	2× Accretion Disk
+	
+
+	Runes  
+	Purity, Solitude, Sunblessed/Abyssal, Summit Seeker, Mountain Climber
+	 Pan  
+	Nebula
+	enchant: Devouring; trinket: Mass Reactor
+	 Shovel  
+	Starcrusher
+	enchant: Mythical (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	Autumn (@spxxd) & bosnia123123 (@CzystyWegiel)
+
+
+
+
+
+
+Summer Hybrid IV.B
+Summertime Hybrid IV.B (with Ascended Equipment)
+Combination of high efficiency, size boost, and modifier boost; †requires limited equipment
+* This is a 1-tap build. If you need more than 1 dig to fill the pan, the efficiency drastically decreases. To fix it, change some Perfect museum ores to Mutated.
+* Conversely, if you have too much dig strength (see formula), change some Mutated ores to Perfect (or Irradiated):         Dig Strength × 1.5 >= Capacity
+* This build is designed to be used with Luck, Strength, and Luminant totems, as well as Solar Magnifiers. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* Optimal size boost is 1500+. Optimal modifier boost is 3300+.
+* ✷ Mutated is preferable over Perfect for the marked ores. 
+* †IF YOU DO NOT HAVE BOTH OF THE LIMITED ITEMS, YOU CANNOT USE THIS BUILD. Use the Original Hybrid IV.B instead.
+Museum
+	Modifiers:  Perfect LCW and Mutated LDM (see ✷ note above); fallback: Irradiated M
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	M Adamantine✷ 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	W Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	M Uranium✷ 60
+	M Radium✷ 60
+	M Peppermint Prism✷ 20
+	Epic
+	M Glowmoss 60
+	W Ashvein 20 | Bone 50
+	W+ Osmium 80
+	Rare
+	P Silver Clamshell 20
+	   pick 2: M Diopside 20 | Onyx 30 | Jade 40
+	Uncommon
+	W Zircon 20
+	M Malachite 20
+	W Rock Candy 60
+	Common
+	P Pearl 20
+	W Copper 60 | Obsidian 30
+	P Silver 40
+	Equipment
+	Name
+	Notes
+	 Charm
+	Starlight Wings
+	
+
+	 Neck
+	Waverider†
+	
+
+	 Rings
+	1× Ring of Champions
+	
+
+	1× Ring of the Stars
+	
+
+	1× Dredge Master’s Ring
+	
+
+	1× Umbrite Ring
+	
+
+	1× Accretion Disk
+	
+
+	3×/1× Ring of Thorns
+	⚠ Replace 1 with Purifying Ring for Fungal Marsh
+For this build, Prismatic RoT is preferable over Festive
+	Runes
+	Bunny, Sunblessed/Abyssal, Summit Seeker, Mountain Climber, Speed I/Solitude/Eternity
+	 Pan
+	Nebula
+	enchant: Irregular; trinket: Beach Umbrella†
+	 Shovel
+	Starcrusher
+	enchant: Mastered
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 rings, second # is for 6 rings
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	em_miaou (@emmaalu), bosnia123123 (@CzystyWegiel), & PPatel (@301manmeet) as a result of “inspiration” from Caelumbrignia (@fiseraphy)
+Hybrid IV.B
+Hybrid IV.B (with Ascended Equipment)
+Combination of high efficiency, size boost, and modifier boost; †limited equipment (optional)
+* This is a 1-tap build. If you need more than 1 dig to fill the pan, the efficiency drastically decreases: adjust your equipment, or change some ores in your museum to Mutated LDM.
+   * To see if your build 1-taps, use the formula below (while in totems):
+Dig Strength × 1.5 >= Capacity
+* This build is designed to be used with Luck, Strength, and Luminant totems, as well as Solar Magnifiers. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+* ✷ Mutated is preferable over Perfect for the marked ores. 
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* Optimal size boost is 1300–1500. Optimal modifier boost is at least 2000-2500+.
+Museum
+	Modifier: Perfect LCW; fallback: Mutated LDM or Irradiated M
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	M Adamantine✷ 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara✷ 20
+	W Painite | Red Beryl | Star Garnet✷ 20
+	
+
+	Legendary
+	M pick 2: Uranium | Radium 60 | Peppermint Prism 20
+	SP Starshine 20
+	Epic
+	M Glowmoss 60
+	W Ashvein 20 | Bone 50
+	W+ Osmium 80
+	Rare
+	P Silver Clamshell 20
+	 M pick 2: Diopside 20 | Onyx 30 | Jade 40
+	Uncommon
+	W Zircon 20
+	A Neodymium 40 | Smoky Quartz 20
+	W Rock Candy 60
+	Common
+	P Pearl 20
+	W Copper 60 | Obsidian 30
+	P Silver 40
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	
+
+	 Neck  
+	Meteor Core
+	
+
+	 Rings  
+	1× Ring of Champions
+	
+
+	1× Ring of the Stars
+	fallback: Accretion Disk
+	2× Accretion Disk
+	
+
+	1x/0x Dredge Master’s Ring
+	fallback: Umbrite Ring
+	3x/2× Ring of Thorns
+	⚠ Replace 1 with Purifying Ring for Fungal Marsh
+For this build, Prismatic RoT is preferable over Festive
+	Runes  
+	Bunny, Sunblessed/Abyssal, Summit Seeker, Mountain Climber, Speed I/Solitude/Eternity
+	 Pan  
+	Nebula
+	enchant: Irregular; trinket: Beach Umbrella† (fallback: Mass Reactor) 
+	 Shovel  
+	Starcrusher
+	enchant: Mastered
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 rings, second # is for 6 rings
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	PPatel (@301manmeet) & bosnia123123 (@CzystyWegiel)
+Hybrid IV.A
+Hybrid IV.A (no Ascended Equipment) 
+(under work… because of change to modifier boost)
+Combination of high efficiency and size boost (as for now, it doesn’t include Modifier Boost)
+* This is a 1-tap build. If you need more than 1 dig to fill the pan, the efficiency drastically decreases – adjust your museum (Mutated is your friend) or equipment.
+   * To see if your build 1-taps, use the formula below (while in totems):
+Dig Strength × 1.5 >= Capacity
+* This build is designed to be used with Luck, Strength, and Luminant totems, as well as Solar Magnifiers. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* All equipment should be Prismatic
+* Optimal size boost is 1300–1500. If it’s too low, replace one or more Accretion Disks with an Otherworldly Ring.
+Museum
+	Modifier: Perfect LCW; fallbacks: Treasured 2L | Mutated LDM | Crystalline W
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W Pumpkin Soul | Bloodstone 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	W Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	P Specterite 10
+	pick 2: W Cinnabar | Fire Opal | Volcanic Key 20 | Dragon Bone 50
+	Epic
+	W Ashvein 20
+	W Bone 50
+	W+ Osmium 80
+	Rare
+	L Peridot 20
+	A Meteoric Iron 40 | Ruby 20
+	W Candy Cane 40
+	Uncommon
+	W Rock Candy 60
+	C Coral 10 | Topaz 20 | Nickel  40
+	W Zircon 20
+	Common
+	W Obsidian 30
+	P Silver 40 | Pearl 20
+	W Copper 60
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	
+
+	 Neck  
+	Venomshank
+	
+
+	 Rings  
+	4×/3× Umbrite Ring
+	⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	0×/1× Ring of Thorns
+	mutation: Festive; fallback: Prismatic
+	4×/2× Accretion Disk
+	If size boost too low, replace with Otherworldly Ring(s)
+	Runes  
+	Solitude, Sunblessed/Abyssal, Summit Seeker, Mountain Climber, Speed I
+	 Pan  
+	Nebula
+	enchant: Starstruck
+	 Shovel  
+	Starcrusher
+	enchant: Rhythmic (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	softlyhollowed (@kamipaci) & bosnia123123 (@CzystyWegiel)
+Size Boost IV.
+Size Boost
+Highest possible size boost; †limited equipment (optional)
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* For best results, use Luck, Strength, and Luminant totems, as well as Solar Magnifiers. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+* If you have the Candy Cane shovel, use it to trigger the 🍪 XP Cookie effect for an extra size boost. Otherwise/in addition, you can use the consumable item to trigger the effect. (Do not use the Gingerbread pan, though, because it doesn’t have a size boost passive ability.)
+* Buy Stardust Shake potion from Meteor Valley to increase your Size Boost even further.
+* All equipment should be Prismatic, except Rings of Thorns should be Festive if possible.
+Museum
+	Modifier: Perfect LCW; fallback: Crystalline W
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W Pumpkin Soul | Bloodstone 40
+	
+
+	
+
+	Mythic
+	W pick 2: Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	W pick 3: Cinnabar | Fire Opal | Volcanic Key 20 | Dragon Bone 50
+	Epic
+	W+ Osmium 80
+	W Ashvein 20
+	W Bone 50
+	Rare
+	A Meteoric Iron 40 | Ruby 20
+	L Peridot 20
+	W Candy Cane 40
+	Uncommon
+	A Neodymium 40 | Smoky Quartz 20
+	W Rock Candy 60
+	W Zircon 20
+	Common
+	S Amethyst 20 | Platinum | Blue Ice 40
+	W Copper 60
+	W Obsidian 30
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Clockwork
+	fallback: Pumpkin Lord† | Helm of the Round
+	 Neck  
+	Waverider†
+	fallback: Meteor Core
+	 Rings  
+	1× Ring of Champions
+	fallback: Ring of Thorns
+	1× Ring of the Stars
+	fallback: Ring of Thorns
+	1× Dredge Master’s Ring
+	fallback: Ring of Thorns
+	5×/3× Ring of Thorns
+	mutation: Festive; fallback: Prismatic
+⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	Runes  
+	Mountain Climber, Summit Seeker, Speed I, Sunblessed/Abyssal, Volcanic/Solitude
+	 Pan  
+	Nebula | Galactic†
+	enchant: Cursed
+	 Shovel  
+	Candy Cane† | Starcrusher
+	enchant: Non-Euclidean (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one꙳ of the ores or equipment listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+Items Farming IV.
+Items Farming
+Optimized amount per minute, suitable for torturer Dredge Master quests.
+* This build is designed to be used with Strength and Luminant totems. ‡If you don’t have those totems, use the Critical I and II runes.
+* ⚠ For Fungal Marsh, replace one of the marked rings with a Purifying Ring.
+* ☒ Replace one of the marked rings with Dredge Master’s Ring for better results.
+* Use the Maximum Luck setting to reduce your luck for Common, Uncommon, Rare, and possibly Epic ores. Experiment to find the best setting for each ore.
+* Use Rain Stones/Infernal Idols/Snow Globes if appropriate. 
+* All equipment should be Prismatic; Excavating shovel enchant is optional but recommended.
+* ‡If you need more than 1 dig to fill the pan, change some of the modifiers to Mutated LDM.
+Museum
+	Modifier: Cosmic CA ‡see note
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	DA Starpiercer 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	D Frostshard 20
+	
+
+	Legendary
+	A Rose Gold 40
+	P Specterite 10
+	S Aetherite | Aquamarine | Gloomcap | Lost Soul 20 | Bismuth 80
+	Epic
+	A Mercury 80
+	pick 2: S Aurorite 30 | Borealite | Lightshard 20 | Cobalt | Iridium 40
+	Rare
+	pick 2: S Glacial Quartz | Gloomberry 40 | Lapis Lazuli | Azuralite 30
+	A Meteoric Iron 40 | Ruby 20
+	Uncommon
+	S Titanium 40
+	S Sapphire 20
+	A Neodymium 40 | Smoky Quartz 20
+	Common
+	S Amethyst 20 
+	S Platinum 40
+	S Blue Ice 40
+	Equipment
+	With Ring of Champions
+	No Ring of Champions
+	 Charm  
+	Starlight Wings
+	Starlight Wings
+	 Neck  
+	Meteor Core
+	Meteor Core
+	 Rings  
+	1× Ring of Champions
+	3×/2× Umbrite Ring⚠
+	3× Accretion Disk
+	3× Accretion Disk
+	2×/0× Umbrite Ring
+	2×/1× Vortex Ring☒
+	2× Vortex Ring☒⚠
+	
+
+	Runes  
+	Summit Seeker, Mountain Climber, Speed I, Eternity/Critical I, Critical II ‡
+	 Pan  
+	Nebula
+	enchant: Hyperspeed
+	 Shovel  
+	Starcrusher
+	enchant: Excavating (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Stage III.: Swamp
+Stage III. Builds - Swamp
+Highest location is Timelocked Sanctuary
+At this game stage, all equipment is assumed to be at least five-star. The majority should be at least 90% quality, and Diamond mutation or better.
+The builds provide options for having the Ring of Champions vs. not having it yet.
+Five rune slots are assumed. If you don’t have that many yet, equip the runes in the order listed.
+
+
+Builds in this stage:
+* Luck Efficiency III.B
+* Luck Efficiency III.A
+* Hybrid III.
+* Size Boost III.
+* Items Farming III.
+* Sell Boost III.
+
+
+Luck Efficiency III.B
+Luck Efficiency III.B (with Ring of Champions)
+Highest average rerolls
+* ‡ Treasured isn’t possible for the marked ores. For those, use the fallback modifiers.
+* This build is designed to be used with Luck, Strength, and Luminant totems. You can also use a Friendship totem, but in that case, do not equip the Solitude rune.
+* ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* ☒ Replace one of the marked rings with Dredge Master’s Ring for better results.
+* If you need more than 2 digs to fill the pan, change some of the modifiers to Mutated LDM.
+Museum
+	Modifier: Treasured 2L:fallback: Mutated LDM | Perfect LCW or Voidtorn LC
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	L Vineheart‡ 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara‡ 20
+	+L-W Flarebloom 20
+	
+
+	Legendary
+	L Diamond 20
+	SP Starshine‡ 20
+	A Rose Gold 40
+	Epic
+	L Emerald 20
+	P Moonstone 50
+	A Mercury 80
+	Rare
+	L Peridot 20
+	A Meteoric Iron 40
+	A Ruby 20
+	Uncommon
+	A Smoky Quartz 20
+	A Neodymium 40
+	C Coral 10 | Topaz 20 | Nickel 40
+	Common
+	P Pearl 20
+	P Silver 40
+	C Seashell 20 | Pyrite 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Timelocked Soul
+	
+
+	 Neck  
+	Venomshank
+	
+
+	 Rings  
+	1× Ring of Champions
+	
+
+	7×/5× Umbrite Ring☒⚠
+	☒ Replace 1 with Dredge Master’s Ring for better results
+⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	Runes  
+	Purity, Solitude, Sunblessed/Abyssal, Summit Seeker, Mountain Climber
+	 Pan  
+	Blightflow
+	enchant: Infernal; trinket: Mass Reactor
+	 Shovel  
+	Venomspade
+	enchant: Mythical (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Luck Efficiency III.A
+Luck Efficiency III.A (no Ring of Champions)
+Highest average rerolls
+* ‡ Treasured isn’t possible for the marked ores. For those, use the fallback modifiers.
+* This build is designed to be used with Luck, Strength, and Luminant totems. You can also use a Friendship totem, but in that case, do not equip the Solitude rune.
+* 6 ring slots version: ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* ☒ Replace one of the marked rings with Dredge Master’s Ring for better results.
+* If you need more than 2 digs to fill the pan, change some of the modifiers to Mutated LDM.
+Museum
+	Modifier: Treasured 2L:fallback: Mutated LDM | Perfect LCW or Voidtorn LC
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	L Vineheart‡ 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara‡ 20
+	+L-W Flarebloom 20
+	
+
+	Legendary
+	L Diamond 20
+	P Specterite 10
+	S Aquamarine | Aetherite | Gloomcap‡ | Lost Soul‡ 20 | Bismuth 80
+	Epic
+	L Emerald 20
+	P Moonstone 50
+	A Mercury 80
+	Rare
+	L Peridot 20
+	A Meteoric Iron 40
+	A Ruby 20
+	Uncommon
+	A Smoky Quartz 20
+	A Neodymium 40
+	C Coral 10 | Topaz 20 | Nickel 40
+	Common
+	P Pearl 20
+	P Silver 40
+	C Seashell 20 | Pyrite 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Timelocked Soul
+	
+
+	 Neck  
+	Venomshank
+	
+
+	 Rings  
+	4×/3×⚠ Umbrite Ring ☒
+	☒ Replace 1 with Dredge Master’s Ring for better results
+6 rings: ⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	3× Otherworldly Ring
+	
+
+	1×/0× Purifying Ring
+	
+
+	Runes  
+	Purity, Solitude, Sunblessed/Abyssal, Summit Seeker, Mountain Climber
+	 Pan  
+	Blightflow
+	enchant: Infernal; trinket: Mass Reactor
+	 Shovel  
+	Venomspade
+	enchant: Mythical (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+
+
+last update 2026.09.15
+Hybrid III.
+Hybrid 
+Solid Luck build with optimal Size Boost
+* This build can be used to collect Perfect LCW museum ores, using one of the fallback modifiers.
+* Optimal size boost is 1300–1500. ★If size boost exceeds 1700, see substitutions below the table.
+* This build is designed to be used with Luck, Strength, and Luminant totems. You can also use a Friendship totem, but in that case, do not equip the Solitude rune.
+* Use a Solar Magnifier (and an Infernal Idol if at Caldera Park) to increase the chances of getting Museum-quality ores.
+* ⚠ For Fungal Marsh, replace one of the marked rings with a Purifying Ring (no-RoC only).
+* ☒ Replace one of the marked rings with Dredge Master’s Ring for better results (no-RoC only!).
+* ‡ Use the Abyssal Shovel for 6 ring slots in the version without Ring of Champions.
+* If you need more than two digs to fill the pan, change some ores to Mutated LDM.
+Museum
+	Modifier: Perfect LCW; fallbacks: Voidtorn LC, Mutated LDM, Crystalline W
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W Pumpkin Soul | Bloodstone 40
+	
+
+	
+
+	Mythic
+	W Painite | Red Beryl | Star Garnet 20
+	LCDA Prismara 20
+	
+
+	Legendary ★
+	pick 2: W Cinnabar | Fire Opal | Volcanic Key 20 | Dragon Bone 50
+	P Specterite 10
+	Epic ★
+	P Moonstone 50 | Opal 20
+	W Ashvein 20 | Bone 50
+	W+ Osmium 80
+	Rare
+	S Azuralite | Lapis Lazuli 30 | Glacial Quartz | Gloomberry 40
+	L Peridot 20
+	W Candy Cane 40
+	Uncommon
+	A Neodymium 40 | Smoky Quartz 20
+	W Rock Candy 60
+	W Zircon 20
+	Common
+	S Amethyst 20 | Platinum | Blue Ice 40
+	W Copper 60
+	W Obsidian 30
+	Equipment
+	With Ring of Champions
+	No Ring of Champions
+	 Charm  
+	Timelocked Soul
+	Timelocked Soul
+	 Neck  
+	Venomshank
+	Frostthorn Pendant
+	 Rings  
+	1× Ring of Champions
+	4×/3× Umbrite Ring ⚠ ☒
+	5×/3× Umbrite Ring
+	4×/3× Otherworldly Ring
+	2× Purifying Ring
+	
+
+	Runes  
+	Solitude, Sunblessed/Abyssal, Summit Seeker, Mountain Climber, Speed I
+	 Pan  
+	Blightflow
+	enchant: Cosmic
+	 Shovel  
+	Venomspade | Abyssal‡
+	enchant: Rhythmic (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one꙳ of the ores or equipment listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	
+
+★Alternative museum ores if size boost is greater than optimal - changes highlighted & bold (not all substitutions may be necessary):
+
+
+	Slot 1
+	Slot 2
+	Slot 3
+	Legendary
+	A Rose Gold 40
+	L Diamond 20
+	P Specterite 10
+	Epic
+	P Moonstone 50 | Opal 20
+	A Mercury 80
+	W+ Osmium 80
+	bosnia123123 (@CzystyWegiel)
+
+
+Size Boost III.
+Size Boost
+Highest possible size boost at this stage; †limited equipment
+*  ⚠ Not suitable for Fungal Marsh without modification (see notes).
+* If you do not have a Ring of Champions yet, see Size Boost II, or the no-RoC option in Hybrid III.
+* For best results, use Luck, Strength, and Luminant totems, as well as Solar Magnifiers. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+* All equipment should be Diamond or better, but Rings of Thorns should be Festive if at all possible, and Prismatic otherwise.
+Museum
+	Modifier: Perfect LCW; fallback: Crystalline W
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W Pumpkin Soul | Bloodstone 40
+	
+
+	
+
+	Mythic
+	W pick 2: Star Garnet | Red Beryl | Painite 20
+	
+
+	Legendary
+	W pick 3: Dragon Bone 50| Fire Opal | Cinnabar | Volcanic Key 20
+	Epic
+	W+ Osmium 80
+	W Bone 50
+	W Ashvein 20
+	Rare
+	A Ruby 20 | Meteoric Iron 40
+	L Peridot 20
+	W Candy Cane 40
+	Uncommon
+	A Neodymium 40 | Smoky Quartz 20
+	W Zircon 20
+	W Rock Candy 60
+	Common
+	C Seashell 20 | Pyrite 60
+	W Copper 60
+	W Obsidian 30
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Helm of the Round
+	fallback: Royal Federation Crown
+	 Neck  
+	Frostthorn Pendant
+	
+
+	 Rings  
+	1× Ring of Champions
+	fallback:  Festive Ring of Thorns
+	1× Dredge Master’s Ring
+	fallback:  Festive Ring of Thorns
+	6×/4× Ring of Thorns⚠
+	mutation: Festive; fallback: Prismatic
+⚠ Replace 1 with Purifying Ring for Fungal Marsh
+	 Runes  
+	Summit Seeker, Mountain Climber, Speed I, Sunblessed/Abyssal, Volcanic/Solitude
+	 Pan  
+	Blightflow | Galactic†
+	enchant: Cosmic
+	 Shovel  
+	Candy Cane† | Venomspade
+	enchant: Non-Euclidean (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+  
+Credits for museum buffs: MrOhnoez (@MrOhnoez)
+   
+Items Farming III.
+Items Farming
+Optimized amount per minute, suitable for torturer Dredge Master quests.
+* Designed to be used with Strength & Luminant totems; do not waste your Luck & Friendship totems.
+* ☒ Replace one of the marked rings with Dredge Master’s Ring for better results.
+* Use the Maximum Luck setting to reduce your luck for Common, Uncommon, Rare, and possibly Epic ores. Experiment to find the best setting for each ore.
+* Use Rain Stones/Infernal Idols if appropriate.
+* ‡If you need more than 2 digs to fill the pan, change some of the modifiers to Mutated LDM.
+* Excavating enchant is optional but recommended.
+Museum
+	Modifier: Cosmic CA ‡see note; fallback:  Lunar SPK 
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	SP Umbrite 20
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	A Mythril 60
+	
+
+	Legendary
+	A Rose Gold 40
+	C Catseye 20 | Firefly Stone 60 | Luminum 40
+	S Aquamarine | Aetherite | Gloomcap | Lost Soul 20 | Bismuth 80
+	Epic
+	A Mercury 80
+	C Golden Pearl 20
+	C Ammonite Fossil 50
+	Rare
+	A Meteoric Iron 40
+	A Ruby 20
+	S Azuralite | Lapis Lazuli 30 | Glacial Quartz | Gloomberry 40
+	Uncommon
+	A Smoky Quartz 20
+	A Neodymium 40
+	C Coral 10 | Topaz 20 | Nickel 40
+	Common
+	P Pearl 20
+	P Silver 40
+	C Seashell 20 | Pyrite 20
+	Equipment
+	With Ring of Champions
+	No Ring of Champions
+	 Charm  
+	Timelocked Soul
+	Timelocked Soul
+	 Neck  
+	Frostthorn Pendant
+	Frostthorn Pendant
+	 Rings  
+	1x Ring of Champions
+	2×/1× Umbrite Ring ☒
+	3×/0× Umbrite Ring ☒
+	4×/3× Purifying Ring
+	0×/2× Vortex Ring ☒
+	2× Mythril Ring
+	4×/3× Purifying Ring
+	
+
+	Runes  
+	Summit Seeker, Mountain Climber, Critical I, Critical II, Eternity/Speed I
+	 Pan  
+	Blightflow
+	enchant: Cosmic
+	 Shovel  
+	Venomspade
+	enchant: Excavating (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+
+
+
+
+Sell Boost III.
+Sell Boost III. – SELLING ONLY
+* Equip this build right before selling a full backpack’s worth of ores.
+* For best results, use a size boost build to collect the ores.
+* *Some of the Museum ores are not Stage III; they’re included because you might luck onto them in the Void.
+* You don't need everything listed here in order to make this build work: more parts of the build covered = bigger money.
+* Blank museum slots can be filled with anything you want, or just leave them empty.
+Museum
+	Modifiers: any
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	$ Radiant Gold 60
+	$ Sunstone* 40
+	
+
+	Legendary
+	$ Palladium 40
+	$ Tourmaline 24
+	
+
+	Epic
+	$ Pyronium 50
+	$ Meteoric Gold* 40
+	
+
+	Rare
+	$ Pyrelith 30
+	$ Amber 20
+	
+
+	Uncommon
+	$ Electrum 40
+	$ Glowberry 40
+	
+
+	Common
+	$ Gold 40
+	
+
+	
+
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Royal Federation Crown
+	
+
+	 Neck  
+	Venomshank
+	
+
+	 Rings  
+	1× Ring of Champions
+	fallback: Apocalypse Bringer
+	7×/5× Apocalypse Bringer
+	
+
+	Runes    
+	Any
+	 Pan  
+	Any
+	enchant: Midas
+	 Shovel  
+	Any
+	enchant: any
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one of the items listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+Stage II.: Overgrown
+Stage II. Builds - Overgrown Caves
+Highest-level location: Enchanted Ruins/Abyssal Depths
+At this game stage, all equipment is expected to be at least five-star and 85% quality. 
+Mythic equipment should be Diamond mutation or better.
+
+
+Builds in this stage:
+* Luck Efficiency II.
+* Size Boost II.
+* Sell Boost II.
+Luck Efficiency II.
+Luck Efficiency II
+High average rerolls; †Optional limited equipment
+* All Mythic equipment should be Diamond mutation or better.
+* ☽ If your Mythril Rings don’t have a mutation, use Prismatic Moon Rings instead. (Moon Rings are easy to mutate.)
+Museum
+	Modifier: Voidtorn LC; fallback: Mutated LDM or Iridescent L
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	L Vineheart 40
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	+L-W Flarebloom 20
+	
+
+	Legendary
+	A Rose Gold 40
+	SP Starshine 20
+	L Diamond 20
+	Epic
+	P Moonstone 50
+	P Opal 20
+	L Emerald 20
+	Rare
+	L Peridot 20
+	P Silver Clamshell 20
+	A Ruby 20 | Meteoric Iron 40
+	Uncommon
+	A Smoky Quartz 20
+	A Neodymium 40
+	C Coral 10 | Topaz 20
+	Common
+	P Pearl 20
+	P Silver 40
+	C Pyrite 60 | Seashell 20
+	Equipment
+	With Umbrite/Vortex Rings
+	No Umbrite/Vortex Rings
+	 Charm  
+	Antlers of Life | Witch Hat†
+	Antlers of Life | Witch Hat†
+	 Neck  
+	Frostthorn Pendant
+	Frostthorn Pendant
+	 Rings  
+	6×/4× Umbrite/Vortex Ring
+	4×/2× Ring of Thorns
+	2× Mythril Ring☽
+	2× Apocalypse Bringer
+	
+
+	2× Mythril Ring☽
+	 Runes  
+	Summit Seeker, Mountain Climber, Speed I, Purity/Solitude/Abyssal
+	  Pan  
+	Abyssal
+	enchant: Infernal or Prismatic
+	 Shovel  
+	Abyssal
+	enchant: Non-Euclidean (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Size Boost II.
+Size Boost II
+High size boost
+* All Mythic equipment should be Diamond mutation or better.
+* ☽ If your Mythril Rings don’t have a mutation, use Prismatic Moon Rings instead. (Moon Rings are easy to mutate.)
+* 🏵After reaching the Swamp, this build can still be used: replace Apocalypse Bringers with 1× Purifying Ring and 1×/0× Ring of Thorns.
+Museum
+	Modifier: Perfect LCW; fallback: Voidtorn LC or Crystalline W
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	W Painite 20
+	
+
+	Legendary
+	W pick 2: Dragon Bone 50 | Cinnabar | Volcanic Key | Fire Opal 20
+	A Rose Gold 40
+	Epic
+	P Moonstone 50 | Opal 20
+	W+ Osmium 80
+	L Emerald 20
+	Rare
+	A Ruby 20 | Meteoric Iron 40
+	P Silver Clamshell 20
+	L Peridot 20
+	Uncommon
+	W Zircon 20 | Rock Candy 60
+	A Smoky Quartz 20
+	A Neodymium 40
+	Common
+	P Pearl 20 | Silver 40
+	W Copper 60
+	W Obsidian 30
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Helm of the Round
+	fallback: Royal Federation Crown
+	 Neck  
+	Frostthorn Pendant
+	
+
+	 Rings  
+	4× Ring of Thorns
+	
+
+	2×/1× Apocalypse Bringer🏵
+	
+
+	2×/1× Mythril Ring☽
+	
+
+	 Runes  
+	Summit Seeker, Mountain Climber, Speed I, Purity/Solitude/Abyssal
+	  Pan  
+	Abyssal
+	enchant: Cosmic
+	 Shovel  
+	Abyssal
+	enchant: Non-Euclidean (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Sell Boost II.
+Sell Boost II. – SELLING ONLY
+* Equip this build right before selling a full backpack’s worth of ores.
+* For best results, use a size boost build to collect the ores.
+* *Some of the Museum ores are not Stage II; they’re included because you might luck onto them in the Void.
+* You don't need everything listed here in order to make this build work: more parts of the build covered = bigger money.
+* Blank museum slots can be filled with anything you want, or just leave them empty.
+Museum
+	Modifiers: any
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	$ Radiant Gold 60
+	$ Sunstone* 40
+	
+
+	Legendary
+	$ Palladium 40
+	$ Tourmaline 24
+	
+
+	Epic
+	$ Pyronium 50
+	$ Meteoric Gold* 40
+	
+
+	Rare
+	$ Pyrelith 30
+	$ Amber 20
+	
+
+	Uncommon
+	$ Electrum* 40
+	$ Glowberry 40
+	
+
+	Common
+	$ Gold 40
+	
+
+	
+
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Royal Federation Crown
+	The higher stars, quality (%), and mutation, the better, but remember that two 5-star rings are better than a single 6-star
+	 Neck  
+	Amethyst Pendant
+	 Rings  
+	8×/6× Apocalypse Bringer
+	 Runes  
+	Any
+	 Pan  
+	Any
+	enchant: Midas
+	 Shovel  
+	Any
+	enchant: any
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one of the items listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Stage I.: Snowy
+.Stage I. Builds - Snowy Isle
+Highest-level location reached: Frozen Peak
+At this game stage, all equipment is expected to be at least five-star and 80% quality. 
+When forging together two items to make them six-star, prioritize the neck and charm items. If forging will leave you with fewer rings than you have ring slots, don’t do it.
+Ditto for mutating: use your day-nine-login-reward Diamond Catalyst on your Frostthorn Pendant, not on a Mythril Ring (unless of course your pendant is already diamond or better). 
+Be flexible about the museum. If you don’t have any shake strength ores in a particular rarity, see if there are any shake speed ores that you can substitute. If your biggest Peridot is only 15kg, check if you have any of the suggested ores with a Treasured modifier to “make up for” the decrease in the Luck stat. Check the pinned messages for the most up-to-date museum guide, or look at the museum page in the wiki.
+
+
+Builds in this stage:
+* Luck Efficiency I.
+* Size Boost I.
+* Sell Boost I. 
+Luck Efficiency I.
+Luck Efficiency Build
+No limited-time equipment required
+* You should focus on getting these stats from ores: Luck > Shake Strength = Shake Speed > Capacity > Dig Speed
+* Museum is more of a suggestion rather than necessity. Treat it with a grain of salt.
+* Modifier ranking FOR THIS BUILD: Treasured 2L > Perfect LCW = Voidtorn LC  > Mutated LDM > Iridescent L > Cosmic CA > Lunar SPK > Electrified SP > Shiny A = Glowing P > Scorching D  > Pure S. For this build, Crystalline W and Irradiated M are useless.
+* Fallback ores for museum (dig speed): Common: Blue Ice 40, Platinum 40, Amethyst 20, Uncommon: Titanium 40, Sapphire 20, Rare: Lapis Lazuli 30, Glacial Quartz 40, Azuralite 30, Epic: Iridium 40, Cobalt 40, Borealite 20, Aurorite 30, Legendary: Aquamarine 20, Aetherite 20
+* More info on museum buffs: https://prospecting.miraheze.org/wiki/Museum
+* ☽ If your Mythril Rings don’t have a mutation, you can use Prismatic Moon Rings instead. (Moon Rings are easy to mutate.)
+Museum
+	Modifiers: see note above
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	LC Voidstone 20
+	
+
+	
+
+	Mythic
+	L Inferlume | Pink Diamond 20
+	+L-W Flarebloom 20
+	
+
+	Legendary
+	C Luminum 40 | Catseye 20 | SP Starshine 20
+	A Rose Gold 40
+	L Diamond 20
+	Epic
+	pick 2: P Moonstone 50 | Opal 20 | C Ammonite Fossil 50 | Golden Pearl 20
+	L Emerald 20
+	Rare
+	A Meteoric Iron 40 | Ruby 20
+	P Silver Clamshell 20
+	L Peridot 20
+	Uncommon
+	C Coral 10 | Topaz 20
+	A Smoky Quartz 20
+	A Neodymium 40
+	Common
+	C Pyrite 60 | Seashell 20
+	P Pearl 20
+	P Silver 40
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Cryogenic Preserver
+	The higher stars, quality (%), and mutation, the better, but remember that two 5-star rings are better than a single 6-star
+☽ See note above about rings
+	 Neck  
+	Frostthorn Pendant
+	 Rings  
+	2× Apocalypse Bringer
+	6×/4× Mythril Ring ☽
+	 Runes  
+	Mountain Climber, Speed I, Summit Seeker, Solitude/Discovery/Sunblessed
+	 Pan  
+	Frostbite
+	enchant: Infernal or Prismatic 
+	 Shovel  
+	Icebreaker
+	enchant: Non-Euclidean/Rhythmic (auto-pan: Mythical or Mastered)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one‡ of the ores listed (‡unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed * “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Size Boost I.
+Size Boost Build
+High Size Boost; no limited equipment required
+* Goals:
+   1. Collecting big ores to earn big money.
+   2. Collecting Museum-sized ores that grant the maximum possible buffs.
+* Modifier ranking FOR THIS BUILD (if you don’t have Perfect LCW or Crystalline W): Treasured 2L > Mutated LDM > Voidtorn LC > Iridescent L > Cosmic CA > Lunar SPK > Electrified > SP Shiny A = Glowing P > Scorching D > Pure S. 
+* Use Solar Magnifier (and Infernal Idol at Caldera Island) to increase your chances of getting Museum-quality ores.
+* More info on museum buffs: https://prospecting.miraheze.org/wiki/Museum
+* Use this build alternately with the Sell Boost Build.
+Museum
+	Modifier: Perfect LCW; fallback: Crystalline W OR see note above
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	W Painite 20
+	WD Volcanic Core 20
+	
+
+	Legendary
+	pick 3: W Volcanic Key | Fire Opal | Cinnabar 20 | Dragon Bone 50
+	Epic
+	W Ashvein 20
+	W+ Osmium 80
+	L Emerald 20
+	Rare
+	A Meteoric Iron 40 | Ruby 20
+	P Silver Clamshell 20
+	L Peridot 20
+	Uncommon
+	W Zircon 20
+	A Smoky Quartz 20
+	A Neodymium 40
+	Common
+	W Obsidian 30
+	W Copper 60
+	P Silver 40 | P Pearl 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Royal Federation Crown
+	fallback: Crown
+	 Neck  
+	Frostthorn Pendant
+	fallback: Mass Accumulator
+	 Rings  
+	3×/2× Mythril Ring
+	fallback: Prismatic Moon Ring
+	3×/2× Apocalypse Bringer
+	
+
+	2× Eye of Fire
+	
+
+	 Runes  
+	Mountain Climber, Speed I, Summit Seeker, Sunblessed/Abyssal/Solitude/Discovery
+	 Pan  
+	Frostbite
+	enchant: Cosmic; fallback: Glowing
+	 Shovel  
+	Icebreaker
+	enchant: Non-Euclidean/Rhythmic/Voidtouched
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one‡ of the ores listed (‡unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+Sell Boost I.
+Sell Boost I – SELLING ONLY
+Stage I; no limited-time equipment required
+* Equip this build right before selling a full backpack’s worth of ores
+* For best results, use a size boost build to collect the ores
+* *Some of the Museum ores are not Stage I; they’re included because you might luck onto them in the Void
+* You don't need everything listed here in order to make this build work: more parts of the build covered = bigger money
+* Blank museum slots can be filled with anything you want, or just leave them empty
+Museum
+	Modifiers: any
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	$ Radiant Gold* 60
+	$ Sunstone* 40
+	
+
+	Legendary
+	$ Palladium 40
+	$ Tourmaline 24
+	
+
+	Epic
+	$ Pyronium 50
+	$ Meteoric Gold* 40
+	
+
+	Rare
+	$ Pyrelith 30
+	$ Amber* 20
+	
+
+	Uncommon
+	$ Electrum* 40
+	$ Glowberry* 40
+	
+
+	Common
+	$ Gold 40
+	
+
+	
+
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Royal Federation Crown
+	The higher stars, quality (%), and mutation, the better, but remember that two 5-star rings are better than a single 6-star
+	 Neck  
+	Amethyst Pendant
+	 Rings  
+	8×/6× Apocalypse Bringer
+	 Runes  
+	Any
+	 Pan  
+	Any
+	enchant: Midas
+	 Shovel  
+	Any
+	enchant: any
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one of the items listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Stage 0.: Caldera
+Stage 0 Builds - Caldera
+Highest-level location reached: Infernal Heart
+At this game stage, strive to make all equipment five-star and at least 75% quality. 
+This game stage introduces two important mechanics: the Magma Furnace Forge, which can be used to merge two five-star items into a single six-star item with better stats; and the all-important Museum, which can give you significant multipliers to all of your stats.
+* When forging together two equipment to make them six-star, prioritize the neck and charm items. Also, remember that two 5-star rings are better than a single 6-star. In other words, if forging will leave you with fewer rings than you have ring slots, don’t do it.
+* At this stage, the Museum portions of the guides are a suggestion, not a requirement. Do the best you can, even if you don’t have some of the ores, or the ones you do have don’t meet the minimum weight or have the right modifiers. 
+* That said, you absolutely should unlock the museum slots as soon as you can. Even a tiny ore will give more of a boost than a nonexistent one. If you need totems, go hunt down some treasure maps; save your meteor shards for the museum.
+* You can check what all the ores/modifiers do and the minimum weight requirements on the  museum page in the wiki.
+
+
+🗎Learn about important statistics and terms
+The information in the linked document is also available on the discord by typing ?commands and then clicking the bottom link in the resulting server message.
+
+
+Builds in this stage:
+* Luck Efficiency 0
+* Size Boost 0
+* Sell Boost 0
+Luck Efficiency 0
+Luck Efficiency
+Luck efficiency for Caldera stage
+* The goal of this build is getting higher-rarity ores to progress further in the game.
+* Museum is a suggestion, not a requirement. Just do the best you can.
+   * Your dino skull can be any size, as long as it has a modifier that gives luck.
+* You should, however, do your best to follow the equipment part of this build.
+● Exception: If you own any equipment from later stages, it’s most likely better.
+* The higher stars and quality (%), the better, but remember that two 5-star rings are better than a single 6-star.
+
+
+Museum
+	Modifiers: Perfect LCW; Iridescent L;  Mutated LDM or any
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull⭐
+	
+
+	
+
+	Mythic
+	L Inferlume | Pink Diamond 20
+	+L-W Flarebloom 20
+	
+
+	Legendary
+	SP Starshine 20
+	A Rose Gold 40
+	L Diamond 20
+	Epic
+	pick 2: P Moonstone 50 | Opal 20 | C Ammonite Fossil 50 | Golden Pearl 20
+	L Emerald 20
+	Rare
+	A Meteoric Iron 40 | Ruby 20
+	P Silver Clamshell 20
+	L Peridot 20
+	Uncommon
+	C Coral 10 | Topaz 20
+	S Sapphire 20
+	S Titanium 40
+	Common
+	P Silver 40 | P Pearl 20
+	S Amethyst 20
+	S Platinum 40
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Fossilized Crown
+	fallback: Royal Federation Crown
+	 Neck  
+	Phoenix Heart
+	fallback: Celestial Rings
+	 Rings  
+	4×/3× Apocalypse Bringer
+	
+
+	4×/3× Moon Ring
+	
+
+	Runes  
+	Purity, Sunblessed, Solitude/Speed I/Discovery
+	 Pan  
+	Fossilized
+	enchant: Destructive
+	 Shovel  
+	Fossilized
+	enchant: Non-Euclidean/Rhythmic (auto-pan: Mythical or Mastered)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one of the items listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+Size Boost 0
+Size Boost
+Size Boost build for Caldera stage
+* Goals:
+   1. Collecting big ores to earn big money.
+   2. Collecting big ores that grant significant Museum buffs.
+* Museum is a suggestion, not a requirement. Just do the best you can.
+* You should, however, do your best to follow the equipment part of this build.
+● Exception: If you own any equipment from later stages, it might provide higher Size Boost.
+* The higher stars and quality (%), the better, but remember that two 5-star rings are better than a single 6-star.
+
+Museum
+	Modifiers: Perfect LCW; Iridescent L;  Mutated LDM or any
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	W Painite 20
+	WD Volcanic Core 20
+	
+
+	Legendary
+	pick 3: W Volcanic Key | Fire Opal | Cinnabar 20 | Dragon Bone 50
+	Epic
+	W Ashvein 20
+	W+ Osmium 80
+	L Emerald 20
+	Rare
+	A Meteoric Iron 40 | Ruby 20
+	P Silver Clamshell 20
+	L Peridot 20
+	Uncommon
+	W Zircon 20
+	A Smoky Quartz 20
+	A Neodymium 40
+	Common
+	W Obsidian 30
+	W Copper 60
+	P Silver 40 | P Pearl 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Royal Federation Crown
+	
+
+	 Neck  
+	Mass Accumulator
+	
+
+	 Rings  
+	8×/6× Eye of Fire
+	fallback: Ruby Ring
+	Runes  
+	Scorching, Sunblessed, Solitude/Speed I/Discovery
+	 Pan  
+	Fossilized
+	enchant: Titanic
+	 Shovel  
+	Fossilized
+	enchant: Non-Euclidean/Rhythmic (auto-pan: Mythical or Mastered)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one of the items listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+Sell Boost 0
+Sell Boost 0 – SELLING ONLY
+   * Equip this build right before selling a full backpack’s worth of ores.
+   * For best results, use a size boost build to collect the ores.
+   * *Some of the Museum ores are not Stage 0; they’re included because you might luck onto them in the Void.
+   * You don't need everything listed here in order to make this build work: more parts of the build covered = bigger money.
+   * Blank museum slots can be filled with anything you want, or just leave them empty.
+Museum
+	Modifiers: any
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	$ Radiant Gold* 60
+	$ Sunstone* 40
+	
+
+	Legendary
+	$ Palladium* 40
+	$ Tourmaline* 24
+	
+
+	Epic
+	$ Pyronium 50
+	$ Meteoric Gold* 40
+	
+
+	Rare
+	$ Pyrelith 30
+	$ Amber* 20
+	
+
+	Uncommon
+	$ Electrum* 40
+	$ Glowberry* 40
+	
+
+	Common
+	$ Gold 40
+	
+
+	
+
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Royal Federation Crown
+	The higher stars and quality (%), the better, but remember that two 5-star rings are better than a single 6-star
+	 Neck  
+	Amethyst Pendant
+	 Rings  
+	8×/6× Apocalypse Bringer
+	 Runes  
+	Any
+	 Pan  
+	Any
+	enchant: Midas
+	 Shovel  
+	Any
+	enchant: any
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one of the items listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+
+
+Bonus Builds
+Bonus Builds
+I wonder what I can find here…
+
+
+Hint:
+   * Treasure Chests
+   * Money Printers
+   * Shards Farming
+   * Walk Speed
+   * Nothing Burger V2
+
+
+Treasure Chests
+Treasure Chests
+Builds and tips related to treasure maps and treasure chests
+Applies to Geode farming as well
+What are the benefits of opening Treasure Chests?
+   * It’s the easiest way to obtain lots of different relics and totems!
+   * Treasure Chests are the only source of ores with the Treasured 2L modifier, which is the best choice for Luck Efficiency builds.
+   * See https://prospecting.miraheze.org/wiki/Treasure_Chest for a detailed loot pool.
+How do I get Treasure Maps?
+Each dig has a chance to drop a Treasure Map. In order to obtain Treasure Maps effectively, you need a dedicated build which meets specific criteria:
+   * Dig speed = 10%: most important part of the build, achieved by equipping Solar Rings or/and Venomshank (the lower the quality, the better);
+   * Treasure Hunter Shovel enchant: grants 2× chance of getting a Treasure Map each dig, and raises map capacity to 10;
+   * Excalibur: a charm that introduces a unique statistic - Treasure Map Chance, self explanatory.
+Other Tips
+   * Quality of digs doesn’t matter.
+   * The chance of getting a specific Treasure Map is increased when digging in the same location.
+   * You can swap your pans instead of manually emptying your pan, especially if you run a full Capacity build.
+   * Use the Walkspeed Build to hunt down chests faster.
+   * Use a Size Boost build when opening Treasure Chests to maximize profits - it is the only statistic that affects them. (note: Solar Magnifier and Volcanic Eruption don’t increase size of ores from Chests)
+   * Most of the above applies to Geodes as well! The only differences are:
+   * Shovel Enchant: Geothermal.
+   * Excalibur is not needed.
+   * Obviously, you don’t need to collect chests (you can 100% AFK through the process).
+   * Luck does affect the rarity of minerals you drop, so you should use the Geode Opening build instead of a Size Boost build to open geodes.
+Builds in this category are just examples and suitable for Auto Pan. You can make your own!
+   * Treasure/Geode 1
+   * Treasure/Geode 2
+   * Geode Opening
+Treasure/Geode 1
+Treasure Map / Geode Digging Build
+Game stage III/IV; no limited equipment; EXAMPLE OF A BUILD
+   * This is the most efficient Treasure Digging Build in the game. It is not for the faint of heart.
+   * ‡ Use Geothermal Enchant for Geode farming.
+   * Good overall game knowledge is strongly recommended, as well as maxed-out equipment.
+— This is a two-stage build —
+Stage 1: Pebble Beach Build
+Getting the tiny ores needed to craft one-star but Prismatic Venomshank and Solar Rings
+   * Get the Infernal enchant on the Dragonflame Pan.
+   * Equip Phoenix Heart with the highest negative Size Boost you can manage. It won’t be very bad yet, but it’ll get you on your way.
+   * Equip Purity Rune to lower the quality of your ores; equip other usual Runes as well.
+   * Make sure none of your equipment gives a positive Size Boost.
+   * Load a Full Size Boost Museum. (The negative Size Boost from your equipment will be multiplied by the positive size boost from your museum to give you a large negative total size boost.)
+Gathering minerals part 1: Disimproving your Phoenix Heart
+Note: if you already have a Phoenix Heart that has a -60% to -70% size boost, you can skip this part. Make it Prismatic (so the size is between -96% and -112%) and move on to “Gathering minerals part 2.”
+   * Get 3 Uranium, 2 Starshine, and 1 Inferlume. Go to a crafting anvil and check if they’re small enough to make a one-star Phoenix Heart. If yes, go to the next step; otherwise, keep digging.
+   * Craft your new-and-negatively-improved Phoenix Heart. Reforge if needed: aim for the largest-possible negative size boost, -70%.
+   * If you own the Crafter’s Luck gamepass and/or have Crafting Mastery, don’t reforge too many times. Craft a new Heart instead.
+   * Switch to your usual Luck Efficiency build (including the museum) and collect enough Inferlumes to get the Prismatic mutation on your Phoenix Heart.
+   * Best locations for Inferlume: Infernal Heart > Windswept Beach > Sunset Beach > Volcanic Sands
+Gathering minerals part 2: Venomshank and Solar Ring, it’s your turn
+Note: if you manage to craft a -80% Dig Speed (mutation included) or more Venomshank and own The Excavator Shovel, you can skip crafting Solar Ring at all.
+   * Equip your one-star Prismatic Phoenix Heart, and fill the rest of your equipment slots with equipment that gives no size boost.
+   * For example, Charm: Excalibur/Witch Hat; Rings: 4×/2× Vortex Ring, 2× Mythril Ring, 2× Purifying Ring
+   * Equip the Infernal Dragonflame Pan.
+   * Equip any shovel that fits your build (Venomspade, Cupid’s Arrow, Abyssal Shovel, etc.).
+   * Load a Full Size Boost Museum.
+   * Collect these ores with the lowest weight possible: 1 Bloodstone, 3 Star Garnet, 3 Mythril, 10 Bismuth, 1 Vortessence, 1 Volcanic Core, 2 Fire Opal, 10 Pyronium.
+   * Craft a 1-star Venomshank and a 1-star Solar Ring with the lowest Dig Speed possible. (Venomshank: -60%; Solar Ring: -30%.)
+   * Again, if you own the Crafter’s Luck gamepass and/or have Crafting Mastery, don’t reforge too many times. Craft a new item instead.
+   * Additionally if you use both venomshank and 1 solar ring, you should be able to use a -57% and like -27% - don’t be stressed about getting the very minimum dig speed.
+   * Switch to your usual Luck Efficiency build (including the museum) and collect enough Bloodstones and Volcanic Cores to get a Prismatic mutation on your Venomshank and Solar Ring.
+   * Bloodstone: Rotwood Swamp > Timelocked Sanctuary. 
+Volcanic Core: Infernal Heart > Magma Furnace.
+Stage 2: The Actual Treasure Map Digging Build
+Museum
+	Modifier: Cosmic CA; fallback: Glowing P
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	CW Singularium 100 | LC Voidstone 20
+	
+
+	
+
+	Mythic
+	C Vortessence 20
+	A Mythril 60
+	
+
+	Legendary
+	C Firefly Stone 60
+	C Catseye 20
+	C Luminum 40
+	Epic
+	C Ammonite Fossil 50
+	C Golden Pearl 20
+	A Mercury 80
+	Rare
+	A Ruby 20
+	A Meteoric Iron 40
+	P Silver Clamshell 20
+	Uncommon
+	A Neodymium 40 | Smoky Quartz 20
+	C Coral 10
+	C Topaz 20
+	Common
+	C Seashell 20
+	C Pyrite 60
+	P Pearl 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Excalibur
+	
+
+	 Neck  
+	Venomshank
+	1-star Prismatic
+	 Rings  
+	1× Solar Ring
+	1-star Prismatic; swap for Vortex Ring if dig speed = 10% with Venomshank only
+	1× Dredge Master’s Ring
+	fallback: Vortex Ring
+	3×/2× Vortex Ring
+	If dig speed > 10%, replace 1 with a Solar Ring
+	3×/2× Purifying Ring
+	
+
+	 Runes  
+	Mountain Climber, Speed I; do NOT equip Summit Seeker or Equalizer!!!
+	 Pan  
+	Nebula | Blightflow
+	enchant: Hyperspeed
+	 Shovel  
+	The Excavator
+	enchant: Treasure Hunter (or Geothermal‡)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	PPatel (@301Manmeet) & bosnia123123 (@CzystyWegiel)
+Treasure/Geode 2
+Treasure Map / Geode Digging Build
+Game stage II/III; Autopan 1-tap; EXAMPLE OF A BUILD
+      * Designed for auto-panning. If digging manually, don’t strive for perfect digs – pan quality doesn’t matter, frequency of digs does.
+      * ‡ Use Geothermal Enchant for Geode farming.
+      * This is a simplified version of Treasure Map build, not a regular one.
+      * Goals:
+      * 10% Dig Speed
+      * Fill pan with one dig
+      * Empty pan as quickly as possible
+      * With a Treasure Hunter shovel, the maximum number of treasure maps you can have in your backpack is 10.
+Museum
+	Modifiers: Shiny A or Cosmic CA; fallback: Glowing P
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	+DA-SP Cryonic Artifact 20
+	
+
+	
+
+	Mythic
+	LCDA Prismara 20
+	A Mythril 60
+	
+
+	Legendary
+	P Specterite 10
+	A Rose Gold 40
+	(anything)
+	Epic
+	P Opal 20
+	P Moonstone 50
+	A Mercury 80
+	Rare
+	P Silver Clamshell 20
+	A Ruby 20
+	A Meteoric Iron 40
+	Uncommon
+	A Smoky Quartz 20
+	A Neodymium 40
+	(anything)
+	Common
+	P Pearl 20
+	P Silver 40
+	(anything)
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Excalibur
+	
+
+	 Neck  
+	Venomshank
+	
+
+	 Rings  
+	3× Solar Ring
+	Prismatic mutation, but the lower stars & quality (%) the better (for lowest possible dig speed)
+	3×/5× Purifying Ring
+	
+
+	 Runes  
+	NOT Equalizer and NOT Summit Seeker. Walk speed runes (Speed I, Mountain Climber) are OK.
+	 Pan  
+	Nebula | Blightflow
+	enchant: Hyperspeed
+	 Shovel  
+	Venomspade
+	enchant: Treasure Hunter (or Geothermal‡)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Geode Opening
+Geode Opening Build
+Build for getting rarer and larger Crystalline ores; †Optional limited equipment
+      * The goal of this build is to get as much Luck and Size Boost as possible for opening Geodes
+      * This build is not suitable for opening Treasure Chests as they are not affected by Luck - see Size Boost builds and Treasure Chests introduction page instead.
+      * You don't need everything listed here in order to make this build work: more parts of the build covered = bigger benefit. The build is also suitable for any game stage.
+      * Don't leave any museum slots empty: even if the ore itself doesn't give you luck/size, the modifier will.
+      * The higher stars, quality (%), and mutation of the equipment, the better.
+      * You can mix the equipment according to your resources; there is no balance, just high numbers.
+      * Additional tips are below the table.
+Museum
+	Modifier: Perfect LCW; fallbacks: Treasured 2L, Voidtorn LC, Crystalline W
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	L Vineheart 40 | W Bloodstone | Pumpkin Soul 40
+	
+
+	
+
+	Mythic
+	L Pink Diamond | Inferlume | Chrysoberyl 20
+	W Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	W pick 2: Dragon Bone 50 | Fire Opal | Cinnabar | Volcanic Key 20
+	L Diamond 20
+	Epic
+	W+ Osmium 80
+	W Ashvein 20 | Bone 50
+	L Emerald 20
+	Rare
+	W Candy Cane 40
+	(anything)
+	L Peridot 20
+	Uncommon
+	W Rock Candy 60
+	W Zircon 20
+	(anything)
+	Common
+	W Obsidian 30
+	W Copper 60
+	(anything)
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Timelocked Soul | Starlight Wings
+	fallbacks: Antlers of Life > Helm of the Round > Royal Federation Crown
+	 Neck  
+	Venomshank | Meteor Core
+	fallbacks: Santa’s Bag† > Frostthorn Pendant > Celestial Rings
+	 Rings  
+	1× Ring of Champions
+	fallbacks: Accretion Disk | Otherworldly Ring > see last row
+	1× Ring of the Stars
+	fallbacks: Accretion Disk | Otherworldly Ring > see last row
+	6×/4× Accretion Disk | Otherworldly Ring
+	fallbacks: Umbrite Ring > Ring of Thorns > Eye of Fire
+	 Runes  
+	Purity, Sunblessed/Abyssal, Solitude (if <2 players around you)
+	 Pan  
+	Nebula | Abyssal | Blightflow
+	enchant: Starstruck
+fallbacks: Frostbite = Gingerbread† > Rose†
+	 Shovel  
+	Candy Cane†
+	Purpose: activation of the 🍪 XP Cookie Buff. 
+fallbacks: Starcrusher > any other shovel
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one꙳ of the items listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
+* “amount” is sometimes called “strength”
+	      * Ways to further increase your Luck:
+      * Be in the locations that are affected by luck-boosting events.
+- Nimue’s Blessing: Overgrown Grotto, Deeproot Spring, or Enchanted Ruins.
+- Blizzard: any location on the Snowy island.
+- Swamp Fog: Rotwood Swamp or Fungal Marsh.
+- Starfall: anywhere in Meteor Valley.
+         * Stay in Luck and Friendship Totem’s range.
+         * Pop or wait for a Meteor Shower.
+         * Use luck potions, especially the shard ones, e.g. Ambrosia.
+         * Use consumables, such as Luck Booster, Gingerbread Cookie, etc.
+         * Activate 🍪 XP Cookie effect (via consumable or trigger it with Christmas equipment; this also increases Size Boost).
+         * Open Geodes during Admin Abuse.
+         * Solar Magnifier and Volcanic Eruption do not affect the sizes of ores obtained from Geodes.
+         * Don’t forget to adjust or turn off the Auto Sell settings if you own the gamepass.
+         * When opening Geodes, for better Common, Uncommon and Rare ores rates you should use one of the Size Boost builds since they prioritize Size Boost statistic over everything else.
+
+
+bosnia123123 (@CzystyWegiel)
+
+
+
+
+Money Printers
+Money Printers
+The purpose of these builds is to earn money. The "Standard" version requires the Sell Anywhere gamepass; the "Budget" version does not require any gamepasses. Both are essentially stage IV. builds, although the Budget version has earlier-stage fallbacks. "Endgame" and "Apex" are different approaches to a stage V. build. "Endgame" works best with XP Cookies, while "Apex" assumes you're autopanning or macroing.
+All equipment should be Prismatic if at all possible.
+The most practical place to earn money is Infernal Heart, and all of these builds assume you will spend as much time there as possible. The best place is actually The Void, but that's rarely available. Other good locations are Magma Furnace, Rotwood Swamp, Frozen Peak, and Enchanted Ruins. 
+To select a site when the Heart is closed, go to where the events are: if you're totally out of Infernal Idols and Snow Globes, but someone just started Nimue's Blessing, go to Enchanted Ruins. If the server event at the top of the hour is Swamp Fog, go to Rotwood Swamp. And vote for Event Planner.
+
+
+         * Money Printer - Budget
+         * Money Printer - Standard
+         * Money Printer - Endgame
+         * Money Printer - Apex
+$ - Budget
+Money Printer - Budget
+Money earning build; designed for Auto-pan; no limited equipment or gamepasses required.
+         * When available, pan in Infernal Heart.
+         * Use Luck, Strength, and Luminant totems. You can also use Friendship totems, but in that case, do not equip the Solitude rune.
+         * This build does not require Solar Magnifiers, Relics, or potions, but they won’t hurt.
+         * Sell at any merchant when your backpack fills: about every 5 minutes with Ascended equipment, every 8 minutes without.
+         * Use Annihilation I & II runes so that your backpack doesn’t fill up with low-value ores. Do NOT use Annihilation III.
+         * 🌀One Rare ore should be Mutated (fallback Scorching) instead of Perfect.
+         * This is a two-tap build. If you're not filling your pan in two digs, adjust equipment or museum (Mutated helps).
+Dig Strength × 3 > Capacity
+         * ⚠ Not suitable for Fungal Marsh.
+Museum
+	Modifier: Perfect LCW (fallback Crystalline W) 
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	$ Radiant Gold 60
+	$ Sunstone 40
+	
+
+	Legendary
+	$ Tourmaline 24
+	M Peppermint Prism 20 | Uranium | Radium 60
+	$ Palladium 40
+	Epic
+	W+ Osmium 80
+	W Ashvein 20 
+	W Bone 50 
+	Rare
+	M Jade 40🌀
+	M Diopside 20🌀
+	M Onyx 30🌀
+	Uncommon
+	M Malachite 20
+	$ Glowberry 40
+	$ Electrum 40
+	Common
+	W Copper 60
+	W Obsidian 30
+	$ Gold 40
+	Equipment
+	With Ascended Equipment⚠
+	No Ascended Equipment⚠
+	 Charm  
+	Clockwork
+	Royal Federation Crown
+	 Neck  
+	Meteor Core
+	Meteor Core (fallback: Frostthorn Pendant)
+	 Rings  
+	1×/0× Dredge Master's Ring  
+	1× Dredge Master's Ring (fallback: Vortex Ring)
+	1× Ring of Champions
+	5×/4× Ring of Thorns
+	1× Ring of the Stars
+	2×/1× Otherworldly Ring
+	4× Ring of Thorns
+	
+
+	1×/0× Otherworldly Ring
+	
+
+	Runes  
+	Annihilation I, Annihilation II, Summit Seeker, Volcanic, Abyssal/Sunblessed 
+	 Pan  
+	Nebula
+	enchant: Starstruck (fallback: Excavating); trinket: Duplicator
+	 Shovel  
+	Starcrusher
+	enchant: Mythical (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	zexy_24 (@tedtheidot)
+$ - Standard
+Money Printer - Standard
+Money earning build; designed for Auto-pan; †limited equipment; Sell Anywhere gamepass required.
+         * When available, pan in Infernal Heart. If possible, use the Shrine to extend the Heart.
+         * Use Luck, Strength, Luminant, and Friendship totems, Solar Magnifiers, and whatever relic applies to the location you’re panning in (Infernal Idol, Rain Stone, Spirit Orb, etc.)
+         *  Use all coin potions, Cryonic Brew, and Merchant’s Sell.
+         * Don’t forget to sell your Exotic ores periodically (auto-sell only applies to Mythic and below).
+         * Ascended is a two-tap build; without Ascended it is a one-tap build. If your dig count differs, adjust equipment or museum (Mutated helps).
+Two-tap (Ascended): Dig Strength × 3 > Capacity
+One-tap (No Ascended): Dig Strength × 1.5 > Capacity
+         * ⚠ Not suitable for Fungal Marsh.
+Museum
+	Modifier: Perfect LCW (fallback Crystalline W) 
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W$ Dinosaur Skull 100
+	
+
+	
+
+	Mythic
+	$ Radiant Gold 60 | Sunstone 40
+	W Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	$ Tourmaline 24
+	M Peppermint Prism 20 | Uranium | Radium 60
+	$ Palladium 40
+	Epic
+	$ Pyronium 50
+	$ Meteoric Gold 40 
+	W+ Osmium 80 
+	Rare
+	M Jade 40
+	M Diopside 20
+	M Onyx 30
+	Uncommon
+	M Malachite 20
+	$ Glowberry 40
+	$ Electrum 40
+	Common
+	W Copper 60
+	W Obsidian 30
+	$ Gold 40
+	Equipment
+	With Ascended Equipment⚠
+	No Ascended Equipment⚠
+	 Charm  
+	Clockwork
+	Starlight Wings
+	 Neck  
+	Waverider† (fallback: Meteor Core)
+	Meteor Core
+	 Rings  
+	1× Dredge Master's Ring 
+	1× Dredge Master's Ring
+	1× Ring of Champions
+	5×/3× Otherworldly Ring
+	1× Ring of the Stars
+	2× Ring of Thorns
+	4×/3× Otherworldly Ring
+	
+
+	1×/0× Umbrite Ring
+	
+
+	Runes  
+	Mountain Climber, Summit Seeker, Speed I, Volcanic, Abyssal/Sunblessed 
+	 Pan  
+	Nebula
+	enchant: Starstruck; trinket: Duplicator
+	 Shovel  
+	Starcrusher
+	enchant: Mythical (Mastered if autopanning)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	zexy_24 (@tedtheidot)
+$ - Endgame
+Money Printer - Sunscorched Desert (Endgame)
+Money earning build; Sell Anywhere gamepass required; †limited equipment/ore (optional)
+         * When available, pan in Infernal Heart. If possible, use the Shrine to extend the Heart.
+         * Use Luck, Strength, Luminant, and Friendship totems, Solar Magnifiers, Concentrated Chaos, and whatever relic applies to the location you’re panning in (Infernal Idol, Rain Stone, Spirit Orb, etc.).
+         * 🍪 Triggering XP Cookie Effect is recommended using Candy Cane shovel or consumables.
+         * If you use Galactic Shovel, don’t enchant it with Voidtouched.
+         * Use all coin potions. These are also recommended: Merchant’s Sell, Instability and Stardust Shake.
+         * Don’t forget to sell your Exotic ores periodically (auto-sell only applies to Mythic and below).
+         * ⚠ This build is not suitable for Fungal Marsh.
+Museum
+	Modifier: Perfect LCW (fallback: Mutated LDM) 
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	$ Eye of the Sands | Forgotten Totem 40
+	
+
+	
+
+	Mythic
+	$ Radiant Gold 60
+	$ Sunstone 40
+	
+
+	Legendary
+	W Cinnabar | Fire Opal | 
+Volcanic Key 20 | Dragon Bone 50
+	$ Tourmaline 24
+	$ Palladium 40
+	Epic
+	$ Pyronium 50
+	$ Meteoric Gold 40 
+	W+ Osmium 80 
+	Rare
+	W Candy Cane 40
+	$ Amber 20
+	$ Pyrelith 30
+	Uncommon
+	W Rock Candy 60
+	$ Glowberry 40
+	$ Electrum 40
+	Common
+	W Copper 60
+	W Obsidian 30
+	$ Gold 40
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Clockwork
+	
+
+	 Neck  
+	Meteor Core
+	fallback: Waverider†
+	 Rings  
+	1× Dredge Master's Ring 
+	
+
+	1× Ring of Champions
+	
+
+	1× Ring of the Stars
+	
+
+	5×/3× Sun’s Gift
+	
+
+	Runes  
+	Singularity I, Singularity II, Bunny, Critical I, Critical II
+	 Pan  
+	Pharaoh’s
+	enchant: Starstruck; trinket: Duplicator
+	 Shovel  
+	Candy Cane†🍪
+(fallback: Galactic†, Pharaoh’s)
+	enchant: Voidtouched (fallback: Mastered)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	relaxoo (@relaxoo14) 
+$ - Apex
+Money Printer - Apex        
+Money earning build; no XP Cookie; Sell Anywhere gamepass required; †limited equipment (optional)
+         * When available, pan in Infernal Heart. If possible, use the Shrine to extend the Heart.
+         * Use Luck, Strength, Luminant, and Friendship totems, Solar Magnifier, and Concentrated Chaos/Modifier Surge when available; use Infernal Idol to keep Volcanic Eruption active.
+         * This is a 1-tap build. If you need more than 1 dig to fill the pan, the efficiency drastically decreases. You want Dig Strength × 1.5 to be slightly more than Capacity while in totems.
+         * Use all potions and buffs you have, including all coin potions, Cryonic Brew, Merchant’s Sell, Instability, and Stardust Shake.
+         * Auto-sell stops at Mythic. Periodically switch to a dedicated Sell Boost build to sell your Exotics.
+         * ☀ If you don’t have Perfect Solarium, fallback is W Bloodstone 40 > W$ Dinosaur Skull 100.
+         * ⚠ This build is not suitable for Fungal Marsh.
+Museum
+	Modifier: Perfect LCW (fallback: Crystalline W) 
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	W Solarium 40 ☀see note above
+	
+
+	
+
+	Mythic
+	$ Radiant Gold 60 | Sunstone | Agate 40
+	W Painite | Red Beryl | Star Garnet 20
+	
+
+	Legendary
+	$ Tourmaline 24 | Palladium | Jasper 40
+	W pick 2: Cinnabar | Fire Opal | 
+Volcanic Key 20 | Dragon Bone 50
+	Epic
+	$ Pyronium 50 | Meteoric Gold 40
+	W Ashvein 20 | Bone 50 
+	W+ Osmium 80 
+	Rare
+	$ Sandsteel 30
+	$ Amber 20
+	$ Pyrelith 30
+	Uncommon
+	$ Electrum 40 | Glowberry 40
+	C pick 2: Coral 10 | Topaz 20 | Nickel 40
+	Common
+	W Copper 60
+	W Obsidian 30
+	$ Gold 40
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	
+
+	 Neck  
+	Waverider†
+	fallback: Guardian Pendant
+	 Rings  
+	1× Dredge Master's Ring 
+	
+
+	1× Ring of Champions
+	
+
+	1× Ring of the Stars
+	
+
+	5×/3× Sun’s Gift
+	
+
+	Runes  
+	Mountain Climber, Summit Seeker, Abyssal/Sunblessed, Volcanic, Bunny
+	 Pan  
+	Pharaoh’s Pan
+	enchant: Starstruck; trinket: Beach Umbrella† (fallback: Duplicator)
+	 Shovel  
+	Pharaoh’s Shovel
+	enchant: Void Touched if manual/macro panning; Mastered if autopanning
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one꙳ of the ores listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	zexy_24 (@tedtheidot)
+Shards Farming
+Shards Farming
+Shards farming build; suitable for Auto Pan; †optional limited equipment
+         * You must pan during Meteor Shower or in the Void (or both for the best results).
+         * 2× Shards gamepass recommended.
+         * The main goal is to fill the pan with one dig and empty it in one shake.
+         * Equipment, gear, runes, and Museum are recommendations only. Besides 1-dig and 1-shake, you should focus on Dig Speed; Walk Speed; and Shake Speed (but no more than 950%).
+         * The stronger your equipment mutations are, the better, however they are not necessary for this build.
+         * Avoid Capacity in the build; you should use early game pans only.
+         * Quality doesn’t matter, so you don’t need to perform full digs when panning manually.
+Museum
+	Modifier: Lunar SPK; fallback: Shiny A or Glowing P
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	DA Starpiercer 40 | SP Umbrite 40 
+	
+
+	
+
+	Mythic
+	A Mythril 60
+	D Frostshard 20
+	
+
+	Legendary
+	D Depleted Shard 40
+	P Specterite 10
+	A Rose Gold 40
+	Epic
+	A Mercury 80
+	P Opal 20
+	P Moonstone 50
+	Rare
+	L Peridot 20
+	A Ruby 20
+	A Meteoric Iron 40
+	Uncommon
+	S Sapphire 20 | Titanium 40
+	A Neodymium 40
+	A Smoky Quartz 20 
+	Common
+	S Amethyst 20 | Platinum | Blue Ice 40 
+	P Silver 40
+	P Pearl 20
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	fallback: Timelocked Soul > Pumpkin Lord† > Cryogenic Preserver > Dragon Claw
+	 Neck  
+	Waverider†
+	fallback: Amulet of Spirits† > Topaz Necklace > none
+	 Rings  
+	4×/2× Accretion Disk
+	fallback: Moon Ring / Mythril Ring 
+	4× Apocalypse Bringer
+	
+
+	 Runes  
+	Mountain Climber, Summit Seeker, Speed I
+	  Pan  
+	Plastic
+	enchant: Hyperspeed (optional)
+	 Shovel  
+	any
+	enchant: any 
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Ore1 | Ore2
+	Choose one of the ores listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	zexy_24 (@tedtheidot) & bosnia123123 (@CzystyWegiel)
+Walk Speed
+Walk Speed
+This build is for fun only; †Requires limited equipment
+         * This build does NOTHING besides making you run fast. Walk Speed is the only important stat in this build. All equipment should be Prismatic.
+         * Museum ores can be anything/any size, as long as they’re Lunar. Make sure all museum slots are filled.
+         * 🍪Use XP Cookie Effect (via the consumable item, or by activating the passive ability of the Christmas pan/shovel) to further increase your Walk Speed.
+         * Use the Easter sluice† for an extra speed buff when you collect it.
+         * Make sure to turn on sprinting mode.
+         * Have fun (required).
+Museum
+	Modifier: Lunar SPK; fallback: nuh uh
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	ANY Anything ANY
+	
+
+	
+
+	Mythic
+	ANY Anything ANY
+	ANY Anything ANY
+	
+
+	Legendary
+	ANY Anything ANY
+	ANY Anything ANY
+	ANY Anything ANY
+	Epic
+	ANY Anything ANY
+	ANY Anything ANY
+	ANY Anything ANY
+	Rare
+	ANY Anything ANY
+	ANY Anything ANY
+	ANY Anything ANY
+	Uncommon
+	ANY Anything ANY
+	ANY Anything ANY
+	ANY Anything ANY
+	Common
+	ANY Anything ANY
+	ANY Anything ANY
+	ANY Anything ANY
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Bunny Ears†
+	fallback: Excalibur | Witch Hat† 
+(worse options: Pumpkin Lord† | Lunar Mask)
+	 Neck  
+	Waverider†
+	
+
+	 Rings  
+	1× Ring of the Stars
+	fallback: Ring of Harvest†
+	7×/5× Ring of Harvest†
+	
+
+	 Runes  
+	Speed I, Mountain Climber
+	 Pan  
+	(Gingerbread†)
+	🍪 See XP Cookie note above
+	 Shovel  
+	(Candy Cane†)
+	🍪 See XP Cookie note above
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one of the items listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel)
+Nothing Burger v2
+Nothing Burger v2
+“Get a nothing” build (any game stage, as long as you have the required runes)
+         * You should own all three Annihilation Runes, or at least the first and second one.
+         * Set your Max Luck to 1 in settings.
+         * The goal of this build is to get NOTHING from panning (or a Mythic once in a few ages).
+         * The only important parts of this build are the three runes: Annihilation I, Annihilation II, and Annihilation III… and the Max Luck setting, you have to set it to exactly 1.
+         * Museum and Equipment are just recommendations, there’s no need to follow them at all.
+         * Have I mentioned about needing Annihilation runes? They are the vital parts of this build. Which does NOTHING, real fast like, in case you missed it.
+         * Thanks to the Max Luck setting feature, this build is now the ultimate definition of meta. You cannot possibly get better than this, mentally at least. (for legal reasons: that’s a joke.)
+Museum
+	Modifier: Cosmic CA or Lunar SPK; fallback: whatever you’ve got will do fine
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	DA Starpiercer 40 | SP Umbrite 40
+	
+
+	
+
+	Mythic
+	S Aetherium 20
+	A Mythril 60
+	
+
+	Legendary
+	C Catseye 20 | Firefly Stone 60 | Luminum 40
+	P Specterite 10
+	A Rose Gold 40
+	Epic
+	C Ammonite Fossil 50 | Golden Pearl 20
+	P Moonstone 50 | Opal 20
+	A Mercury 80
+	Rare
+	P Silver Clamshell 20
+	A Meteoric Iron 40
+	A Ruby 20
+	Uncommon
+	C Coral 10 | Nickel 40 | Topaz 20
+	A Smoky Quartz 20
+	A Neodymium 40
+	Common
+	C Pyrite 60 | Seashell 20
+	P Pearl 20
+	P Silver 40
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Starlight Wings
+	fallback: your favorite charm
+	 Neck  
+	Meteor Core | Amulet of Spirits
+	fallback: your favorite necklace
+	 Rings  
+	1× Ring of Champions
+	For 6 rings, truthfully you can leave out whichever two rings you like the least, doesn’t have to be two Vortex rings, poor dears.
+If you don’t have one or more of these rings, substitute what you do have.
+	1× Ring of the Stars
+	1× Dredge Master’s Ring
+	1× Accretion Disk
+	1× Purifying Ring
+	3×/1× Vortex Ring
+	Runes  
+	Annihilation I, Annihilation II,  Annihilation III, Mountain Climber, Summit Seeker
+	 Pan  
+	Nebula (or whatever)
+	enchant: Hyperspeed (or whatever)
+	 Shovel  
+	Starcrusher (or whatever)
+	enchant: Excavating (for a chance to get more nothing)
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one of the items listed
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
+* “amount” is sometimes called “strength”
+	bosnia123123 (@CzystyWegiel) & borninbalenciaga (@animalfan62)
+Archive
+Historical Archive
+These builds were good in their day, but they have been made obsolete because of better equipment or other game changes.
+These builds have been moved to a separate document:
+https://docs.google.com/document/d/1eGg6xNzbpasoWXcnwIpo98esQgul_T2duSORUZe1dRw/edit?usp=sharing
+Contents:
+         * Luck Efficiency IV
+         * Cookie Effect IV
+         * Cookie Effect IIIB
+         * Cookie Effect IIIA
+         * Luck Efficiency IIIB
+         * Hybrid IIIB
+         * Size Boost IIIB
+         * Luck Efficiency IIIA
+         * Hybrid IIIA
+         * Size Boost IIIA
+         * Items Farming IV. (v.1)
+         * Items Farming III. (v.1)
+         * Nothing Burger (v.1)
+         * Hybrid IV.B (v.1)
+         * Money Printer
+         * Hearthflame Farming
+         * Treasure/Geode Opening

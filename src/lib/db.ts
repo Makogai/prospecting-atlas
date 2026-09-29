@@ -134,6 +134,48 @@ export interface Equipment {
   currencyAmount: number | null;
 }
 
+/** One museum slot in a community build: a boost, and the ores that grant it. */
+export interface BuildMuseumRow {
+  rarity: string | null;
+  /** Boost types this slot is for, e.g. ['Luck', 'Capacity']. */
+  codes: string[];
+  /** How many of the options to pick; usually 1. */
+  pick: number;
+  options: { ore: string; minWeight: number | null }[];
+}
+
+export interface BuildEquipEntry {
+  count: number;
+  /** Count when you only have six ring slots instead of eight. */
+  countSixRing: number | null;
+  name: string;
+  note?: string;
+}
+
+export interface Build {
+  id: string;
+  /** 'V' … '0', or 'Bonus'. */
+  stage: string | null;
+  area: string;
+  name: string;
+  sellingOnly: boolean;
+  purpose: string;
+  notes: string[];
+  /** The one-tap check, e.g. "Dig Strength × 1.5 >= Capacity". */
+  formula: string | null;
+  credit: string | null;
+  modifier: string | null;
+  museum: BuildMuseumRow[];
+  equipment: {
+    charm: BuildEquipEntry[];
+    neck: BuildEquipEntry[];
+    rings: BuildEquipEntry[];
+    runes: string[];
+    pan: BuildEquipEntry[];
+    shovel: BuildEquipEntry[];
+  };
+}
+
 /** A luck-affecting event, scraped from the wiki's Events page. */
 export interface LuckEvent {
   id: string;
@@ -162,10 +204,13 @@ export const db = raw as unknown as {
   sluices: Gear[];
   events: LuckEvent[];
   equipment: Equipment[];
+  builds: Build[];
+  buildGuide: { title: string; url: string; authors: string[]; snapshot: string };
 };
 
 export const {
   minerals, digSites, locations, pans, shovels, sluices, rarities, events, equipment,
+  builds, buildGuide,
 } = db;
 
 export const equipmentById = new Map(equipment.map((e) => [e.id, e]));

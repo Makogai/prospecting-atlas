@@ -10,7 +10,8 @@
     "data:parse": "node scripts/parse-wiki.mjs",
     "data:images": "node scripts/fetch-images.mjs",
     "data:all": "npm run data:fetch && npm run data:parse && npm run data:images && npm run data:sprites",
-    "data:sprites": "node scripts/clean-sprites.mjs"
+    "data:sprites": "node scripts/clean-sprites.mjs",
+    "data:builds": "node scripts/fetch-builds.mjs"
   },
   "keywords": [],
   "author": "",

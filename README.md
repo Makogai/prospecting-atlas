@@ -26,8 +26,9 @@ from it.
 | **Global search** | `Ctrl/⌘ K` or `/` — fuzzy over minerals, dig sites, locations and gear. |
 | **Gear comparison** | Up to three pans/shovels/sluices side by side, bars scaled to the best in the category, with the winning stat flagged. |
 | **Luck model** | Enter your Luck, tick the events that are running, and every drop rate re-prices. Location-locked events only apply where they actually fire. |
-| **Time estimates** | Set your pace and each dig site shows when you'd have one, half the time. |
+| **Yield estimates** | Set your pace and a session length, and each dig site says how many you'd expect — "56×" an hour, or "1 every 3 days" when it's rarer than that. |
 | **Equipment & loadouts** | All 67 craftables with recipes, stat ranges and six-star values. Equip 1 necklace, 1 charm and 8 rings, and the totals feed straight back into your Luck. |
+| **Community builds** | 37 loadouts across all six game stages, with the museum ore grid and runes for each — every item linked into the rest of the atlas. |
 
 The `100.0%` drop-rate coverage on real dig sites is a useful correctness signal: it means no
 mineral is missing from a site's extracted table. (The Void sums higher because its loot pool
@@ -127,9 +128,9 @@ drive it, but no page states a base rate in seconds, and inventing one would put
 number under every estimate on the site. So panning asks you to time a cycle yourself, and the
 input says so rather than dressing it up as game data.
 
-Times shown are the **median** — when you'd have one half the time. The mean of a geometric
-distribution is dragged a long way out by the unlucky tail, which makes it a worse thing to plan
-around.
+The headline is the **expected yield for a session** — "56× an hour" — because that's the question
+people actually ask before committing to a spot. Below one a session that reads badly, so it flips
+to an interval instead: "1 every 3 days".
 
 ## Equipment and crafting
 
@@ -144,6 +145,30 @@ stat. Its Luck total feeds into the luck model with one click, so the chain runs
 The roll-quality slider interpolates across each stat's range. The wiki gives the ranges and
 describes the reforge percentage, but not exactly how the two combine — so it's a slider you can
 move, not a claim about the game.
+
+## Community builds
+
+`/builds` mirrors the **[Prospecting! Build Guide](https://docs.google.com/document/d/1qh68P12Pm1nz80jbKLZloVgapCXxVRoarM_pAs-5aVY/edit)**
+— 37 loadouts across stages V down to 0 plus bonus builds, written by Autumn, bosnia123123,
+Finnlay, Martika14, PPatel, em_miaou and softlyhollowed.
+
+**It is their work, credited on the page and linked as the source of truth.** The guide says it is
+"subject to change without warning", so what's here is a dated snapshot. `scripts/parse-builds.mjs`
+reads the doc's text export: build name, stage, purpose, the one-tap formula, the museum ore grid
+(boost codes, minimum weights, "pick 2" choices) and the equipment list with counts, fallbacks and
+runes.
+
+What mirroring adds over reading the doc: every ore and every item resolves against our own data,
+so a build's museum grid shows sprites and links through to drop tables, and its equipment links to
+recipes and stat ranges. 108 of 111 ore references and 35 of 36 equipment references resolve; the
+rest are prose the guide writes inline and they display as plain text.
+
+```bash
+npm run data:builds    # pull a fresh snapshot, then data:parse
+```
+
+Deliberately not part of `data:all` — it's someone else's document, so you refresh it when you mean
+to.
 
 ## Discord bot
 

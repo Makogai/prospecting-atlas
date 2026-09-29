@@ -11,6 +11,7 @@ const NAV = [
   { to: '/locations', label: 'Locations' },
   { to: '/gear/pans', label: 'Gear' },
   { to: '/equipment', label: 'Equipment' },
+  { to: '/builds', label: 'Builds' },
   { to: '/compare', label: 'Compare' },
 ];
 

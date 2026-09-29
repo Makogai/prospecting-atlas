@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { findTemplates, plain, refs, num, slug } from './parse-util.mjs';
 import { parseEvents } from './parse-events.mjs';
 import { parseEquipment } from './parse-equipment.mjs';
+import { parseBuilds } from './parse-builds.mjs';
 
 const raw = JSON.parse(readFileSync('data/raw/pages.json', 'utf8'));
 const { pages, templates, byCategory } = raw;
@@ -251,6 +252,16 @@ const events = parseEvents(pages['Events']).map(e => ({
 /* ---------- equipment --------------------------------------------------- */
 const equipment = parseEquipment(pages['Equipment']);
 
+/* ---------- community builds ------------------------------------------- */
+// Optional: the guide is a third-party Google Doc, so the site still builds
+// without it. `npm run data:builds` refreshes the snapshot.
+let builds = [];
+try {
+  builds = parseBuilds(readFileSync('data/raw/builds.txt', 'utf8'));
+} catch {
+  console.warn('data/raw/builds.txt missing — skipping community builds');
+}
+
 /* ---------- emit ------------------------------------------------------- */
 mkdirSync('src/data', { recursive: true });
 const db = {
@@ -262,6 +273,13 @@ const db = {
   pans, shovels, sluices,
   events,
   equipment,
+  builds,
+  buildGuide: {
+    title: 'Prospecting! Build Guide',
+    url: 'https://docs.google.com/document/d/1qh68P12Pm1nz80jbKLZloVgapCXxVRoarM_pAs-5aVY/edit',
+    authors: ['Autumn', 'bosnia123123', 'Finnlay', 'Martika14', 'PPatel', 'em_miaou', 'softlyhollowed'],
+    snapshot: new Date().toISOString().slice(0, 10),
+  },
 };
 writeFileSync('src/data/db.json', JSON.stringify(db));
 
@@ -269,6 +287,7 @@ console.log(`minerals  ${db.minerals.length}`);
 console.log(`digSites  ${db.digSites.length}`);
 console.log(`locations ${db.locations.length}`);
 console.log(`pans ${pans.length} | shovels ${shovels.length} | sluices ${sluices.length}`);
+console.log(`builds ${builds.length} (${[...new Set(builds.map(b => b.stage))].join(', ')})`);
 console.log(`equipment ${equipment.length} (${equipment.filter(e => e.limited).length} limited) · slots ${[...new Set(equipment.map(e => e.slot))].join('/')}`);
 console.log(`luck events ${events.length} (${events.filter(e => e.kind === 'multiplicative').length} multiplicative, ${events.filter(e => e.kind === 'additive').length} additive, ${events.filter(e => e.kind === 'unknown').length} unquantified)`);
 console.log(`no chances: ${minerals.filter(m => !m.chances.length).map(m => m.name).join(', ') || 'none'}`);

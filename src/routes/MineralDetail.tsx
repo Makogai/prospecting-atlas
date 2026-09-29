@@ -1,14 +1,14 @@
 import { Link, useParams } from 'react-router-dom';
 import { siteBands, mineralChance } from '../../shared/luck.mjs';
 import { LuckPanel, LuckCaveat, useLuck, activeBoosts, luckAt } from '../components/LuckPanel';
-import { GrindPanel, useGrind, grindRate } from '../components/GrindPanel';
-import { hoursFor, pullsForConfidence, duration } from '../../shared/estimate.mjs';
+import { GrindPanel, useGrind, grindRate, sessionLabel } from '../components/GrindPanel';
+import { yieldLabel } from '../../shared/estimate.mjs';
 import {
   mineralById, minerals, rarityByName, sitesFor, bestSiteFor, usedInRecipes,
   locationForSite, money, odds, percent,
 } from '../lib/db';
 import {
-  Empty, OddsBar, RarityTag, SectionTitle, SiteTag, Sprite, gradientVars,
+  Empty, OddsBar, RarityTag, SectionTitle, SiteTag, Sprite, cx, gradientVars,
 } from '../components/ui';
 
 export function MineralDetail() {
@@ -50,10 +50,9 @@ export function MineralDetail() {
       ...d,
       luckHere: at,
       lucky,
-      // Median is the fairer headline: the mean of a geometric distribution is
-      // dragged a long way out by the unlucky tail.
-      medianHours: p > 0 ? pullsForConfidence(p, 0.5) / rate : Infinity,
-      meanHours: hoursFor(p, rate),
+      // "About 4 an hour" is the question people actually ask. Below one a
+      // session that reads badly, so yieldLabel switches to an interval.
+      yield: yieldLabel(p, rate, grind.sessionHours),
     };
   });
 
@@ -148,7 +147,7 @@ export function MineralDetail() {
                         ? `Odds at ${Math.round(effectiveLuckValue).toLocaleString('en-US')} Luck.`
                         : 'Ranked by drop rate.',
                       rate > 0
-                        ? `Times are when you'd have one half the time, at ${Math.round(rate).toLocaleString('en-US')} minerals/hour.`
+                        ? `Yields are what you'd expect in ${sessionLabel(grind.sessionHours)} at ${Math.round(rate).toLocaleString('en-US')} minerals/hour.`
                         : '',
                       'Bars are log-scaled — each step is 10× rarer.',
                     ].filter(Boolean).join(' ')
@@ -159,7 +158,7 @@ export function MineralDetail() {
               <Empty>No drop locations recorded.</Empty>
             ) : (
               <div className="panel divide-y divide-white/6">
-                {drops.map(({ chance, site, lucky, luckHere, medianHours }, i) => (
+                {drops.map(({ chance, site, lucky, luckHere, yield: y }, i) => (
                   <Link
                     key={chance.site}
                     to={`/sites/${site.id}`}
@@ -195,12 +194,19 @@ export function MineralDetail() {
                           ? `was ${odds(chance.oneIn)}`
                           : percent(chance.percent)}
                       </span>
-                      {rate > 0 && Number.isFinite(medianHours) && (
+                      {rate > 0 && y.value > 0 && (
                         <span
-                          className="numeric w-full text-right text-[11px] text-ore-400 sm:w-auto"
-                          title="Half the time you'll have one by here, at your current pace"
+                          className={cx(
+                            'numeric w-full text-right text-xs font-bold sm:w-auto',
+                            y.per === 'session' ? 'text-ore-400' : 'text-ink-400',
+                          )}
+                          title={
+                            y.per === 'session'
+                              ? `Expected in ${sessionLabel(grind.sessionHours)} at your pace`
+                              : 'At your pace, this is how often one turns up'
+                          }
                         >
-                          ~{duration(medianHours)}
+                          {y.text}
                         </span>
                       )}
                     </div>

@@ -9,6 +9,8 @@ export interface GrindState {
   /** The player's own measured seconds per pan cycle. */
   secondsPerCycle: number;
   sluiceId: string;
+  /** How long a session you're planning, in hours. */
+  sessionHours: number;
 }
 
 export const DEFAULT_GRIND: GrindState = {
@@ -16,7 +18,20 @@ export const DEFAULT_GRIND: GrindState = {
   capacity: 100,
   secondsPerCycle: 15,
   sluiceId: 'gold-sluice-box',
+  sessionHours: 1,
 };
+
+/** Session lengths worth offering as one tap. */
+export const SESSIONS = [
+  { hours: 0.5, label: '30 min' },
+  { hours: 1, label: '1 h' },
+  { hours: 3, label: '3 h' },
+  { hours: 8, label: '8 h' },
+  { hours: 24, label: '1 day' },
+];
+
+export const sessionLabel = (h: number) =>
+  SESSIONS.find((s) => s.hours === h)?.label ?? `${h} h`;
 
 const STORAGE_KEY = 'atlas.grind';
 
@@ -80,13 +95,38 @@ export function GrindPanel({
         </div>
         <div className="text-right">
           <div className="numeric text-3xl font-black text-ore-400">
-            {Math.round(rate).toLocaleString('en-US')}
+            {Math.round(rate * grind.sessionHours).toLocaleString('en-US')}
           </div>
-          <div className="text-[11px] text-ink-500">minerals / hour</div>
+          <div className="text-[11px] text-ink-500">
+            minerals in {sessionLabel(grind.sessionHours)}
+            <span className="numeric block opacity-70">
+              {Math.round(rate).toLocaleString('en-US')} / hour
+            </span>
+          </div>
         </div>
       </div>
 
       <div className="space-y-4 p-5">
+        <div>
+          <p className="mb-1.5 text-xs font-semibold text-ink-400">Session length</p>
+          <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/4 p-1">
+            {SESSIONS.map((s) => (
+              <button
+                key={s.hours}
+                onClick={() => onChange({ ...grind, sessionHours: s.hours })}
+                className={cx(
+                  'flex-1 rounded px-2 py-1 text-[11px] font-bold transition',
+                  grind.sessionHours === s.hours
+                    ? 'bg-vein-500/25 text-vein-400 ring-1 ring-vein-500/40'
+                    : 'text-ink-400 hover:text-ink-100',
+                )}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/4 p-1">
           {(['pan', 'sluice'] as const).map((m) => (
             <button

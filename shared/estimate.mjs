@@ -60,6 +60,30 @@ export function chanceWithin(p, pulls) {
 }
 
 /**
+ * How many of a mineral you'd expect in a session — the headline number, because
+ * "about 4 an hour" is what you actually want to know before committing to a spot.
+ */
+export function yieldIn(p, ratePerHour, hours = 1) {
+  if (!(p > 0) || !(ratePerHour > 0)) return 0;
+  return p * ratePerHour * hours;
+}
+
+/**
+ * Phrases an expected yield the way round it reads best: a rate when you'd get
+ * several, and a gap when you'd get less than one.
+ * @returns {{ text: string, per: 'session'|'gap', value: number }}
+ */
+export function yieldLabel(p, ratePerHour, hours = 1) {
+  const n = yieldIn(p, ratePerHour, hours);
+  if (n >= 0.995) {
+    const rounded = n >= 100 ? Math.round(n) : n >= 10 ? Math.round(n) : +n.toFixed(1);
+    return { text: `${rounded.toLocaleString('en-US')}×`, per: 'session', value: n };
+  }
+  // Fewer than one a session: an interval is more use than "0.3 per hour".
+  return { text: `1 every ${duration(hoursFor(p, ratePerHour))}`, per: 'gap', value: n };
+}
+
+/**
  * Hours to collect `count` of a mineral at drop rate `p`, pulling `ratePerHour`
  * minerals an hour.
  */
