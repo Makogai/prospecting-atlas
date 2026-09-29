@@ -68,7 +68,7 @@ export function Compare() {
       </header>
 
       {/* --- picker --- */}
-      <div className="panel mb-6 p-4">
+      <div className="panel relative z-40 mb-6 p-4">
         <div className="relative">
           <input
             value={q}
@@ -77,7 +77,7 @@ export function Compare() {
             className="w-full rounded-lg border border-white/10 bg-white/4 px-3 py-2.5 text-sm outline-none transition placeholder:text-ink-500 focus:border-ore-400/50 focus:bg-white/7"
           />
           {suggestions.length > 0 && (
-            <div className="absolute top-full right-0 left-0 z-20 mt-1.5 overflow-hidden rounded-xl border border-white/12 bg-rock-850 shadow-2xl shadow-black/50">
+            <div className="absolute top-full right-0 left-0 z-50 mt-1.5 overflow-hidden rounded-xl border border-white/12 bg-rock-850 shadow-2xl shadow-black/50">
               {suggestions.map((m) => (
                 <button
                   key={m.id}

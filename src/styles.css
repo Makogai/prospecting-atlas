@@ -64,6 +64,14 @@
   @apply rounded-2xl border border-white/8 bg-white/3 backdrop-blur-xl;
 }
 
+/* Sticky filter bars sit over scrolling content, so they need a near-solid
+   backing rather than `panel`'s 3% white. A blur alone isn't enough — at 85%
+   the text of whatever scrolls underneath still reads through. */
+@utility panel-sticky {
+  @apply rounded-2xl border border-white/10 bg-rock-900/97 backdrop-blur-2xl;
+  box-shadow: 0 8px 24px -12px rgb(0 0 0 / 0.8);
+}
+
 @utility panel-hover {
   @apply transition duration-200 hover:border-white/16 hover:bg-white/6;
 }

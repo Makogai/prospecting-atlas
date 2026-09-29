@@ -87,7 +87,7 @@ export function Minerals() {
       </header>
 
       {/* --- filter bar --- */}
-      <div className="panel sticky top-16 z-30 mb-6 p-3">
+      <div className="panel-sticky sticky top-14 z-30 mb-6 p-3">
         <div className="flex flex-wrap items-center gap-2">
           <input
             value={q}

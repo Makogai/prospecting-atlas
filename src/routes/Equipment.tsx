@@ -79,7 +79,7 @@ export function EquipmentPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
         <div>
           {/* --- filters --- */}
-          <div className="panel sticky top-16 z-30 mb-5 p-3">
+          <div className="panel-sticky sticky top-14 z-30 mb-5 p-3">
             <div className="flex flex-wrap items-center gap-2">
               <input
                 value={q}

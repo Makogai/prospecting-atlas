@@ -68,7 +68,7 @@ export function BuildsPage() {
         </div>
       </header>
 
-      <div className="panel sticky top-16 z-30 mb-5 flex flex-wrap items-center gap-1 p-2">
+      <div className="panel-sticky sticky top-14 z-30 mb-5 flex flex-wrap items-center gap-1 p-2">
         {STAGES.map((s) => (
           <button
             key={s}
