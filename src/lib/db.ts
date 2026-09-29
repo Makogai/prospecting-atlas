@@ -101,6 +101,21 @@ export interface Gear {
 
 export type GearKind = 'pans' | 'shovels' | 'sluices';
 
+/** A luck-affecting event, scraped from the wiki's Events page. */
+export interface LuckEvent {
+  id: string;
+  name: string;
+  /** How it combines: additive bonuses sum, multiplicative ones multiply on top. */
+  kind: 'additive' | 'multiplicative' | 'unknown';
+  /** Bonus for additive, factor for multiplicative, null when the wiki omits it. */
+  value: number | null;
+  /** Dig sites it is restricted to; empty when it applies everywhere. */
+  sites: string[];
+  global: boolean;
+  admin: boolean;
+  note: string | null;
+}
+
 /* ---------- the database ----------------------------------------------- */
 
 export const db = raw as unknown as {
@@ -112,9 +127,10 @@ export const db = raw as unknown as {
   pans: Gear[];
   shovels: Gear[];
   sluices: Gear[];
+  events: LuckEvent[];
 };
 
-export const { minerals, digSites, locations, pans, shovels, sluices, rarities } = db;
+export const { minerals, digSites, locations, pans, shovels, sluices, rarities, events } = db;
 
 export const RARITY_ORDER = rarities.map((r) => r.name);
 

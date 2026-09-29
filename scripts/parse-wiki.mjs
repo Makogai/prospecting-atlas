@@ -1,6 +1,7 @@
 // Stage 2: turn raw wikitext into the typed JSON the site consumes.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { findTemplates, plain, refs, num, slug } from './parse-util.mjs';
+import { parseEvents } from './parse-events.mjs';
 
 const raw = JSON.parse(readFileSync('data/raw/pages.json', 'utf8'));
 const { pages, templates, byCategory } = raw;
@@ -236,6 +237,16 @@ const locations = byCategory.Locations.map(title => {
   };
 }).filter(l => l.digSites.length || l.summary);
 
+/* ---------- events ------------------------------------------------------ */
+// Keep only sites we actually know about, so a UI toggle can be scoped to the
+// dig sites it really affects.
+const knownSite = (n) => Boolean(digSites[n]);
+const events = parseEvents(pages['Events']).map(e => ({
+  ...e,
+  id: slug(e.name),
+  sites: e.sites.filter(knownSite),
+})).map(e => ({ ...e, global: e.global || e.sites.length === 0 }));
+
 /* ---------- emit ------------------------------------------------------- */
 mkdirSync('src/data', { recursive: true });
 const db = {
@@ -245,6 +256,7 @@ const db = {
   digSites: Object.values(digSites).sort((a, b) => b.expectedValue - a.expectedValue),
   locations: locations.sort((a, b) => a.name.localeCompare(b.name)),
   pans, shovels, sluices,
+  events,
 };
 writeFileSync('src/data/db.json', JSON.stringify(db));
 
@@ -252,6 +264,7 @@ console.log(`minerals  ${db.minerals.length}`);
 console.log(`digSites  ${db.digSites.length}`);
 console.log(`locations ${db.locations.length}`);
 console.log(`pans ${pans.length} | shovels ${shovels.length} | sluices ${sluices.length}`);
+console.log(`luck events ${events.length} (${events.filter(e => e.kind === 'multiplicative').length} multiplicative, ${events.filter(e => e.kind === 'additive').length} additive, ${events.filter(e => e.kind === 'unknown').length} unquantified)`);
 console.log(`no chances: ${minerals.filter(m => !m.chances.length).map(m => m.name).join(', ') || 'none'}`);
 console.log(`no image:   ${minerals.filter(m => !m.image).map(m => m.name).join(', ') || 'none'}`);
 console.log(`no recipes: ${minerals.filter(m => !m.recipes.length).length}`);

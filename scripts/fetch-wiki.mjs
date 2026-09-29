@@ -11,6 +11,9 @@ const INDEX_PAGES = [
   'Enchanting', 'Trinkets', 'Modifiers', 'Potions', 'Stats', 'Levels',
   'Codes', 'Merchant', 'Museum', 'Geodes', 'Ground Items', 'Consumables',
   'Enchant Books', 'Blueprints', 'Waypoints', 'Toughness', 'Prospector Kit',
+  // Luck sources: the Events page annotates each effect "Multiplicative" or
+  // "Additive", which is exactly what the luck model needs.
+  'Events', 'Luck Mechanics', 'Shard Merchant', 'Relics',
 ];
 
 const CATEGORIES = ['Minerals', 'Locations', 'Items', 'Consumables', 'Potions', 'Enchant Books', 'Geodes'];

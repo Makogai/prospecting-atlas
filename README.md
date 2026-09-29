@@ -25,6 +25,7 @@ from it.
 | **Farm Planner** | Pick the minerals you're hunting; it ranks sites by how much of your list each one covers, then by the value of wanted minerals per pull, and names what you'd be giving up. |
 | **Global search** | `Ctrl/⌘ K` or `/` — fuzzy over minerals, dig sites, locations and gear. |
 | **Gear comparison** | Up to three pans/shovels/sluices side by side, bars scaled to the best in the category, with the winning stat flagged. |
+| **Luck model** | Enter your Luck, tick the events that are running, and every drop rate re-prices. Location-locked events only apply where they actually fire. |
 
 The `100.0%` drop-rate coverage on real dig sites is a useful correctness signal: it means no
 mineral is missing from a site's extracted table. (The Void sums higher because its loot pool
@@ -84,6 +85,32 @@ To eyeball the result:
 ```bash
 node scripts/contact-sheet.mjs public/sprites out.png 40
 ```
+
+## The luck model
+
+Luck is the one mechanic that changes every number on the site, so it's modelled from the wiki's
+[Luck Mechanics](https://prospecting.miraheze.org/wiki/Luck_Mechanics) page rather than guessed:
+each point of Luck rerolls the rarity number and the lowest roll wins. So each mineral owns a band
+of the roll range and its odds are the chance the minimum of *L* rolls lands in that band.
+
+Multipliers follow the wiki's own labels, which the Events page states per effect:
+
+- **Additive** bonuses sum — two ×2 boosts give **×3, not ×4**.
+- **Multiplicative** ones (Meteor Shower, Blizzard, Starfall…) then multiply that total, and each
+  other.
+- Several events are **location-locked**, so luck is computed per dig site. A Blizzard is worth
+  nothing outside Snowy Mountain, and the site rows say so.
+
+`scripts/parse-events.mjs` scrapes all 15 luck-affecting events straight off the Events page,
+including which are admin-only, so a wiki edit flows through `npm run data:parse`.
+
+**Two limits, stated in the UI as well as here.** The wiki never says what Luck its published drop
+tables assume — we take them as Luck 1, since a single roll makes a band's width exactly its listed
+probability, and the starting Rusty Pan has Luck 1. And the dampening the wiki mentions ("a set
+chance to either be weakened or not apply at all… so common items don't become unobtainable at
+high luck") is unquantified. Without it the maths says Gold at Rubble Creek Sands falls to 1-in-10¹⁴⁰
+at Luck 1000, which plainly doesn't happen. So the numbers are an **optimistic upper bound**, most
+trustworthy while a mineral is still a long shot — which is when you'd ask.
 
 ## Discord bot
 

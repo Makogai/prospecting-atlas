@@ -1,4 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
+import { siteBands, mineralChance, effectiveLuck } from '../../shared/luck.mjs';
+import { LuckPanel, LuckCaveat, useLuck, activeBoosts } from '../components/LuckPanel';
 import {
   mineralById, minerals, rarityByName, sitesFor, bestSiteFor, usedInRecipes,
   locationForSite, money, odds, percent,
@@ -10,6 +12,7 @@ import {
 export function MineralDetail() {
   const { id } = useParams();
   const m = id ? mineralById.get(id) : undefined;
+  const [luck, setLuck] = useLuck();
 
   if (!m) {
     return (
@@ -25,7 +28,28 @@ export function MineralDetail() {
   }
 
   const rarity = rarityByName.get(m.rarity);
-  const drops = sitesFor(m);
+  const boosts = activeBoosts(luck);
+
+  // Luck is worked out per dig site, because several events only fire at
+  // particular ones — a Blizzard is worth nothing outside Snowy Mountain.
+  const drops = sitesFor(m).map((d) => {
+    const at = effectiveLuck(luck.base, {
+      boosts,
+      friends: luck.friends,
+      siteName: d.site.name,
+    });
+    return {
+      ...d,
+      luckHere: at,
+      lucky: d.chance.percent == null
+        ? null
+        : mineralChance(siteBands(d.site), m.id, at.luck),
+    };
+  });
+
+  // The headline luck ignores scoping; each row shows its own.
+  const effectiveLuckValue = effectiveLuck(luck.base, { boosts, friends: luck.friends }).luck;
+  const boosted = drops.some((d) => d.luckHere.luck > 1);
   const best = bestSiteFor(m);
   const usedIn = usedInRecipes(m);
   const peers = minerals
@@ -71,13 +95,26 @@ export function MineralDetail() {
             <div className="mt-5 flex flex-wrap gap-2.5">
               <Figure label="Value" value={`${money(m.value)}`} sub="per kg" accent="#ffc247" />
               <Figure label="Dig sites" value={String(drops.length)} sub="that drop it" />
-              {best && (
-                <Figure
-                  label="Best odds"
-                  value={odds(best.chance.oneIn)}
-                  sub={`at ${best.site.name}`}
-                />
-              )}
+              {best && (() => {
+                // Mirror the drop table: if the player has set a luck, the headline
+                // figure has to agree with the rows below it.
+                const boostedBest = drops
+                  .filter((d) => d.lucky && !d.chance.conditional)
+                  .sort((a, b) => (b.lucky?.percent ?? 0) - (a.lucky?.percent ?? 0))[0];
+                const show = boosted && boostedBest?.lucky ? boostedBest : null;
+                return (
+                  <Figure
+                    label="Best odds"
+                    value={odds(show ? show.lucky!.oneIn : best.chance.oneIn)}
+                    sub={
+                      show
+                        ? `at ${show.site.name} · ${Math.round(effectiveLuckValue).toLocaleString('en-US')} Luck`
+                        : `at ${best.site.name}`
+                    }
+                    accent={show ? '#3ee0d0' : undefined}
+                  />
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -90,9 +127,11 @@ export function MineralDetail() {
             <SectionTitle
               title="Where to find it"
               hint={
-                m.ratesKnown
-                  ? 'Ranked by drop rate. Bars are log-scaled — each step is 10× rarer.'
-                  : 'The wiki lists locations for this mineral but no drop rates.'
+                !m.ratesKnown
+                  ? 'The wiki lists locations for this mineral but no drop rates.'
+                  : boosted
+                    ? `Odds at ${Math.round(effectiveLuckValue).toLocaleString('en-US')} Luck. Bars are log-scaled — each step is 10× rarer.`
+                    : 'Ranked by drop rate. Bars are log-scaled — each step is 10× rarer.'
               }
             />
 
@@ -100,7 +139,7 @@ export function MineralDetail() {
               <Empty>No drop locations recorded.</Empty>
             ) : (
               <div className="panel divide-y divide-white/6">
-                {drops.map(({ chance, site }, i) => (
+                {drops.map(({ chance, site, lucky, luckHere }, i) => (
                   <Link
                     key={chance.site}
                     to={`/sites/${site.id}`}
@@ -123,16 +162,47 @@ export function MineralDetail() {
                           {chance.conditional}
                         </span>
                       )}
+                      {boosted && lucky && lucky.gain > 1.01 && (
+                        <span className="numeric rounded bg-vein-500/15 px-1.5 py-0.5 text-[10px] font-bold text-vein-400">
+                          {lucky.gain >= 10 ? Math.round(lucky.gain) : lucky.gain.toFixed(1)}× better
+                        </span>
+                      )}
                       <span className="numeric ml-auto text-sm font-bold">
-                        {odds(chance.oneIn)}
+                        {odds(lucky ? lucky.oneIn : chance.oneIn)}
                       </span>
                       <span className="numeric w-20 shrink-0 text-right text-xs text-ink-500">
-                        {percent(chance.percent)}
+                        {boosted && lucky && lucky.gain > 1.01
+                          ? `was ${odds(chance.oneIn)}`
+                          : percent(chance.percent)}
                       </span>
                     </div>
                     <div className="mt-2">
-                      <OddsBar percent={chance.percent} colors={site.colors} />
+                      <OddsBar percent={lucky ? lucky.percent : chance.percent} colors={site.colors} />
                     </div>
+                    {boosted && lucky?.confidence === 'damped' && (
+                      <p className="mt-1.5 text-[11px] text-ink-500">
+                        Common enough that high Luck would squeeze it out — the game damps that,
+                        so this stays at its base rate.
+                      </p>
+                    )}
+                    {boosted && lucky?.confidence === 'saturating' && (
+                      <p className="mt-1.5 text-[11px] text-ink-500">
+                        Luck is close to guaranteeing this, where the model is least reliable.
+                      </p>
+                    )}
+                    {luckHere.skipped.length > 0 && (
+                      <p className="mt-1.5 text-[11px] text-ink-500">
+                        Not here:{' '}
+                        {luckHere.skipped
+                          .map((b: { label?: string; name?: string }) => b.label ?? b.name)
+                          .join(', ')}{' '}
+                        — so this site sits at{' '}
+                        <span className="numeric">
+                          {Math.round(luckHere.luck).toLocaleString('en-US')}
+                        </span>{' '}
+                        Luck.
+                      </p>
+                    )}
                   </Link>
                 ))}
               </div>
@@ -205,6 +275,13 @@ export function MineralDetail() {
 
         {/* --- sidebar --- */}
         <div className="space-y-6">
+          {m.ratesKnown && (
+            <>
+              <LuckPanel luck={luck} onChange={setLuck} />
+              <LuckCaveat className="-mt-2 px-1" />
+            </>
+          )}
+
           {m.museum && (m.museum.stats.length > 0 || m.museum.maxBoost) && (
             <section className="panel p-5">
               <h2 className="text-sm font-extrabold tracking-[0.1em] text-ink-400 uppercase">
