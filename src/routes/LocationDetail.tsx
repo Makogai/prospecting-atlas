@@ -5,6 +5,7 @@ import {
 import {
   Empty, RarityTag, SectionTitle, Sprite, gradientVars,
 } from '../components/ui';
+import { WhoIsHere } from '../components/WhoIsHere';
 
 export function LocationDetail() {
   const { id } = useParams();
@@ -84,6 +85,8 @@ export function LocationDetail() {
           </div>
         </div>
       </div>
+
+      <WhoIsHere names={[loc.name, ...sites.map((s) => s.name)]} />
 
       {sites.length > 0 && (
         <section className="mt-8">

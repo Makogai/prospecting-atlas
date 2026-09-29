@@ -205,6 +205,12 @@ coloured; the rest fall back to their broad region.
 Both quests and NPCs are in `⌘K`, and an NPC's result shows where they are, so "alchemist" answers
 "Fortune River Town" without leaving the keyboard.
 
+Location and dig-site pages carry a **"who you'll find here"** section — the characters standing
+there and the quests based there — because that's where you look when you arrive somewhere. Quest
+locations straddle both kinds of place ("Fortune River" is a dig site *and* a location, "Rubble
+Creek" only a location), so the lookup takes every name that means "here": a location passes its
+own name plus all its dig sites, a dig site passes just its own.
+
 ## Blueprints
 
 High-tier equipment doesn't appear in the crafting menu at all until you've found its blueprint, so

@@ -416,6 +416,32 @@ export function locationForSite(site: DigSite) {
   return locations.find((l) => l.digSites.includes(site.id)) ?? null;
 }
 
+/**
+ * Who and what you'll find at a place.
+ *
+ * Quest locations straddle both kinds of place — "Fortune River" is a dig site
+ * *and* a location, while "Rubble Creek" is only a location — so callers pass
+ * every name that means "here": a location plus its dig sites, or a single site.
+ */
+export function whoIsAt(names: string[]): { npcs: Npc[]; quests: Quest[] } {
+  const here = new Set(names.filter(Boolean).map((n) => n.toLowerCase()));
+  if (here.size === 0) return { npcs: [], quests: [] };
+
+  const matchingNpcs = npcs.filter(
+    (n) =>
+      n.places.some((p) => here.has(p.name.toLowerCase())) ||
+      n.regions.some((r) => here.has(r.toLowerCase())),
+  );
+
+  return {
+    // Quest givers first, then by how much they have to offer.
+    npcs: matchingNpcs.sort(
+      (a, b) => b.quests.length - a.quests.length || a.name.localeCompare(b.name),
+    ),
+    quests: quests.filter((q) => here.has(q.location.toLowerCase())),
+  };
+}
+
 /** Minerals whose recipes consume the given mineral. */
 export function usedInRecipes(mineral: Mineral) {
   const out: { source: Mineral; recipe: Recipe }[] = [];

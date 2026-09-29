@@ -7,6 +7,7 @@ import {
 import {
   Empty, OddsBar, RarityChip, RarityTag, SectionTitle, Sprite, cx, gradientVars,
 } from '../components/ui';
+import { WhoIsHere } from '../components/WhoIsHere';
 
 type Sort = 'chance' | 'value' | 'ev' | 'rarity';
 
@@ -153,6 +154,8 @@ export function DigSiteDetail() {
           </div>
         </div>
       </div>
+
+      <WhoIsHere names={[site.name]} title="Who you'll find at this site" limit={4} />
 
       <section className="mt-8">
         <SectionTitle
