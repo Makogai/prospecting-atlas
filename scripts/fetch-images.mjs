@@ -17,6 +17,7 @@ db.minerals.forEach(m => add(m.image));
 [...db.pans, ...db.shovels, ...db.sluices].forEach(g => add(g.image));
 db.locations.forEach(l => add(l.image));
 db.equipment.forEach(e => add(e.image));
+db.blueprints.forEach(b => add(b.image));
 
 const files = [...wanted];
 console.log(`${files.length} distinct images referenced`);

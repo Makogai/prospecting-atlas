@@ -28,7 +28,8 @@ from it.
 | **Luck model** | Enter your Luck, tick the events that are running, and every drop rate re-prices. Location-locked events only apply where they actually fire. |
 | **Yield estimates** | Set your pace and a session length, and each dig site says how many you'd expect — "56×" an hour, or "1 every 3 days" when it's rarer than that. |
 | **Equipment & loadouts** | All 67 craftables with recipes, stat ranges and six-star values. Equip 1 necklace, 1 charm and 8 rings, and the totals feed straight back into your Luck. |
-| **Community builds** | 37 loadouts across all six game stages, with the museum ore grid and runes for each — every item linked into the rest of the atlas. |
+| **Community builds** | 37 loadouts, picked by *where you've got to* and *what you want* rather than a stage number, with the museum ore grid and runes for each. |
+| **Blueprints** | 30 blueprint-gated items say exactly how to unlock them — quest, giver, steps and rewards, or where to buy. |
 
 The `100.0%` drop-rate coverage on real dig sites is a useful correctness signal: it means no
 mineral is missing from a site's extracted table. (The Void sums higher because its loot pool
@@ -148,6 +149,12 @@ move, not a claim about the game.
 
 ## Community builds
 
+The guide organises builds by "Stage 0" through "Stage V", which means nothing to a player who
+hasn't read it. The page instead asks two plain questions: **how far have you got** (answered with
+the place names people recognise — Caldera, Snowy Isle, Swamp…, earliest first, since the guide
+lists endgame first) and **what are you after** (Luck, Size, Money, Items…, derived from each
+build's name). Stage numbers never appear.
+
 `/builds` mirrors the **[Prospecting! Build Guide](https://docs.google.com/document/d/1qh68P12Pm1nz80jbKLZloVgapCXxVRoarM_pAs-5aVY/edit)**
 — 37 loadouts across stages V down to 0 plus bonus builds, written by Autumn, bosnia123123,
 Finnlay, Martika14, PPatel, em_miaou and softlyhollowed.
@@ -169,6 +176,19 @@ npm run data:builds    # pull a fresh snapshot, then data:parse
 
 Deliberately not part of `data:all` — it's someone else's document, so you refresh it when you mean
 to.
+
+## Blueprints
+
+High-tier equipment doesn't appear in the crafting menu at all until you've found its blueprint, so
+"how do I even get this?" is a question the equipment table alone can't answer. The wiki keeps that
+on a separate page, one tab per blueprint; `scripts/parse-blueprints.mjs` reads all 30 — 23 from
+quests (with giver, location, every step and the rewards), 6 bought, and one lying in a maze in
+Abyssal Depths.
+
+They surface where they matter rather than on a page of their own: a badge and a full panel on the
+equipment card, a one-line hint under any blueprint-gated item inside a build, and a
+"needs N blueprints" count on the build itself. Ore names inside quest steps link to their drop
+tables, so "Collect 150 Glowmoss" is one click from knowing where Glowmoss comes from.
 
 ## Discord bot
 

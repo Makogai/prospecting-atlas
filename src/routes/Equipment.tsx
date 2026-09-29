@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  equipment, equipmentById, recipeMinerals, equipRarityColors,
+  equipment, equipmentById, recipeMinerals, equipRarityColors, blueprintById,
   EQUIP_RARITY_ORDER, SLOT_LIMITS, money,
   type Equipment as Item, type EquipSlot, type StatRange,
 } from '../lib/db';
+import { BlueprintPanel } from '../components/Blueprint';
 import { Empty, Sprite, cx, gradientVars } from '../components/ui';
 import { useLoadout, LoadoutSummary } from '../components/Loadout';
 
@@ -23,6 +24,7 @@ export function EquipmentPage() {
   const [q, setQ] = useState(params.get('q') ?? '');
   const [sixStar, setSixStar] = useState(false);
   const [showLimited, setShowLimited] = useState(true);
+  const [needsBlueprint, setNeedsBlueprint] = useState<'any' | 'yes' | 'no'>('any');
   const [loadout, setLoadout] = useLoadout();
 
   const rows = useMemo(() => {
@@ -32,6 +34,8 @@ export function EquipmentPage() {
         if (slot !== 'all' && e.slot !== slot) return false;
         if (stat && !e.stats.some((s) => s.stat === stat)) return false;
         if (!showLimited && e.limited) return false;
+        if (needsBlueprint === 'yes' && !e.blueprint) return false;
+        if (needsBlueprint === 'no' && e.blueprint) return false;
         if (needle && !`${e.name} ${e.description}`.toLowerCase().includes(needle)) return false;
         return true;
       })
@@ -48,7 +52,7 @@ export function EquipmentPage() {
         const rb = EQUIP_RARITY_ORDER.indexOf(b.rarity);
         return ra - rb || a.name.localeCompare(b.name);
       });
-  }, [slot, stat, q, sixStar, showLimited]);
+  }, [slot, stat, q, sixStar, showLimited, needsBlueprint]);
 
   const equipped = loadout.items.map((id) => equipmentById.get(id)).filter(Boolean) as Item[];
 
@@ -140,6 +144,27 @@ export function EquipmentPage() {
                 />
                 Include limited-time
               </label>
+
+              <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/4 p-0.5">
+                {([
+                  ['any', 'All'],
+                  ['no', 'Craftable now'],
+                  ['yes', 'Needs blueprint'],
+                ] as const).map(([v, label]) => (
+                  <button
+                    key={v}
+                    onClick={() => setNeedsBlueprint(v)}
+                    className={cx(
+                      'rounded px-2 py-0.5 text-[11px] font-semibold transition',
+                      needsBlueprint === v
+                        ? 'bg-white/12 text-ink-100'
+                        : 'text-ink-400 hover:text-ink-100',
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
               <span className="numeric ml-auto text-xs text-ink-500">
                 {rows.length} of {equipment.length}
               </span>
@@ -191,6 +216,7 @@ function EquipCard({
 }) {
   const colors = equipRarityColors(item.rarity);
   const parts = recipeMinerals(item);
+  const bp = item.blueprint ? blueprintById.get(item.blueprint) : null;
 
   return (
     <div
@@ -220,6 +246,11 @@ function EquipCard({
             {item.limited && (
               <span className="rounded bg-white/6 px-1.5 py-0.5 text-[10px] font-semibold text-ink-400">
                 limited
+              </span>
+            )}
+            {item.blueprint && (
+              <span className="rounded bg-ore-400/12 px-1.5 py-0.5 text-[10px] font-bold text-ore-300">
+                blueprint
               </span>
             )}
           </div>
@@ -303,6 +334,8 @@ function EquipCard({
           ))}
         </ul>
       </div>
+
+      {bp && <BlueprintPanel blueprint={bp} />}
     </div>
   );
 }

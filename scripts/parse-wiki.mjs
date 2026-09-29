@@ -4,6 +4,7 @@ import { findTemplates, plain, refs, num, slug } from './parse-util.mjs';
 import { parseEvents } from './parse-events.mjs';
 import { parseEquipment } from './parse-equipment.mjs';
 import { parseBuilds } from './parse-builds.mjs';
+import { parseBlueprints } from './parse-blueprints.mjs';
 
 const raw = JSON.parse(readFileSync('data/raw/pages.json', 'utf8'));
 const { pages, templates, byCategory } = raw;
@@ -252,12 +253,41 @@ const events = parseEvents(pages['Events']).map(e => ({
 /* ---------- equipment --------------------------------------------------- */
 const equipment = parseEquipment(pages['Equipment']);
 
+/* ---------- blueprints -------------------------------------------------- */
+// Attached to the equipment they unlock, so a card can say "needs a blueprint"
+// and show where it comes from.
+const blueprints = parseBlueprints(pages['Blueprint']);
+const blueprintFor = new Map(blueprints.map(b => [b.equipment.toLowerCase(), b]));
+for (const item of equipment) {
+  const bp = blueprintFor.get(item.name.toLowerCase());
+  item.blueprint = bp ? bp.id : null;
+}
+
 /* ---------- community builds ------------------------------------------- */
 // Optional: the guide is a third-party Google Doc, so the site still builds
 // without it. `npm run data:builds` refreshes the snapshot.
 let builds = [];
+let buildStages = [];
 try {
-  builds = parseBuilds(readFileSync('data/raw/builds.txt', 'utf8'));
+  const guideText = readFileSync('data/raw/builds.txt', 'utf8');
+  builds = parseBuilds(guideText);
+
+  // "Stage III. - Swamp: Highest location is Timelocked Sanctuary."
+  // The location is what players actually recognise, so it drives the UI.
+  const seen = new Set();
+  for (const m of guideText.matchAll(
+    /^Stage\s+(V|IV|III|II|I|0)\.?\s*[-–]\s*([^:]+):\s*Highest location is ([^.]+)\./gim,
+  )) {
+    const stage = m[1].toUpperCase();
+    if (seen.has(stage)) continue;
+    seen.add(stage);
+    buildStages.push({ stage, area: m[2].trim(), highest: m[3].trim() });
+  }
+  // Earliest first: the guide lists endgame first, which is backwards for
+  // anyone trying to find where they are.
+  const order = ['0', 'I', 'II', 'III', 'IV', 'V'];
+  buildStages.sort((a, b) => order.indexOf(a.stage) - order.indexOf(b.stage));
+  buildStages.push({ stage: 'Bonus', area: 'Bonus builds', highest: null });
 } catch {
   console.warn('data/raw/builds.txt missing — skipping community builds');
 }
@@ -273,7 +303,9 @@ const db = {
   pans, shovels, sluices,
   events,
   equipment,
+  blueprints,
   builds,
+  buildStages,
   buildGuide: {
     title: 'Prospecting! Build Guide',
     url: 'https://docs.google.com/document/d/1qh68P12Pm1nz80jbKLZloVgapCXxVRoarM_pAs-5aVY/edit',
@@ -288,6 +320,7 @@ console.log(`digSites  ${db.digSites.length}`);
 console.log(`locations ${db.locations.length}`);
 console.log(`pans ${pans.length} | shovels ${shovels.length} | sluices ${sluices.length}`);
 console.log(`builds ${builds.length} (${[...new Set(builds.map(b => b.stage))].join(', ')})`);
+console.log(`blueprints ${blueprints.length} (${blueprints.filter(b => b.kind === 'quest').length} quest, ${blueprints.filter(b => b.kind === 'purchase').length} bought, ${blueprints.filter(b => b.kind === 'found').length} found) · matched to ${equipment.filter(e => e.blueprint).length} items`);
 console.log(`equipment ${equipment.length} (${equipment.filter(e => e.limited).length} limited) · slots ${[...new Set(equipment.map(e => e.slot))].join('/')}`);
 console.log(`luck events ${events.length} (${events.filter(e => e.kind === 'multiplicative').length} multiplicative, ${events.filter(e => e.kind === 'additive').length} additive, ${events.filter(e => e.kind === 'unknown').length} unquantified)`);
 console.log(`no chances: ${minerals.filter(m => !m.chances.length).map(m => m.name).join(', ') || 'none'}`);

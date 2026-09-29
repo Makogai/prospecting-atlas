@@ -132,6 +132,28 @@ export interface Equipment {
   price: number | null;
   currency: string | null;
   currencyAmount: number | null;
+  /** Id of the blueprint that unlocks crafting, when one is required. */
+  blueprint: string | null;
+}
+
+/** How a blueprint is obtained; some equipment can't be crafted without one. */
+export interface Blueprint {
+  id: string;
+  /** The equipment this unlocks. */
+  equipment: string;
+  image: string | null;
+  kind: 'quest' | 'purchase' | 'found' | 'other';
+  quest: {
+    name: string | null;
+    summary: string | null;
+    giver: string | null;
+    location: string | null;
+    steps: string[];
+    rewards: string | null;
+  } | null;
+  purchase: { where: string | null; cost: number | null; currency: string | null } | null;
+  note: string | null;
+  wiki: string;
 }
 
 /** One museum slot in a community build: a boost, and the ores that grant it. */
@@ -154,6 +176,8 @@ export interface BuildEquipEntry {
 
 export interface Build {
   id: string;
+  /** Which outcome this build is for; see BUILD_GOALS. */
+  goal: string;
   /** 'V' … '0', or 'Bonus'. */
   stage: string | null;
   area: string;
@@ -204,14 +228,37 @@ export const db = raw as unknown as {
   sluices: Gear[];
   events: LuckEvent[];
   equipment: Equipment[];
+  blueprints: Blueprint[];
   builds: Build[];
+  buildStages: { stage: string; area: string; highest: string | null }[];
   buildGuide: { title: string; url: string; authors: string[]; snapshot: string };
 };
 
 export const {
   minerals, digSites, locations, pans, shovels, sluices, rarities, events, equipment,
-  builds, buildGuide,
+  builds, buildGuide, blueprints, buildStages,
 } = db;
+
+export const blueprintById = new Map(blueprints.map((b) => [b.id, b]));
+
+/**
+ * What a build is for. The guide names builds by stage ("Luck Efficiency III"),
+ * but people arrive wanting an outcome, so this is the first thing they pick.
+ */
+export const BUILD_GOALS = [
+  { id: 'luck', label: 'Luck', blurb: 'Best odds on rare minerals.' },
+  { id: 'hybrid', label: 'Hybrid', blurb: 'Luck, size and modifiers together — the all-rounder.' },
+  { id: 'size', label: 'Size', blurb: 'Heaviest minerals, which are worth more when you sell.' },
+  { id: 'money', label: 'Money', blurb: 'Cash per hour, usually with auto-pan.' },
+  { id: 'sell', label: 'Sell', blurb: 'Swapped on only while selling a full bag.' },
+  { id: 'items', label: 'Items', blurb: 'Most minerals per minute, for collection quests.' },
+  { id: 'treasure', label: 'Treasure', blurb: 'Treasure maps and geodes.' },
+  { id: 'shards', label: 'Shards', blurb: 'Meteor shards during a shower.' },
+  { id: 'fun', label: 'Just for fun', blurb: 'Not meant to be efficient.' },
+  { id: 'other', label: 'Other', blurb: '' },
+];
+
+export const goalMeta = (id: string) => BUILD_GOALS.find((g) => g.id === id) ?? null;
 
 export const equipmentById = new Map(equipment.map((e) => [e.id, e]));
 

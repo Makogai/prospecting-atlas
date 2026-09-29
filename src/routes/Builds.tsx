@@ -1,94 +1,138 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  builds, buildGuide, equipment, minerals, equipRarityColors,
+  builds, buildStages, buildGuide, equipment, minerals, blueprintById,
+  equipRarityColors, BUILD_GOALS, goalMeta,
   type Build, type BuildMuseumRow,
 } from '../lib/db';
 import { Empty, Sprite, cx, gradientVars } from '../components/ui';
-
-const STAGES = ['V', 'IV', 'III', 'II', 'I', '0', 'Bonus'];
-
-const STAGE_AREA: Record<string, string> = {
-  V: 'Desert',
-  IV: 'Meteor Valley',
-  III: 'Swamp',
-  II: 'Overgrown Caves',
-  I: 'Snowy Isle',
-  '0': 'Caldera',
-  Bonus: 'Bonus builds',
-};
+import { BlueprintNote } from '../components/Blueprint';
 
 /** Equipment and ore names in the guide are matched back to our own data. */
-const equipByName = new Map(equipment.map((e) => [e.name.toLowerCase(), e]));
+const equipByName = new Map(
+  equipment.map((e) => [e.name.toLowerCase().replace(/’/g, "'"), e]),
+);
 const mineralByName = new Map(minerals.map((m) => [m.name.toLowerCase(), m]));
 
-const findEquip = (name: string) => {
-  const key = name.toLowerCase().replace(/'/g, '’');
-  return (
-    equipByName.get(name.toLowerCase()) ??
-    equipment.find((e) => e.name.toLowerCase().replace(/’/g, "'") === name.toLowerCase()) ??
-    equipByName.get(key) ??
-    null
-  );
-};
+const findEquip = (name: string) =>
+  equipByName.get(name.toLowerCase().replace(/’/g, "'")) ?? null;
 
 export function BuildsPage() {
-  const [stage, setStage] = useState<string>('V');
+  const [stage, setStage] = useState<string>('III');
+  const [goal, setGoal] = useState<string>('all');
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const rows = useMemo(() => builds.filter((b) => b.stage === stage), [stage]);
+  const forStage = useMemo(() => builds.filter((b) => b.stage === stage), [stage]);
+  const rows = useMemo(
+    () => (goal === 'all' ? forStage : forStage.filter((b) => b.goal === goal)),
+    [forStage, goal],
+  );
+
+  // Only offer the goals that actually exist at this stage.
+  const goalsHere = useMemo(() => {
+    const present = new Set(forStage.map((b) => b.goal));
+    return BUILD_GOALS.filter((g) => present.has(g.id));
+  }, [forStage]);
+
+  const current = buildStages.find((s) => s.stage === stage);
 
   return (
     <div className="animate-rise">
       <header className="mb-6">
         <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Builds</h1>
         <p className="mt-1 max-w-3xl text-ink-400">
-          Community loadouts for every game stage — which equipment to wear, which ores to put in
-          the museum, and which runes to slot.
+          What to wear, what to put in your museum and which runes to slot — for wherever you are in
+          the game.
         </p>
-
-        <div className="panel mt-4 p-4">
-          <p className="text-sm text-ink-300">
-            These builds are the work of the{' '}
-            <a
-              href={buildGuide.url}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="font-semibold text-ore-400 underline decoration-ore-400/30 underline-offset-2 hover:decoration-ore-400"
-            >
-              {buildGuide.title}
-            </a>{' '}
-            authors — {buildGuide.authors.join(', ')}.
-          </p>
-          <p className="mt-1.5 text-xs text-ink-500">
-            Mirrored here so the item names link into the rest of the atlas. The guide says it is
-            “subject to change without warning”, so treat the doc as the source of truth — this is a
-            snapshot taken {buildGuide.snapshot}.
-          </p>
-        </div>
       </header>
 
-      <div className="panel-sticky sticky top-14 z-30 mb-5 flex flex-wrap items-center gap-1 p-2">
-        {STAGES.map((s) => (
-          <button
-            key={s}
-            onClick={() => { setStage(s); setOpenId(null); }}
-            className={cx(
-              'rounded-lg px-3 py-1.5 text-sm font-bold transition',
-              stage === s ? 'bg-ore-400 text-rock-950' : 'text-ink-400 hover:bg-white/6 hover:text-ink-100',
-            )}
-          >
-            {s === 'Bonus' ? 'Bonus' : `Stage ${s}`}
-            <span className="ml-1.5 text-[11px] opacity-60">
-              {builds.filter((b) => b.stage === s).length}
-            </span>
-          </button>
-        ))}
-        <span className="ml-auto pr-2 text-xs text-ink-500">{STAGE_AREA[stage]}</span>
-      </div>
+      {/* --- step 1: where are you? Roman numerals mean nothing; places do. --- */}
+      <section className="mb-5">
+        <h2 className="mb-2 text-xs font-extrabold tracking-[0.12em] text-ink-500 uppercase">
+          1 · How far have you got?
+        </h2>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+          {buildStages.map((s, i) => {
+            const on = stage === s.stage;
+            const bonus = s.stage === 'Bonus';
+            return (
+              <button
+                key={s.stage}
+                onClick={() => {
+                  setStage(s.stage);
+                  setGoal('all');
+                  setOpenId(null);
+                }}
+                aria-pressed={on}
+                className={cx(
+                  'rounded-xl border p-3 text-left transition',
+                  on
+                    ? 'border-ore-400/60 bg-ore-400/12'
+                    : 'border-white/8 bg-white/3 hover:border-white/20 hover:bg-white/6',
+                )}
+              >
+                <div className="flex items-baseline gap-1.5">
+                  {!bonus && (
+                    <span
+                      className={cx(
+                        'numeric text-[10px] font-bold',
+                        on ? 'text-ore-400' : 'text-ink-500',
+                      )}
+                    >
+                      {i + 1}
+                    </span>
+                  )}
+                  <span className={cx('text-sm font-bold', on ? 'text-ink-100' : 'text-ink-300')}>
+                    {s.area}
+                  </span>
+                </div>
+                <p className="mt-0.5 text-[11px] leading-snug text-ink-500">
+                  {s.highest ? `up to ${s.highest}` : 'Outside the main progression'}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+        {current?.highest && (
+          <p className="mt-2 text-xs text-ink-500">
+            Pick the furthest place you can dig — these builds assume{' '}
+            <span className="text-ink-400">{current.highest}</span> is your best site.
+          </p>
+        )}
+      </section>
+
+      {/* --- step 2: what do you want out of it? --- */}
+      {goalsHere.length > 1 && (
+        <section className="mb-5">
+          <h2 className="mb-2 text-xs font-extrabold tracking-[0.12em] text-ink-500 uppercase">
+            2 · What are you after?
+          </h2>
+          <div className="flex flex-wrap gap-1.5">
+            <GoalChip
+              label="Everything"
+              count={forStage.length}
+              on={goal === 'all'}
+              onClick={() => setGoal('all')}
+            />
+            {goalsHere.map((g) => (
+              <GoalChip
+                key={g.id}
+                label={g.label}
+                blurb={g.blurb}
+                count={forStage.filter((b) => b.goal === g.id).length}
+                on={goal === g.id}
+                onClick={() => setGoal(g.id)}
+              />
+            ))}
+          </div>
+          {goal !== 'all' && (
+            <p className="mt-2 text-xs text-ink-500">{goalMeta(goal)?.blurb}</p>
+          )}
+        </section>
+      )}
 
       {rows.length === 0 ? (
-        <Empty>No builds recorded for that stage.</Empty>
+        <Empty>Nothing for that combination.</Empty>
       ) : (
         <div className="space-y-3">
           {rows.map((b) => (
@@ -101,7 +145,46 @@ export function BuildsPage() {
           ))}
         </div>
       )}
+
+      <p className="mt-8 max-w-3xl text-xs leading-relaxed text-ink-500">
+        These builds are the work of the{' '}
+        <a
+          href={buildGuide.url}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="font-semibold text-ore-400 underline decoration-ore-400/30 underline-offset-2 hover:decoration-ore-400"
+        >
+          {buildGuide.title}
+        </a>{' '}
+        authors — {buildGuide.authors.join(', ')} — mirrored here so every item links into the rest
+        of the atlas. The guide says it is “subject to change without warning”, so treat the doc as
+        the source of truth; this is a snapshot from {buildGuide.snapshot}.
+      </p>
     </div>
+  );
+}
+
+function GoalChip({
+  label, blurb, count, on, onClick,
+}: {
+  label: string;
+  blurb?: string;
+  count: number;
+  on: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={blurb}
+      aria-pressed={on}
+      className={cx(
+        'rounded-lg px-3 py-1.5 text-xs font-bold transition',
+        on ? 'bg-ore-400 text-rock-950' : 'bg-white/5 text-ink-400 hover:bg-white/10 hover:text-ink-100',
+      )}
+    >
+      {label} <span className="numeric opacity-60">{count}</span>
+    </button>
   );
 }
 
@@ -112,16 +195,22 @@ function BuildCard({
   open: boolean;
   onToggle: () => void;
 }) {
-  const slots: [string, typeof b.equipment.charm][] = [
+  const meta = goalMeta(b.goal);
+  const slots: [string, Build['equipment']['rings']][] = [
     ['Charm', b.equipment.charm],
-    ['Neck', b.equipment.neck],
+    ['Necklace', b.equipment.neck],
     ['Rings', b.equipment.rings],
     ['Pan', b.equipment.pan],
     ['Shovel', b.equipment.shovel],
   ];
 
+  // Blueprint-gated pieces are the real barrier to actually assembling this.
+  const gated = [...b.equipment.charm, ...b.equipment.neck, ...b.equipment.rings]
+    .map((e) => findEquip(e.name))
+    .filter((e): e is NonNullable<typeof e> => Boolean(e?.blueprint));
+
   return (
-    <section className="panel overflow-hidden">
+    <section className={cx('panel overflow-hidden', open && 'border-white/16')}>
       <button
         onClick={onToggle}
         aria-expanded={open}
@@ -129,6 +218,11 @@ function BuildCard({
       >
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
+            {meta && (
+              <span className="rounded bg-vein-500/15 px-2 py-0.5 text-[10px] font-bold tracking-wide text-vein-400 uppercase">
+                {meta.label}
+              </span>
+            )}
             <h2 className="text-lg font-black">{b.name}</h2>
             {b.sellingOnly && (
               <span className="rounded bg-ore-400/15 px-2 py-0.5 text-[10px] font-bold tracking-wide text-ore-300 uppercase">
@@ -137,34 +231,50 @@ function BuildCard({
             )}
           </div>
           <p className="mt-0.5 text-sm text-ink-400">{b.purpose}</p>
-          {b.formula && (
-            <p className="numeric mt-1.5 inline-block rounded bg-vein-500/12 px-2 py-0.5 text-xs text-vein-400">
-              {b.formula}
-            </p>
-          )}
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {b.formula && (
+              <span className="numeric rounded bg-white/6 px-2 py-0.5 text-[11px] text-ink-300">
+                one-tap check: {b.formula}
+              </span>
+            )}
+            {gated.length > 0 && (
+              <span className="rounded bg-ore-400/10 px-2 py-0.5 text-[11px] text-ore-300">
+                needs {gated.length} blueprint{gated.length === 1 ? '' : 's'}
+              </span>
+            )}
+          </div>
         </div>
-        <span className="shrink-0 text-xs font-semibold text-ink-500">
-          {open ? 'Hide' : 'Show'} build
+        <span
+          className={cx(
+            'shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold transition',
+            open ? 'bg-white/10 text-ink-200' : 'bg-ore-400 text-rock-950',
+          )}
+        >
+          {open ? 'Close' : 'Open build'}
         </span>
       </button>
 
       {open && (
         <div className="space-y-6 border-t border-white/8 px-5 py-5">
           {b.notes.length > 0 && (
-            <ul className="space-y-1">
-              {b.notes.map((n, i) => (
-                <li key={i} className="flex gap-2 text-xs text-ink-400">
-                  <span className="text-ink-600">•</span>
-                  <span>{n}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="rounded-xl bg-white/4 p-3.5">
+              <p className="mb-1.5 text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                Before you start
+              </p>
+              <ul className="space-y-1">
+                {b.notes.map((n, i) => (
+                  <li key={i} className="flex gap-2 text-xs text-ink-400">
+                    <span className="text-ink-600">•</span>
+                    <span>{n}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
-          {/* --- equipment --- */}
           <div>
             <h3 className="mb-2 text-xs font-extrabold tracking-[0.1em] text-ink-400 uppercase">
-              Equipment
+              Wear this
             </h3>
             <div className="grid gap-2 sm:grid-cols-2">
               {slots.map(([label, entries]) =>
@@ -173,49 +283,10 @@ function BuildCard({
                     <p className="mb-1.5 text-[11px] font-bold tracking-wide text-ink-500 uppercase">
                       {label}
                     </p>
-                    <ul className="space-y-1.5">
-                      {entries.map((e, i) => {
-                        const item = findEquip(e.name);
-                        return (
-                          <li key={i} className="flex items-start gap-2">
-                            {item && <Sprite file={item.image} alt="" className="mt-0.5 h-6 w-6 shrink-0" />}
-                            <span className="min-w-0 flex-1">
-                              <span className="text-sm">
-                                {e.count > 1 && (
-                                  <span className="numeric mr-1 font-bold text-ore-300">
-                                    {e.count}×
-                                    {e.countSixRing != null && (
-                                      <span className="opacity-60">/{e.countSixRing}×</span>
-                                    )}
-                                  </span>
-                                )}
-                                {item ? (
-                                  <Link
-                                    to={`/equipment?q=${encodeURIComponent(item.name)}`}
-                                    className="font-semibold hover:text-ore-400"
-                                    style={item.color ? { color: item.color } : undefined}
-                                  >
-                                    {e.name}
-                                  </Link>
-                                ) : (
-                                  <span className="font-semibold text-ink-200">{e.name}</span>
-                                )}
-                              </span>
-                              {e.note && (
-                                <span className="block text-[11px] text-ink-500">{e.note}</span>
-                              )}
-                              {item && (
-                                <span
-                                  className="gradient-text block text-[10px] font-bold uppercase"
-                                  style={gradientVars(equipRarityColors(item.rarity))}
-                                >
-                                  {item.rarity}
-                                </span>
-                              )}
-                            </span>
-                          </li>
-                        );
-                      })}
+                    <ul className="space-y-2">
+                      {entries.map((e, i) => (
+                        <EquipLine key={i} entry={e} />
+                      ))}
                     </ul>
                   </div>
                 ),
@@ -241,17 +312,20 @@ function BuildCard({
             )}
           </div>
 
-          {/* --- museum --- */}
           {b.museum.length > 0 && (
             <div>
               <h3 className="mb-1 text-xs font-extrabold tracking-[0.1em] text-ink-400 uppercase">
-                Museum
+                Put these in the museum
               </h3>
-              {b.modifier && (
-                <p className="mb-2 text-xs text-ink-500">
-                  <span className="font-semibold text-ink-400">Modifier:</span> {b.modifier}
-                </p>
-              )}
+              <p className="mb-2 text-xs text-ink-500">
+                Each slot wants one of the ores listed, at least that heavy.
+                {b.modifier && (
+                  <>
+                    {' '}
+                    Modifier: <span className="text-ink-400">{b.modifier}</span>
+                  </>
+                )}
+              </p>
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {b.museum.map((row, i) => (
                   <MuseumRow key={i} row={row} />
@@ -264,6 +338,50 @@ function BuildCard({
         </div>
       )}
     </section>
+  );
+}
+
+function EquipLine({ entry }: { entry: Build['equipment']['rings'][number] }) {
+  const item = findEquip(entry.name);
+  const bp = item?.blueprint ? blueprintById.get(item.blueprint) : null;
+
+  return (
+    <li className="flex items-start gap-2">
+      {item && <Sprite file={item.image} alt="" className="mt-0.5 h-7 w-7 shrink-0" />}
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-baseline gap-1.5 text-sm">
+          {entry.count > 1 && (
+            <span className="numeric font-bold text-ore-300">
+              {entry.count}×
+              {entry.countSixRing != null && (
+                <span className="opacity-60">/{entry.countSixRing}×</span>
+              )}
+            </span>
+          )}
+          {item ? (
+            <Link
+              to={`/equipment?q=${encodeURIComponent(item.name)}`}
+              className="font-semibold hover:underline"
+              style={item.color ? { color: item.color } : undefined}
+            >
+              {entry.name}
+            </Link>
+          ) : (
+            <span className="font-semibold text-ink-200">{entry.name}</span>
+          )}
+          {item && (
+            <span
+              className="gradient-text text-[10px] font-bold uppercase"
+              style={gradientVars(equipRarityColors(item.rarity))}
+            >
+              {item.rarity}
+            </span>
+          )}
+        </span>
+        {entry.note && <span className="block text-[11px] text-ink-500">{entry.note}</span>}
+        {bp && <BlueprintNote blueprint={bp} compact />}
+      </span>
+    </li>
   );
 }
 
@@ -287,9 +405,7 @@ function MuseumRow({ row }: { row: BuildMuseumRow }) {
             {c}
           </span>
         ))}
-        {row.pick > 1 && (
-          <span className="text-[10px] text-ink-500">pick {row.pick}</span>
-        )}
+        {row.pick > 1 && <span className="text-[10px] text-ink-500">pick {row.pick}</span>}
       </div>
       <ul className="space-y-0.5">
         {row.options.map((o, i) => {

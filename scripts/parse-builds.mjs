@@ -185,6 +185,35 @@ function stageIndex(lines) {
   };
 }
 
+/**
+ * What a build is *for*, from its name. "Stage III" means nothing to most
+ * players; "I want more Luck" is how people actually arrive at this page.
+ */
+const GOALS = [
+  { id: 'luck', label: 'Luck', match: /^Luck Efficiency/i,
+    blurb: 'Best odds on rare minerals' },
+  { id: 'hybrid', label: 'Hybrid', match: /Hybrid/i,
+    blurb: 'Luck, size and modifiers together' },
+  { id: 'size', label: 'Size', match: /^Size Boost/i,
+    blurb: 'Heaviest minerals, which sell for more' },
+  { id: 'money', label: 'Money', match: /^Money Printer/i,
+    blurb: 'Cash per hour' },
+  { id: 'sell', label: 'Sell', match: /^Sell Boost/i,
+    blurb: 'Worn only while selling a full bag' },
+  { id: 'items', label: 'Items', match: /^Items Farming/i,
+    blurb: 'Most minerals per minute, for quests' },
+  { id: 'treasure', label: 'Treasure', match: /Treasure|Geode/i,
+    blurb: 'Treasure maps and geodes' },
+  { id: 'shards', label: 'Shards', match: /Shards/i,
+    blurb: 'Meteor shards during showers' },
+  { id: 'fun', label: 'Just for fun', match: /Walk Speed|Nothing Burger/i,
+    blurb: 'Not meant to be efficient' },
+];
+
+const goalFor = (name) => GOALS.find((g) => g.match.test(name))?.id ?? 'other';
+
+export { GOALS };
+
 export function parseBuilds(raw) {
   const lines = raw.replace(/\r/g, '').split('\n');
   const museumAt = lines.map((l, i) => (clean(l) === 'Museum' ? i : -1)).filter((i) => i >= 0);
@@ -311,6 +340,7 @@ export function parseBuilds(raw) {
       id,
       stage,
       area,
+      goal: goalFor(name),
       name: name.replace(/\s*[-–]\s*SELLING ONLY\s*$/i, '').replace(/\s+Build$/i, ''),
       sellingOnly: /SELLING ONLY/i.test(name),
       purpose,
