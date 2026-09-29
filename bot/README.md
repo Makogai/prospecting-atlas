@@ -21,10 +21,19 @@ span 1% down to 0.0000000015%, so a bar chart is the only way to read them at a 
 ```bash
 cd bot
 npm install
-cp .env.example .env     # fill in DISCORD_TOKEN and DISCORD_CLIENT_ID
-npm run register:guild   # instant, into DISCORD_GUILD_ID (global takes up to an hour)
+cp .env.example .env     # fill in DISCORD_TOKEN
+npm run register:here    # every server the bot is in, instantly
 npm start
 ```
+
+Only `DISCORD_TOKEN` is required — the registration script reads the application id back from
+the token itself.
+
+| Script | Registers to |
+|---|---|
+| `npm run register:here` | Every server the bot is already in. Instant. Use this while testing. |
+| `npm run register` | Globally. Can take up to an hour to appear. |
+| `npm run register:guild` | Just `DISCORD_GUILD_ID`. |
 
 `npm run smoke` runs every command against a fake interaction and writes the rendered cards to
 `bot/smoke/` — no token needed. Use it after touching `render.js`.
@@ -61,7 +70,7 @@ node make-icon.mjs "Gold"     # any mineral name; writes app-icon.png
 | Variable | Required | Purpose |
 |---|---|---|
 | `DISCORD_TOKEN` | yes | Bot token. |
-| `DISCORD_CLIENT_ID` | yes | Application ID, for registering commands. |
+| `DISCORD_CLIENT_ID` | no | Application id. Read back from the token when unset. |
 | `DISCORD_GUILD_ID` | no | Target for `register:guild`. |
 | `SITE_URL` | no | Base URL for the "Open on Atlas" buttons. Unset → buttons are omitted, which is what you want before the site is live. |
 
@@ -86,6 +95,9 @@ definition:
 ```bash
 docker exec -it <container> node src/deploy-commands.js
 ```
+
+A 401 from the registration script is reported as "Discord rejected the token" rather than
+printing the response body — a 401 body can echo the token back into your logs.
 
 ## How the data gets in
 
