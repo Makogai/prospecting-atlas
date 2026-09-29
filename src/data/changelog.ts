@@ -26,6 +26,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-29-museum-share',
+    date: '2026-09-29',
+    title: 'Save and share museum builds',
+    tag: 'new',
+    body: 'Keep several museum setups the way the Manage Museums Board does, switch between them, and send one to a friend as a link. Opening someone else’s build never touches your own.',
+    href: '/museum',
+  },
+  {
     id: '2026-09-29-changelog',
     date: '2026-09-29',
     title: 'This changelog',
