@@ -45,6 +45,7 @@ data/raw/          cached wikitext, committed
 data/img/          raw image downloads, gitignored build input
 public/sprites/    published item art, committed
 src/data/          generated db.json + images.json — do not hand-edit
+src/data/changelog.ts  the changelog — this one IS hand-edited
 src/lib/db.ts      typed accessors, derived indexes
 src/lib/search.ts  the search index
 src/components/    shared UI + command palette
@@ -223,6 +224,29 @@ They surface where they matter rather than on a page of their own: a badge and a
 equipment card, a one-line hint under any blueprint-gated item inside a build, and a
 "needs N blueprints" count on the build itself. Ore names inside quest steps link to their drop
 tables, so "Collect 150 Glowmoss" is one click from knowing where Glowmoss comes from.
+
+## Announcing a change
+
+`src/data/changelog.ts` drives both the `/changelog` page and the corner popup. To announce
+something, add one entry at the **top** of the array:
+
+```ts
+{
+  id: '2026-10-04-geodes',        // unique, and never reused for other content
+  date: '2026-10-04',
+  title: 'Geode drop tables',
+  tag: 'new',                     // new | improved | fixed | data
+  body: 'One sentence on what it means for a player, not what changed in the code.',
+  href: '/geodes',                // optional — where to go look
+},
+```
+
+Each visitor's browser remembers the `id` of the newest entry they've seen, so on their next
+visit they get a popup covering exactly what shipped since. Two deliberate quiet cases: someone
+arriving for the first time is marked up to date rather than shown the whole backlog, and a
+marker pointing at an id that no longer exists resets silently instead of replaying everything.
+That second one is why ids must never be recycled — reusing one makes returning visitors miss
+the update.
 
 ## Discord bot
 

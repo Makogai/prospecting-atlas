@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { CommandPalette } from './CommandPalette';
+import { WhatsNew, useUnseen } from './WhatsNew';
 import { db } from '../lib/db';
 import { cx } from './ui';
 
@@ -20,6 +21,7 @@ const NAV = [
 const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform);
 
 export function Layout() {
+  const { unseen } = useUnseen();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
@@ -86,6 +88,29 @@ export function Layout() {
             </kbd>
           </button>
 
+          <NavLink
+            to="/changelog"
+            aria-label={
+              unseen.length > 0 ? `What's new — ${unseen.length} unread` : "What's new"
+            }
+            className={({ isActive }) =>
+              cx(
+                'relative rounded-lg border border-white/10 px-2.5 py-1.5 text-sm transition',
+                isActive
+                  ? 'border-white/20 bg-white/10 text-ink-100'
+                  : 'bg-white/4 text-ink-400 hover:border-white/20 hover:bg-white/8 hover:text-ink-100',
+              )
+            }
+          >
+            <span aria-hidden>✦</span>
+            {unseen.length > 0 && (
+              <span
+                aria-hidden
+                className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-ore-400 ring-2 ring-rock-950"
+              />
+            )}
+          </NavLink>
+
           <button
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
@@ -117,6 +142,8 @@ export function Layout() {
         )}
       </header>
 
+      <WhatsNew />
+
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <Outlet context={{ openPalette: () => setPaletteOpen(true) }} />
       </main>
@@ -136,7 +163,10 @@ export function Layout() {
             , which is CC BY-SA. Not affiliated with the game or Roblox.
           </p>
           <p className="numeric shrink-0">
-            {db.minerals.length} minerals · data synced{' '}
+            <Link to="/changelog" className="text-ink-300 hover:text-ore-400">
+              What's new
+            </Link>{' '}
+            · {db.minerals.length} minerals · data synced{' '}
             {new Date(db.meta.fetchedAt).toLocaleDateString('en-GB', {
               day: 'numeric', month: 'short', year: 'numeric',
             })}

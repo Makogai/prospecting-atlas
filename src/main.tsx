@@ -16,6 +16,7 @@ import { EquipmentPage } from './routes/Equipment';
 import { BuildsPage } from './routes/Builds';
 import { QuestsPage } from './routes/Quests';
 import { MuseumPage } from './routes/Museum';
+import { ChangelogPage } from './routes/Changelog';
 import { Compare } from './routes/Compare';
 import { NotFound } from './routes/NotFound';
 
@@ -36,6 +37,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="builds" element={<BuildsPage />} />
           <Route path="quests" element={<QuestsPage />} />
           <Route path="museum" element={<MuseumPage />} />
+          <Route path="changelog" element={<ChangelogPage />} />
           <Route path="compare" element={<Compare />} />
           <Route path="*" element={<NotFound />} />
         </Route>
