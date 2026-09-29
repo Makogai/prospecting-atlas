@@ -31,14 +31,30 @@ npm start
 
 ### Discord setup
 
-1. [Developer Portal](https://discord.com/developers/applications) → **New Application**.
-2. **Bot** → **Reset Token** → copy into `.env` as `DISCORD_TOKEN`.
-3. **General Information** → **Application ID** → `.env` as `DISCORD_CLIENT_ID`.
-4. **OAuth2 → URL Generator**: scopes `bot` + `applications.commands`, bot permissions
-   **Send Messages** and **Attach Files**. Open the generated URL to invite it.
+The application already exists — **Prospecting Atlas**, app id `1554465933152755722`. The app id
+is public (it's in the invite URL); only the bot token is secret.
+
+Invite it to a server:
+
+```
+https://discord.com/oauth2/authorize?client_id=1554465933152755722&permissions=52224&scope=bot%20applications.commands
+```
+
+`52224` = View Channel + Send Messages + Embed Links + Attach Files. Nothing else — the bot has no
+reason to manage anything.
+
+To get a token: [Developer Portal](https://discord.com/developers/applications) → Prospecting Atlas
+→ **Bot** → **Reset Token** → copy it straight into `.env` as `DISCORD_TOKEN`. Discord shows a
+token once; if you lose it, reset again. Never commit it or paste it into a chat.
 
 No privileged intents. The bot only uses `Guilds`, never reads message content, and replies solely
 to its own slash commands.
+
+### Regenerating the app icon
+
+```bash
+node make-icon.mjs "Gold"     # any mineral name; writes app-icon.png
+```
 
 ### Environment
 
