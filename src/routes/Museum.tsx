@@ -6,12 +6,13 @@ import {
   type MuseumOre, type RarityName,
 } from '../lib/db';
 import {
-  decodeBuild, encodeBuild, isEmptyBuild, readBuilds, slotKey, writeBuilds,
-  type SavedBuild, type Slots,
+  decodeBuild, encodeBuild, isEmptyBuild, slotKey, MUSEUM_BUILDS_KEY, type Slots,
 } from '../lib/museumBuild';
+import { makeBuild, readBuilds, writeBuilds, type SavedBuild } from '../lib/buildLibrary';
 import {
   Empty, RarityTag, SectionTitle, Sprite, cx, gradientVars,
 } from '../components/ui';
+import { BuildLibrary, ShareBox } from '../components/BuildLibrary';
 
 /* ---------- slot state -------------------------------------------------- */
 
@@ -92,24 +93,18 @@ export function MuseumPage() {
 
   const [picking, setPicking] = useState<{ rarity: RarityName; index: number } | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
-  const [library, setLibrary] = useState<SavedBuild[]>(readBuilds);
+  const [library, setLibrary] = useState<SavedBuild[]>(() => readBuilds(MUSEUM_BUILDS_KEY));
 
   const saveBuild = (name: string) => {
-    const build: SavedBuild = {
-      id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
-      name: name.trim().slice(0, 40) || 'Untitled build',
-      code: encodeBuild(slots),
-      savedAt: new Date().toISOString(),
-    };
-    const next = [build, ...library];
+    const next = [makeBuild(name, encodeBuild(slots)), ...library];
     setLibrary(next);
-    writeBuilds(next);
+    writeBuilds(MUSEUM_BUILDS_KEY, next);
   };
 
   const removeBuild = (id: string) => {
     const next = library.filter((b) => b.id !== id);
     setLibrary(next);
-    writeBuilds(next);
+    writeBuilds(MUSEUM_BUILDS_KEY, next);
   };
 
   /** Loading a saved build shows it the same way a shared link does. */
@@ -280,7 +275,11 @@ export function MuseumPage() {
           />
 
           {shareOpen && !isEmptyBuild(slots) && (
-            <ShareBox url={shareUrl} onClose={() => setShareOpen(false)} />
+            <ShareBox
+              url={shareUrl}
+              onClose={() => setShareOpen(false)}
+              note="Anyone who opens this sees your exact layout. It stays valid as the wiki updates, because it stores ore names rather than positions."
+            />
           )}
 
           <BuildLibrary
@@ -436,183 +435,6 @@ function Pedestal({
  * button alone: `navigator.clipboard` needs a secure context and can be refused
  * outright, and a "Share" that silently does nothing is worse than no button.
  */
-/**
- * Saved builds, mirroring the game's Manage Museums Board: keep a few setups
- * and switch between them.
- *
- * Loading one shows it the same way a shared link does — held apart from the
- * museum you're actively editing — so switching to look at your Sell build
- * doesn't discard the Luck one you had on screen.
- */
-function BuildLibrary({
-  builds, canSave, activeCode, onSave, onLoad, onRemove,
-}: {
-  builds: SavedBuild[];
-  canSave: boolean;
-  /** The code currently being viewed, so its chip can be marked. */
-  activeCode: string | null;
-  onSave: (name: string) => void;
-  onLoad: (build: SavedBuild) => void;
-  onRemove: (id: string) => void;
-}) {
-  const [naming, setNaming] = useState(false);
-  const [name, setName] = useState('');
-
-  const commit = () => {
-    onSave(name);
-    setName('');
-    setNaming(false);
-  };
-
-  if (builds.length === 0 && !naming) {
-    return (
-      <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-white/8 bg-white/3 px-3 py-2">
-        <span className="flex-1 text-[11px] text-ink-500">
-          Keep more than one setup — a Luck build for hunting, a Sell build for cashing out.
-        </span>
-        <button
-          onClick={() => setNaming(true)}
-          disabled={!canSave}
-          className="rounded-lg bg-white/8 px-2.5 py-1 text-[11px] font-semibold text-ink-200 transition hover:bg-white/14 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Save this build
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mb-3 rounded-xl border border-white/8 bg-white/3 px-3 py-2.5">
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="mr-1 text-[10px] font-bold tracking-[0.12em] text-ink-500 uppercase">
-          Saved
-        </span>
-        {builds.map((build) => (
-          <span
-            key={build.id}
-            className={cx(
-              'group flex items-center gap-1 rounded-lg py-1 pr-1 pl-2.5 text-xs font-semibold transition',
-              build.code === activeCode
-                ? 'bg-ore-400/20 text-ore-300 ring-1 ring-ore-400/40'
-                : 'bg-white/6 text-ink-300 hover:bg-white/12',
-            )}
-          >
-            <button onClick={() => onLoad(build)} className="max-w-[12rem] truncate">
-              {build.name}
-            </button>
-            <button
-              onClick={() => onRemove(build.id)}
-              aria-label={`Delete ${build.name}`}
-              className="rounded px-1 text-ink-500 opacity-0 transition group-hover:opacity-100 hover:text-red-400 focus:opacity-100"
-            >
-              ✕
-            </button>
-          </span>
-        ))}
-
-        {naming ? (
-          <span className="flex items-center gap-1">
-            <input
-              autoFocus
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') commit();
-                if (e.key === 'Escape') setNaming(false);
-              }}
-              placeholder="Name this build"
-              maxLength={40}
-              className="w-40 rounded-lg border border-white/12 bg-white/5 px-2 py-1 text-xs outline-none focus:border-ore-400/50"
-            />
-            <button
-              onClick={commit}
-              className="rounded-lg bg-ore-400 px-2.5 py-1 text-[11px] font-bold text-rock-950 transition hover:bg-ore-300"
-            >
-              Save
-            </button>
-          </span>
-        ) : (
-          <button
-            onClick={() => setNaming(true)}
-            disabled={!canSave}
-            className="rounded-lg bg-white/6 px-2.5 py-1 text-xs font-semibold text-ink-400 transition hover:bg-white/12 hover:text-ink-100 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            + Save current
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ShareBox({ url, onClose }: { url: string; onClose: () => void }) {
-  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
-
-  useEffect(() => {
-    if (state === 'idle') return;
-    const t = setTimeout(() => setState('idle'), 2400);
-    return () => clearTimeout(t);
-  }, [state]);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setState('copied');
-    } catch {
-      setState('failed');
-    }
-  };
-
-  const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
-
-  return (
-    <div className="panel mb-3 p-4">
-      <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-[11px] font-semibold tracking-[0.12em] text-ink-500 uppercase">
-          Share this build
-        </h3>
-        <button
-          onClick={onClose}
-          aria-label="Close"
-          className="text-xs text-ink-500 transition hover:text-ink-100"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className="mt-2.5 flex flex-wrap gap-2">
-        <input
-          readOnly
-          value={url}
-          onFocus={(e) => e.currentTarget.select()}
-          aria-label="Shareable link to this build"
-          className="min-w-0 flex-1 rounded-lg border border-white/10 bg-white/4 px-3 py-2 font-mono text-xs text-ink-300 outline-none focus:border-ore-400/50"
-        />
-        <button
-          onClick={copy}
-          className="rounded-lg bg-ore-400 px-3 py-2 text-xs font-bold text-rock-950 transition hover:bg-ore-300"
-        >
-          {state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed' : 'Copy link'}
-        </button>
-        {canShare && (
-          <button
-            onClick={() => navigator.share({ title: 'Prospecting Atlas — museum build', url })}
-            className="rounded-lg bg-white/6 px-3 py-2 text-xs font-semibold text-ink-300 transition hover:bg-white/10"
-          >
-            Share…
-          </button>
-        )}
-      </div>
-
-      <p className="mt-2 text-[11px] text-ink-500">
-        {state === 'failed'
-          ? 'Your browser blocked the clipboard — select the link above and copy it manually.'
-          : 'Anyone who opens this sees your exact layout. It stays valid as the wiki updates, because it stores ore names rather than positions.'}
-      </p>
-    </div>
-  );
-}
-
 function Totals({
   totals, stat, filled,
 }: {

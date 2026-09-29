@@ -65,38 +65,5 @@ export function decodeBuild(code: string): DecodedBuild {
 
 export const isEmptyBuild = (slots: Slots) => Object.values(slots).every((v) => !v);
 
-/* ---------- the build library ------------------------------------------- */
-
-/**
- * A named build, the way the game's own Manage Museums Board lets you keep
- * several setups and switch between them.
- *
- * Stored as the share code rather than a slot map: it's the same thing, a third
- * of the size, and it means a saved build and a shared link can't drift apart.
- */
-export interface SavedBuild {
-  id: string;
-  name: string;
-  code: string;
-  savedAt: string;
-}
-
-export const BUILDS_KEY = 'atlas.museum.builds';
-
-export function readBuilds(): SavedBuild[] {
-  try {
-    const raw = localStorage.getItem(BUILDS_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? (parsed as SavedBuild[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function writeBuilds(builds: SavedBuild[]) {
-  try {
-    localStorage.setItem(BUILDS_KEY, JSON.stringify(builds));
-  } catch {
-    /* blocked storage — the build still works for this session */
-  }
-}
+/** Where this planner's saved builds live. */
+export const MUSEUM_BUILDS_KEY = 'atlas.museum.builds';

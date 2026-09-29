@@ -7,7 +7,12 @@ import {
 } from '../lib/db';
 import { BlueprintPanel } from '../components/Blueprint';
 import { Empty, Sprite, cx, gradientVars } from '../components/ui';
-import { useLoadout, LoadoutSummary } from '../components/Loadout';
+import { useLoadout, LoadoutSummary, type LoadoutState } from '../components/Loadout';
+import { BuildLibrary, ShareBox } from '../components/BuildLibrary';
+import {
+  decodeLoadout, decodeQuality, encodeLoadout, isEmptyLoadout, EQUIP_BUILDS_KEY,
+} from '../lib/equipBuild';
+import { makeBuild, readBuilds, writeBuilds, type SavedBuild } from '../lib/buildLibrary';
 
 const SLOTS: EquipSlot[] = ['Necklace', 'Charm', 'Ring'];
 
@@ -20,12 +25,79 @@ const fmt = (r: StatRange) =>
 export function EquipmentPage() {
   const [slot, setSlot] = useState<EquipSlot | 'all'>('all');
   const [stat, setStat] = useState('');
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const [q, setQ] = useState(params.get('q') ?? '');
-  const [sixStar, setSixStar] = useState(false);
+  // A shared link carries the six-star toggle, since it changes every number.
+  // Initialised from the URL rather than bound to it, so flipping it afterwards
+  // is just a toggle and doesn't rewrite somebody's link.
+  const [sixStar, setSixStar] = useState(params.get('six') === '1');
   const [showLimited, setShowLimited] = useState(true);
   const [needsBlueprint, setNeedsBlueprint] = useState<'any' | 'yes' | 'no'>('any');
-  const [loadout, setLoadout] = useLoadout();
+
+  const [saved, setSaved] = useLoadout();
+
+  // `?b=` is somebody else's loadout. Held apart from the saved one and never
+  // written to storage on its own: opening a friend's link must not replace the
+  // loadout you put together. Taking it over is an explicit "Make this mine".
+  const sharedCode = params.get('b');
+  const shared = useMemo(
+    () => (sharedCode !== null ? decodeLoadout(sharedCode) : null),
+    [sharedCode],
+  );
+  const viewingShared = shared != null;
+  const loadout: LoadoutState = viewingShared
+    ? { items: shared.items, quality: decodeQuality(params.get('qual')) }
+    : saved;
+
+  const clearShared = () => {
+    const next = new URLSearchParams(params);
+    next.delete('b');
+    next.delete('qual');
+    next.delete('six');
+    setParams(next, { replace: true });
+  };
+
+  /** Edits land on your own loadout, or in the link while you're viewing one. */
+  const setLoadout = (next: LoadoutState) => {
+    if (!viewingShared) {
+      setSaved(next);
+      return;
+    }
+    const p = new URLSearchParams(params);
+    p.set('b', encodeLoadout(next.items));
+    p.set('qual', String(next.quality));
+    setParams(p, { replace: true });
+  };
+
+  const [shareOpen, setShareOpen] = useState(false);
+  const [library, setLibrary] = useState<SavedBuild[]>(() => readBuilds(EQUIP_BUILDS_KEY));
+
+  const shareUrl = useMemo(() => {
+    const origin = typeof window === 'undefined' ? '' : window.location.origin;
+    return (
+      `${origin}/equipment?b=${encodeLoadout(loadout.items)}` +
+      `&qual=${loadout.quality}${sixStar ? '&six=1' : ''}`
+    );
+  }, [loadout, sixStar]);
+
+  const saveBuild = (name: string) => {
+    const next = [makeBuild(name, encodeLoadout(loadout.items)), ...library];
+    setLibrary(next);
+    writeBuilds(EQUIP_BUILDS_KEY, next);
+  };
+
+  const removeBuild = (id: string) => {
+    const next = library.filter((b) => b.id !== id);
+    setLibrary(next);
+    writeBuilds(EQUIP_BUILDS_KEY, next);
+  };
+
+  const loadBuild = (build: SavedBuild) => {
+    const p = new URLSearchParams(params);
+    p.set('b', build.code);
+    setParams(p, { replace: true });
+    setShareOpen(false);
+  };
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -79,6 +151,41 @@ export function EquipmentPage() {
           what a six-star merge adds. Build a loadout and it totals the stats for you.
         </p>
       </header>
+
+      {viewingShared && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-ore-400/30 bg-ore-400/8 px-4 py-3">
+          <span className="flex-1 text-sm">
+            <strong className="font-bold text-ore-300">You're looking at a shared loadout.</strong>{' '}
+            <span className="text-ink-300">
+              Your own is untouched. Changes you make stay in this link — save it with “Make this
+              mine”.
+            </span>
+            {(shared.dropped.length > 0 || shared.overfilled) && (
+              <span className="mt-1 block text-[11px] text-ink-400">
+                {shared.dropped.length > 0 && (
+                  <>
+                    {shared.dropped.length} item{shared.dropped.length === 1 ? '' : 's'} couldn't be
+                    equipped: {shared.dropped.join(', ')}.{' '}
+                  </>
+                )}
+                {shared.overfilled && 'The link asked for more than the slots allow; the extras were dropped.'}
+              </span>
+            )}
+          </span>
+          <button
+            onClick={() => { setSaved(loadout); clearShared(); }}
+            className="rounded-lg bg-ore-400 px-3 py-1.5 text-xs font-bold text-rock-950 transition hover:bg-ore-300"
+          >
+            Make this mine
+          </button>
+          <button
+            onClick={clearShared}
+            className="rounded-lg bg-white/8 px-3 py-1.5 text-xs font-semibold text-ink-200 transition hover:bg-white/14"
+          >
+            Back to mine
+          </button>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
         <div>
@@ -191,12 +298,48 @@ export function EquipmentPage() {
         </div>
 
         {/* --- loadout --- */}
-        <div className="lg:sticky lg:top-16 lg:self-start">
+        <div className="space-y-3 lg:sticky lg:top-16 lg:self-start">
           <LoadoutSummary
             loadout={loadout}
             onChange={setLoadout}
             equipped={equipped}
             sixStar={sixStar}
+          />
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setShareOpen((v) => !v)}
+              disabled={isEmptyLoadout(loadout)}
+              aria-expanded={shareOpen}
+              className="rounded-lg bg-white/6 px-3 py-1.5 text-xs font-semibold text-ink-300 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Share
+            </button>
+            <button
+              onClick={() => setLoadout({ ...loadout, items: [] })}
+              disabled={isEmptyLoadout(loadout)}
+              className="rounded-lg bg-white/6 px-3 py-1.5 text-xs font-semibold text-ink-300 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Clear
+            </button>
+          </div>
+
+          {shareOpen && !isEmptyLoadout(loadout) && (
+            <ShareBox
+              url={shareUrl}
+              onClose={() => setShareOpen(false)}
+              note="Carries your roll quality and the six-star toggle, so a friend sees the same numbers you do."
+            />
+          )}
+
+          <BuildLibrary
+            builds={library}
+            canSave={!isEmptyLoadout(loadout)}
+            activeCode={viewingShared ? sharedCode : null}
+            onSave={saveBuild}
+            onLoad={loadBuild}
+            onRemove={removeBuild}
+            hint="Keep more than one setup — a Luck loadout for hunting, a Sell loadout for cashing out."
           />
         </div>
       </div>

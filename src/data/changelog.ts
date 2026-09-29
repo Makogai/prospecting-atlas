@@ -26,6 +26,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-29-equipment-share',
+    date: '2026-09-29',
+    title: 'Save and share equipment loadouts',
+    tag: 'new',
+    body: 'Loadouts now work like museum builds: keep several, switch between them, and send one as a link. The link carries your roll quality and the six-star toggle, so the numbers a friend sees are the ones you saw.',
+    href: '/equipment',
+  },
+  {
     id: '2026-09-29-museum-share',
     date: '2026-09-29',
     title: 'Save and share museum builds',
