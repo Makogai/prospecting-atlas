@@ -632,7 +632,9 @@ function Totals({
       <div className="numeric mt-1 text-3xl font-black text-vein-400">
         {boostLabel(totals[stat] ?? 0)}
       </div>
-      <p className="text-xs text-ink-400">{stat} from {filled} displays</p>
+      <p className="text-xs text-ink-400">
+        {stat} from {filled} display{filled === 1 ? '' : 's'}
+      </p>
 
       {rows.length > 0 ? (
         <dl className="mt-4 space-y-1.5">

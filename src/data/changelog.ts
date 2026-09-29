@@ -68,7 +68,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-29',
     title: 'Quests, NPCs, and who is where',
     tag: 'new',
-    body: '107 quests and 120 NPCs, searchable in ⌘K by the place they stand. Location and dig-site pages now list who you will find there.',
+    body: '107 quests and 120 NPCs, searchable by the place they stand. Location and dig-site pages now list who you will find there.',
     href: '/quests',
   },
   {
