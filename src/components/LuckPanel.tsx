@@ -4,7 +4,7 @@ import {
 } from '../../shared/luck.mjs';
 import { pans, events, equipmentById, type LuckEvent } from '../lib/db';
 import { useLoadout, loadoutTotals } from './Loadout';
-import { cx } from './ui';
+import { NumberField, cx } from './ui';
 
 export interface LuckState {
   base: number;
@@ -186,13 +186,12 @@ export function LuckPanel({
               {showPans ? 'hide' : 'use a pan'}
             </button>
           </div>
-          <input
+          <NumberField
             id="base-luck"
-            type="number"
             min={0}
             value={luck.base}
-            onChange={(e) => onChange({ ...luck, base: Math.max(0, Number(e.target.value) || 0) })}
-            className="w-full rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-sm outline-none transition focus:border-vein-500/50 focus:bg-white/7"
+            onChange={(base) => onChange({ ...luck, base })}
+            className="focus:border-vein-500/50 focus:bg-white/7"
           />
           {loadoutLuck > 0 && (
             <button

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { CSSProperties, ReactNode } from 'react';
 import {
@@ -60,6 +61,70 @@ export function Sprite({
         )}
       />
     </div>
+  );
+}
+
+/**
+ * A numeric field you can actually clear.
+ *
+ * `<input type="number">` with `value={Math.max(min, Number(raw) || min)}` looks
+ * fine until someone selects all and starts typing: clearing the box parses as
+ * NaN, snaps straight back to the minimum, and every keystroke then lands after
+ * it — so entering 2400 gets you 12400. Holding the text as a draft lets the
+ * field be empty mid-edit and only clamps on blur.
+ *
+ * It's a text input on purpose: no spinner arrows to fight, and inputMode still
+ * brings up the numeric keypad on a phone.
+ */
+export function NumberField({
+  value, onChange, min = 0, max, id, className, ariaLabel,
+}: {
+  value: number;
+  onChange: (next: number) => void;
+  min?: number;
+  max?: number;
+  id?: string;
+  className?: string;
+  ariaLabel?: string;
+}) {
+  const [draft, setDraft] = useState(String(value));
+  const [editing, setEditing] = useState(false);
+
+  // Follow the value when something else changes it — a preset button, say —
+  // but never yank the text out from under someone mid-edit.
+  useEffect(() => {
+    if (!editing) setDraft(String(value));
+  }, [value, editing]);
+
+  const clamp = (n: number) => Math.min(Math.max(n, min), max ?? Infinity);
+
+  return (
+    <input
+      id={id}
+      type="text"
+      inputMode="decimal"
+      aria-label={ariaLabel}
+      value={draft}
+      onFocus={() => setEditing(true)}
+      onChange={(e) => {
+        const raw = e.target.value.replace(/[^\d.]/g, '');
+        setDraft(raw);
+        // An empty or half-typed box keeps the last good value downstream.
+        const n = Number(raw);
+        if (raw !== '' && Number.isFinite(n)) onChange(clamp(n));
+      }}
+      onBlur={() => {
+        setEditing(false);
+        const n = Number(draft);
+        const next = draft === '' || !Number.isFinite(n) ? min : clamp(n);
+        setDraft(String(next));
+        onChange(next);
+      }}
+      className={cx(
+        'w-full rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-sm outline-none transition',
+        className,
+      )}
+    />
   );
 }
 

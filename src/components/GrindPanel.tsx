@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { panRate, sluiceRate, sluiceFillMinutes, mineralsPerCycle, duration } from '../../shared/estimate.mjs';
 import { pans, sluices } from '../lib/db';
-import { cx } from './ui';
+import { NumberField, cx } from './ui';
 
 export interface GrindState {
   mode: 'pan' | 'sluice';
@@ -156,15 +156,12 @@ export function GrindPanel({
                   {showPans ? 'hide' : 'use a pan'}
                 </button>
               </div>
-              <input
+              <NumberField
                 id="cap"
-                type="number"
                 min={1}
                 value={grind.capacity}
-                onChange={(e) =>
-                  onChange({ ...grind, capacity: Math.max(1, Number(e.target.value) || 1) })
-                }
-                className="w-full rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-sm outline-none transition focus:border-ore-400/50 focus:bg-white/7"
+                onChange={(capacity) => onChange({ ...grind, capacity })}
+                className="focus:border-ore-400/50 focus:bg-white/7"
               />
               {showPans && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
