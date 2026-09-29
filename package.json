@@ -6,12 +6,13 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "data:all": "node scripts/fetch-builds.mjs --keep-going && npm run data:wiki",
+    "data:wiki": "npm run data:fetch && npm run data:parse && npm run data:images && npm run data:sprites",
     "data:fetch": "node scripts/fetch-wiki.mjs --fresh",
+    "data:builds": "node scripts/fetch-builds.mjs",
     "data:parse": "node scripts/parse-wiki.mjs",
     "data:images": "node scripts/fetch-images.mjs",
-    "data:all": "npm run data:fetch && npm run data:parse && npm run data:images && npm run data:sprites",
-    "data:sprites": "node scripts/clean-sprites.mjs",
-    "data:builds": "node scripts/fetch-builds.mjs"
+    "data:sprites": "node scripts/clean-sprites.mjs"
   },
   "keywords": [],
   "author": "",

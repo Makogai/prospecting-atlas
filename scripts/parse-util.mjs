@@ -68,6 +68,20 @@ export function refs(s) {
   return out;
 }
 
+/**
+ * `{{$|4,000}} • {{EXP|5,000}} • {{Meteor Shards|2,000}}` ->
+ * `$4,000 • 5,000 EXP • 2,000 Meteor Shards`.
+ *
+ * Run this before plain(), which keeps only a template's name and would drop
+ * every number in a rewards line.
+ */
+export function renderValues(text) {
+  return String(text ?? '')
+    .replace(/\{\{\s*\$\s*\|([^{}]*)\}\}/g, (_, v) => `$${v.trim()}`)
+    .replace(/\{\{([^|{}]+)\|([^{}]*)\}\}/g, (_, n, v) =>
+      v.trim() ? `${v.trim()} ${n.trim()}` : n.trim());
+}
+
 export const num = (s) => {
   if (s == null) return null;
   const m = String(s).replace(/,/g, '').match(/-?\d+(\.\d+)?/);

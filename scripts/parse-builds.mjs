@@ -167,10 +167,18 @@ function parseEquipEntry(raw) {
 function stageIndex(lines) {
   const marks = [];
   for (const [i, line] of lines.entries()) {
-    const s = clean(line);
-    const stage = s.match(/^Stage\s+(V|IV|III|II|I|0)\b[.:]?\s*(?:Builds)?\s*[-:]?\s*(.*)$/i);
-    if (stage && s.length < 70) {
-      marks.push({ at: i, stage: stage[1].toUpperCase(), area: clean(stage[2]).replace(/^Builds\s*-\s*/i, '') });
+    // One heading is typed ".Stage I. Builds - Snowy Isle" with a stray leading
+    // period; without stripping it, a whole stage files under the previous one.
+    const s = clean(line).replace(/^[.\s]+/, '');
+    const stage = s.match(/^Stage\s+(V|IV|III|II|I|0)\b\.?\s*(?:Builds)?\s*[-–:]\s*(.+)$/i);
+    // A real heading names an area. "Stage I; no limited-time equipment
+    // required" is a sentence about a stage and must not become its marker.
+    if (stage && s.length < 70 && !/[;,]/.test(s)) {
+      marks.push({
+        at: i,
+        stage: stage[1].toUpperCase(),
+        area: clean(stage[2]).replace(/^Builds\s*-\s*/i, ''),
+      });
       continue;
     }
     if (/^Bonus Builds$/i.test(s)) marks.push({ at: i, stage: 'Bonus', area: '' });
@@ -214,7 +222,7 @@ const goalFor = (name) => GOALS.find((g) => g.match.test(name))?.id ?? 'other';
 
 export { GOALS };
 
-export function parseBuilds(raw) {
+export function parseBuilds(raw, { onSkip } = {}) {
   const lines = raw.replace(/\r/g, '').split('\n');
   const museumAt = lines.map((l, i) => (clean(l) === 'Museum' ? i : -1)).filter((i) => i >= 0);
   const stageAt = stageIndex(lines);
@@ -235,31 +243,71 @@ export function parseBuilds(raw) {
       break;
     }
 
-    const purpose = clean(lines[i]);
+    let purpose = clean(lines[i]);
+
+    // Some blocks have no purpose line, so the backward walk stops on the name
+    // itself. Recognise that and leave the purpose empty rather than hunting
+    // further up and landing on a blank line or the shared legend.
+    const purposeIsName =
+      purpose.length > 2 &&
+      purpose.length < 56 &&
+      NAME_RE.test(purpose.replace(/\.$/, ''));
 
     // Walk back for the nearest line that reads like one of the build families.
     // Position alone isn't enough: a few blocks put a credit line or a stray
     // bullet where the heading usually sits.
-    let name = null;
-    let nameAt = -1;
-    for (let n = i - 1; n >= Math.max(0, i - 60); n--) {
+    let name = purposeIsName ? purpose.replace(/\.$/, '') : null;
+    let nameAt = purposeIsName ? i : -1;
+    let namedByFamily = purposeIsName;
+    if (purposeIsName) purpose = '';
+
+    for (let n = i - 1; !name && n >= Math.max(0, i - 60); n--) {
       const candidate = clean(lines[n])
         .replace(/^[*•●]\s*/, '')
         .replace(/\.$/, '');
-      if (candidate.length > 2 && candidate.length < 48 && NAME_RE.test(candidate)) {
+      if (candidate.length > 2 && candidate.length < 56 && NAME_RE.test(candidate)) {
         name = candidate;
         nameAt = n;
+        namedByFamily = true;
         break;
       }
     }
-    if (!name) continue;
+
+    // The guide is edited without notice and build names drift. Falling back to
+    // the heading above the purpose keeps a renamed build visible instead of
+    // silently vanishing from the site.
+    if (!name) {
+      for (let n = i - 1; n >= Math.max(0, i - 6); n--) {
+        const candidate = clean(lines[n]).replace(/^[*•●]\s*/, '').replace(/\.$/, '');
+        if (
+          candidate.length > 2 &&
+          candidate.length < 56 &&
+          !candidate.includes('	') &&
+          !candidate.includes('@') &&
+          !/^(Museum|Equipment|Name|Notes|Key)$/i.test(candidate) &&
+          // Skip the shared legend that sits between blocks.
+          !/["“]|is (sometimes )?called|=|ring slots?/i.test(candidate)
+        ) {
+          name = candidate;
+          nameAt = n;
+          break;
+        }
+      }
+    }
+    if (!name) {
+      onSkip?.({ at: mi, why: 'no usable name above the block' });
+      continue;
+    }
 
     const creditLine = nameAt > 0 ? clean(lines[nameAt - 1]) : '';
     const credit = creditLine.includes('@') ? creditLine : null;
 
     /* ---- museum grid ---- */
     const eqAt = lines.findIndex((l, n) => n > mi && clean(l) === 'Equipment');
-    if (eqAt === -1) continue;
+    if (eqAt === -1) {
+      onSkip?.({ at: mi, name, why: 'no Equipment section after the museum grid' });
+      continue;
+    }
 
     let modifier = null;
     const museum = [];
@@ -320,7 +368,10 @@ export function parseBuilds(raw) {
       if (entry) equipment[slot].push(entry);
     }
 
-    if (!equipment.charm.length && !equipment.rings.length && !museum.length) continue;
+    if (!equipment.charm.length && !equipment.rings.length && !museum.length) {
+      onSkip?.({ at: mi, name, why: 'no equipment and no museum rows' });
+      continue;
+    }
 
     const { stage, area } = stageAt(mi);
 
@@ -342,6 +393,8 @@ export function parseBuilds(raw) {
       area,
       goal: goalFor(name),
       name: name.replace(/\s*[-–]\s*SELLING ONLY\s*$/i, '').replace(/\s+Build$/i, ''),
+      /** False when the name came from the positional fallback, not a known family. */
+      namedByFamily,
       sellingOnly: /SELLING ONLY/i.test(name),
       purpose,
       notes,

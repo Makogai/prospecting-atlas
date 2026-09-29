@@ -5,6 +5,7 @@ import { parseEvents } from './parse-events.mjs';
 import { parseEquipment } from './parse-equipment.mjs';
 import { parseBuilds } from './parse-builds.mjs';
 import { parseBlueprints } from './parse-blueprints.mjs';
+import { parseQuests, parseNpcs } from './parse-quests.mjs';
 
 const raw = JSON.parse(readFileSync('data/raw/pages.json', 'utf8'));
 const { pages, templates, byCategory } = raw;
@@ -263,6 +264,26 @@ for (const item of equipment) {
   item.blueprint = bp ? bp.id : null;
 }
 
+/* ---------- quests and NPCs -------------------------------------------- */
+const quests = parseQuests(pages['Quests']);
+// Only count a link as a place if it's a dig site or a location we know.
+const knownPlaces = new Map();
+for (const name of Object.keys(digSites)) knownPlaces.set(name.toLowerCase(), name);
+for (const l of locations) knownPlaces.set(l.name.toLowerCase(), l.name);
+for (const t of Object.keys(siteTags)) knownPlaces.set(t.toLowerCase(), t);
+
+const npcs = parseNpcs(pages['NPCs'], pages, knownPlaces);
+
+// Quests know their giver by name; give each NPC the list back.
+const questsByNpc = new Map();
+for (const q of quests) {
+  if (!q.npc) continue;
+  const key = q.npc.toLowerCase();
+  if (!questsByNpc.has(key)) questsByNpc.set(key, []);
+  questsByNpc.get(key).push(q.id);
+}
+for (const npc of npcs) npc.quests = questsByNpc.get(npc.name.toLowerCase()) ?? [];
+
 /* ---------- community builds ------------------------------------------- */
 // Optional: the guide is a third-party Google Doc, so the site still builds
 // without it. `npm run data:builds` refreshes the snapshot.
@@ -270,13 +291,22 @@ let builds = [];
 let buildStages = [];
 try {
   const guideText = readFileSync('data/raw/builds.txt', 'utf8');
-  builds = parseBuilds(guideText);
+  const skipped = [];
+  builds = parseBuilds(guideText, { onSkip: (info) => skipped.push(info) });
+  if (skipped.length) {
+    console.warn(
+      `  ${skipped.length} build block(s) skipped — the guide may have changed shape:`,
+    );
+    for (const s2 of skipped) console.warn(`    line ${s2.at}: ${s2.name ?? '(unnamed)'} — ${s2.why}`);
+  }
 
   // "Stage III. - Swamp: Highest location is Timelocked Sanctuary."
   // The location is what players actually recognise, so it drives the UI.
   const seen = new Set();
   for (const m of guideText.matchAll(
-    /^Stage\s+(V|IV|III|II|I|0)\.?\s*[-–]\s*([^:]+):\s*Highest location is ([^.]+)\./gim,
+    // The leading [.\s]* absorbs a stray period the guide types on one heading.
+    // The area runs to the end of the line; a trailing full stop is optional.
+    /^[.\s]*Stage\s+(V|IV|III|II|I|0)\.?\s*[-–]\s*([^:\n]+):\s*Highest location is ([^.\n]+)/gim,
   )) {
     const stage = m[1].toUpperCase();
     if (seen.has(stage)) continue;
@@ -304,6 +334,8 @@ const db = {
   events,
   equipment,
   blueprints,
+  quests,
+  npcs,
   builds,
   buildStages,
   buildGuide: {
@@ -319,7 +351,13 @@ console.log(`minerals  ${db.minerals.length}`);
 console.log(`digSites  ${db.digSites.length}`);
 console.log(`locations ${db.locations.length}`);
 console.log(`pans ${pans.length} | shovels ${shovels.length} | sluices ${sluices.length}`);
-console.log(`builds ${builds.length} (${[...new Set(builds.map(b => b.stage))].join(', ')})`);
+const guessed = builds.filter(b => !b.namedByFamily);
+console.log(
+  `builds ${builds.length} (${[...new Set(builds.map(b => b.stage))].join(', ')})` +
+  (guessed.length ? ` · ${guessed.length} named by fallback: ${guessed.map(b => b.name).join(', ')}` : ''),
+);
+console.log(`quests ${quests.length} across ${new Set(quests.map(q => q.location)).size} locations · ${quests.filter(q => q.buff).length} grant a permanent buff`);
+console.log(`npcs ${npcs.length} (${npcs.filter(n => n.quests.length).length} give quests, ${npcs.filter(n => n.places.length).length} placed, ${npcs.filter(n => n.summary).length} described)`);
 console.log(`blueprints ${blueprints.length} (${blueprints.filter(b => b.kind === 'quest').length} quest, ${blueprints.filter(b => b.kind === 'purchase').length} bought, ${blueprints.filter(b => b.kind === 'found').length} found) · matched to ${equipment.filter(e => e.blueprint).length} items`);
 console.log(`equipment ${equipment.length} (${equipment.filter(e => e.limited).length} limited) · slots ${[...new Set(equipment.map(e => e.slot))].join('/')}`);
 console.log(`luck events ${events.length} (${events.filter(e => e.kind === 'multiplicative').length} multiplicative, ${events.filter(e => e.kind === 'additive').length} additive, ${events.filter(e => e.kind === 'unknown').length} unquantified)`);

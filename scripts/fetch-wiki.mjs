@@ -14,11 +14,16 @@ const INDEX_PAGES = [
   // Luck sources: the Events page annotates each effect "Multiplicative" or
   // "Additive", which is exactly what the luck model needs.
   'Events', 'Luck Mechanics', 'Shard Merchant', 'Relics',
+  'Quests', 'NPCs',
   // Blueprint (singular) is the page that says how each one is obtained.
   'Blueprint',
 ];
 
-const CATEGORIES = ['Minerals', 'Locations', 'Items', 'Consumables', 'Potions', 'Enchant Books', 'Geodes'];
+const CATEGORIES = [
+  'Minerals', 'Locations', 'Items', 'Consumables', 'Potions', 'Enchant Books', 'Geodes',
+  // NPC articles carry the one-line description each quest giver gets.
+  'NPCs',
+];
 
 async function main() {
   if (existsSync(OUT) && !FRESH) {

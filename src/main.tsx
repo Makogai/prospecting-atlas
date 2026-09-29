@@ -14,6 +14,7 @@ import { LocationDetail } from './routes/LocationDetail';
 import { GearPage } from './routes/Gear';
 import { EquipmentPage } from './routes/Equipment';
 import { BuildsPage } from './routes/Builds';
+import { QuestsPage } from './routes/Quests';
 import { Compare } from './routes/Compare';
 import { NotFound } from './routes/NotFound';
 
@@ -32,6 +33,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="gear/:kind" element={<GearPage />} />
           <Route path="equipment" element={<EquipmentPage />} />
           <Route path="builds" element={<BuildsPage />} />
+          <Route path="quests" element={<QuestsPage />} />
           <Route path="compare" element={<Compare />} />
           <Route path="*" element={<NotFound />} />
         </Route>

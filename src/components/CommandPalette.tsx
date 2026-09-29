@@ -9,6 +9,8 @@ const KIND_ICON: Record<SearchItem['kind'], string> = {
   site: '⛏',
   location: '▲',
   equipment: '◇',
+  npc: '☺',
+  quest: '❯',
   gear: '●',
 };
 

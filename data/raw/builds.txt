@@ -1,4 +1,3 @@
-﻿Introduction
 Prospecting! Build Guide
 Credits: Autumn (@spxxd), bosnia123123 (@CzystyWegiel), Finnlay (@finnlaey), Martika14 (@Martika14), PPatel (@301manmeet), em_miaou (@emmaalu), softlyhollowed (@kamipaci)
 Game update: Desert (part 1)
@@ -17,7 +16,6 @@ Bonus Builds: these builds are not really part of the game progression, but you 
 A note about the torturer Dredge Master: the Dredge Master’s Ring blueprint can theoretically be obtained by players of almost any level, and the materials to craft it can be found without access to the Swamp. The build guides nevertheless only list it for stage III and up. If you have a DMR, feel free to substitute it for an Umbrite Ring, Vortex Ring, Ring of Thorns, or Mythril Ring.
 You might hear about “Sandshaking technique”, as in, “use sandshaking technique for maximum efficiency”. This is a playstyle that tries to minimize the amount of time you spend switching between digging and shaking. It involves arcane magic standing very near the shore and timing your clicking with non-human precision.
 You might also hear about “sandshaking tech”. Despite appearances, this is not some miraculous artifact you can equip or buy (unfortunately for those of us who possess neither arcane magic nor non-human precision): it’s just a mistake from people who don’t know that “tech” is short for “technology”, not for “technique”.  
-Stage V.: Desert
 Stage V. Builds - Desert
 Highest location is Sunscorched Desert
 At this game stage, all equipment is assumed to be six-star and at least 95% quality. All equipment should have the Prismatic mutation.
@@ -33,7 +31,6 @@ Builds in this stage:
 * Items Farming V.
 
 
-Luck Efficiency V.
 Luck Efficiency V.
 Highest average rerolls.
 * If you do NOT have a Prismatic RoC, get that first, as it is a requirement for this build. RoS & DMR are also HIGHLY recommended! 
@@ -125,7 +122,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel) & PPatel772 (@301manmeet)
 Hybrid V.
-Hybrid V.
 Combination of high efficiency, size boost, and modifier boost. 
 * This build requires all three of RoC, RoS, and DMR. If you do not have one of them, refer to the Stage IV. builds instead.
 * This is a 1-tap build. If you need more than 1 dig to fill the pan, the efficiency drastically decreases.
@@ -214,7 +210,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel), & PPatel (@301manmeet)   
-Summer Hybrid V.
 Summertime Hybrid V.
 Combination of high efficiency, size boost, and modifier boost; †requires limited equipment
 * If you do NOT have a Prismatic RoC & RoS, get those items first, as they are a requirement for this build. DMR is also HIGHLY recommended!
@@ -309,7 +304,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 * “amount” is sometimes called “strength”
 	  
 bosnia123123 (@CzystyWegiel) & PPatel (@301manmeet) 
-Size Boost V.
 Size Boost
 Highest possible size boost; †limited equipment (optional)
 * ⚠ Not suitable for Fungal Marsh without modification (see notes).
@@ -387,7 +381,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Items Farming V.
 Items Farming
 Optimized amount per minute, suitable for torturer Dredge Master quests.
 * This build is designed to be used with Strength and Luminant totems. ‡If you don’t have those totems, use the Critical I and II runes.
@@ -471,7 +464,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Stage IV.: Meteor
 Stage IV. Builds - Meteor Valley
 Highest location is Meteor Valley
 At this game stage, all equipment is assumed to be six-star and at least 95% quality. All or almost all should be Prismatic mutation (or Festive if appropriate).
@@ -486,7 +478,6 @@ Builds in this stage:
 * Hybrid IV.A
 * Size Boost IV.
 * Items Farming IV.
-Luck Efficiency IV.B
 Luck Efficiency IV.B (with Ascended Equipment)
 Highest average rerolls.
 * This is a one-tap build. If you’re not filling your pan with one dig, the efficiency drastically decreases: adjust your equipment, or change some ores in your museum to Mutated LDM.
@@ -577,7 +568,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 	bosnia123123 (@CzystyWegiel)
 
 
-Luck Efficiency IV.A
 Luck Efficiency IV.A (no Ascended equipment)
 Highest average rerolls.
 * This is a one-tap build. If you’re not filling your pan with one dig, the efficiency drastically decreases: adjust your equipment, or change some ores in your museum to Mutated LDM.
@@ -670,7 +660,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 
 
 
-Summer Hybrid IV.B
 Summertime Hybrid IV.B (with Ascended Equipment)
 Combination of high efficiency, size boost, and modifier boost; †requires limited equipment
 * This is a 1-tap build. If you need more than 1 dig to fill the pan, the efficiency drastically decreases. To fix it, change some Perfect museum ores to Mutated.
@@ -764,7 +753,6 @@ For this build, Prismatic RoT is preferable over Festive
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	em_miaou (@emmaalu), bosnia123123 (@CzystyWegiel), & PPatel (@301manmeet) as a result of “inspiration” from Caelumbrignia (@fiseraphy)
-Hybrid IV.B
 Hybrid IV.B (with Ascended Equipment)
 Combination of high efficiency, size boost, and modifier boost; †limited equipment (optional)
 * This is a 1-tap build. If you need more than 1 dig to fill the pan, the efficiency drastically decreases: adjust your equipment, or change some ores in your museum to Mutated LDM.
@@ -852,7 +840,6 @@ For this build, Prismatic RoT is preferable over Festive
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	PPatel (@301manmeet) & bosnia123123 (@CzystyWegiel)
-Hybrid IV.A
 Hybrid IV.A (no Ascended Equipment) 
 (under work… because of change to modifier boost)
 Combination of high efficiency and size boost (as for now, it doesn’t include Modifier Boost)
@@ -935,7 +922,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	softlyhollowed (@kamipaci) & bosnia123123 (@CzystyWegiel)
-Size Boost IV.
 Size Boost
 Highest possible size boost; †limited equipment (optional)
 * ⚠ Not suitable for Fungal Marsh without modification (see notes).
@@ -1016,7 +1002,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 	bosnia123123 (@CzystyWegiel)
 
 
-Items Farming IV.
 Items Farming
 Optimized amount per minute, suitable for torturer Dredge Master quests.
 * This build is designed to be used with Strength and Luminant totems. ‡If you don’t have those totems, use the Critical I and II runes.
@@ -1098,7 +1083,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Stage III.: Swamp
 Stage III. Builds - Swamp
 Highest location is Timelocked Sanctuary
 At this game stage, all equipment is assumed to be at least five-star. The majority should be at least 90% quality, and Diamond mutation or better.
@@ -1115,7 +1099,6 @@ Builds in this stage:
 * Sell Boost III.
 
 
-Luck Efficiency III.B
 Luck Efficiency III.B (with Ring of Champions)
 Highest average rerolls
 * ‡ Treasured isn’t possible for the marked ores. For those, use the fallback modifiers.
@@ -1196,7 +1179,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Luck Efficiency III.A
 Luck Efficiency III.A (no Ring of Champions)
 Highest average rerolls
 * ‡ Treasured isn’t possible for the marked ores. For those, use the fallback modifiers.
@@ -1285,7 +1267,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 
 
 last update 2026.09.15
-Hybrid III.
 Hybrid 
 Solid Luck build with optimal Size Boost
 * This build can be used to collect Perfect LCW museum ores, using one of the fallback modifiers.
@@ -1385,7 +1366,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 	bosnia123123 (@CzystyWegiel)
 
 
-Size Boost III.
 Size Boost
 Highest possible size boost at this stage; †limited equipment
 *  ⚠ Not suitable for Fungal Marsh without modification (see notes).
@@ -1465,7 +1445,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
   
 Credits for museum buffs: MrOhnoez (@MrOhnoez)
    
-Items Farming III.
 Items Farming
 Optimized amount per minute, suitable for torturer Dredge Master quests.
 * Designed to be used with Strength & Luminant totems; do not waste your Luck & Friendship totems.
@@ -1554,7 +1533,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 
 
 
-Sell Boost III.
 Sell Boost III. – SELLING ONLY
 * Equip this build right before selling a full backpack’s worth of ores.
 * For best results, use a size boost build to collect the ores.
@@ -1641,7 +1619,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 	bosnia123123 (@CzystyWegiel)
 
 
-Stage II.: Overgrown
 Stage II. Builds - Overgrown Caves
 Highest-level location: Enchanted Ruins/Abyssal Depths
 At this game stage, all equipment is expected to be at least five-star and 85% quality. 
@@ -1652,7 +1629,6 @@ Builds in this stage:
 * Luck Efficiency II.
 * Size Boost II.
 * Sell Boost II.
-Luck Efficiency II.
 Luck Efficiency II
 High average rerolls; †Optional limited equipment
 * All Mythic equipment should be Diamond mutation or better.
@@ -1729,7 +1705,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Size Boost II.
 Size Boost II
 High size boost
 * All Mythic equipment should be Diamond mutation or better.
@@ -1809,7 +1784,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Sell Boost II.
 Sell Boost II. – SELLING ONLY
 * Equip this build right before selling a full backpack’s worth of ores.
 * For best results, use a size boost build to collect the ores.
@@ -1887,7 +1861,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Stage I.: Snowy
 .Stage I. Builds - Snowy Isle
 Highest-level location reached: Frozen Peak
 At this game stage, all equipment is expected to be at least five-star and 80% quality. 
@@ -1900,7 +1873,6 @@ Builds in this stage:
 * Luck Efficiency I.
 * Size Boost I.
 * Sell Boost I. 
-Luck Efficiency I.
 Luck Efficiency Build
 No limited-time equipment required
 * You should focus on getting these stats from ores: Luck > Shake Strength = Shake Speed > Capacity > Dig Speed
@@ -1974,7 +1946,6 @@ Museum
 	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Size Boost I.
 Size Boost Build
 High Size Boost; no limited equipment required
 * Goals:
@@ -2057,7 +2028,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 	bosnia123123 (@CzystyWegiel)
 
 
-Sell Boost I.
 Sell Boost I – SELLING ONLY
 Stage I; no limited-time equipment required
 * Equip this build right before selling a full backpack’s worth of ores
@@ -2136,7 +2106,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Stage 0.: Caldera
 Stage 0 Builds - Caldera
 Highest-level location reached: Infernal Heart
 At this game stage, strive to make all equipment five-star and at least 75% quality. 
@@ -2155,7 +2124,6 @@ Builds in this stage:
 * Luck Efficiency 0
 * Size Boost 0
 * Sell Boost 0
-Luck Efficiency 0
 Luck Efficiency
 Luck efficiency for Caldera stage
 * The goal of this build is getting higher-rarity ores to progress further in the game.
@@ -2238,7 +2206,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 	bosnia123123 (@CzystyWegiel)
 
 
-Size Boost 0
 Size Boost
 Size Boost build for Caldera stage
 * Goals:
@@ -2318,7 +2285,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 	bosnia123123 (@CzystyWegiel)
 
 
-Sell Boost 0
 Sell Boost 0 – SELLING ONLY
    * Equip this build right before selling a full backpack’s worth of ores.
    * For best results, use a size boost build to collect the ores.
@@ -2399,7 +2365,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 
 
 Bonus Builds
-Bonus Builds
 I wonder what I can find here…
 
 
@@ -2411,7 +2376,6 @@ Hint:
    * Nothing Burger V2
 
 
-Treasure Chests
 Treasure Chests
 Builds and tips related to treasure maps and treasure chests
 Applies to Geode farming as well
@@ -2439,7 +2403,6 @@ Builds in this category are just examples and suitable for Auto Pan. You can mak
    * Treasure/Geode 1
    * Treasure/Geode 2
    * Geode Opening
-Treasure/Geode 1
 Treasure Map / Geode Digging Build
 Game stage III/IV; no limited equipment; EXAMPLE OF A BUILD
    * This is the most efficient Treasure Digging Build in the game. It is not for the faint of heart.
@@ -2550,7 +2513,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	PPatel (@301Manmeet) & bosnia123123 (@CzystyWegiel)
-Treasure/Geode 2
 Treasure Map / Geode Digging Build
 Game stage II/III; Autopan 1-tap; EXAMPLE OF A BUILD
       * Designed for auto-panning. If digging manually, don’t strive for perfect digs – pan quality doesn’t matter, frequency of digs does.
@@ -2633,7 +2595,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Geode Opening
 Geode Opening Build
 Build for getting rarer and larger Crystalline ores; †Optional limited equipment
       * The goal of this build is to get as much Luck and Size Boost as possible for opening Geodes
@@ -2737,7 +2698,6 @@ bosnia123123 (@CzystyWegiel)
 
 
 Money Printers
-Money Printers
 The purpose of these builds is to earn money. The "Standard" version requires the Sell Anywhere gamepass; the "Budget" version does not require any gamepasses. Both are essentially stage IV. builds, although the Budget version has earlier-stage fallbacks. "Endgame" and "Apex" are different approaches to a stage V. build. "Endgame" works best with XP Cookies, while "Apex" assumes you're autopanning or macroing.
 All equipment should be Prismatic if at all possible.
 The most practical place to earn money is Infernal Heart, and all of these builds assume you will spend as much time there as possible. The best place is actually The Void, but that's rarely available. Other good locations are Magma Furnace, Rotwood Swamp, Frozen Peak, and Enchanted Ruins. 
@@ -2748,7 +2708,6 @@ To select a site when the Heart is closed, go to where the events are: if you're
          * Money Printer - Standard
          * Money Printer - Endgame
          * Money Printer - Apex
-$ - Budget
 Money Printer - Budget
 Money earning build; designed for Auto-pan; no limited equipment or gamepasses required.
          * When available, pan in Infernal Heart.
@@ -2837,7 +2796,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	zexy_24 (@tedtheidot)
-$ - Standard
 Money Printer - Standard
 Money earning build; designed for Auto-pan; †limited equipment; Sell Anywhere gamepass required.
          * When available, pan in Infernal Heart. If possible, use the Shrine to extend the Heart.
@@ -2925,7 +2883,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	zexy_24 (@tedtheidot)
-$ - Endgame
 Money Printer - Sunscorched Desert (Endgame)
 Money earning build; Sell Anywhere gamepass required; †limited equipment/ore (optional)
          * When available, pan in Infernal Heart. If possible, use the Shrine to extend the Heart.
@@ -3015,7 +2972,6 @@ Volcanic Key 20 | Dragon Bone 50
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	relaxoo (@relaxoo14) 
-$ - Apex
 Money Printer - Apex        
 Money earning build; no XP Cookie; Sell Anywhere gamepass required; †limited equipment (optional)
          * When available, pan in Infernal Heart. If possible, use the Shrine to extend the Heart.
@@ -3103,7 +3059,6 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 * “amount” is sometimes called “strength”
 	zexy_24 (@tedtheidot)
 Shards Farming
-Shards Farming
 Shards farming build; suitable for Auto Pan; †optional limited equipment
          * You must pan during Meteor Shower or in the Void (or both for the best results).
          * 2× Shards gamepass recommended.
@@ -3182,7 +3137,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	zexy_24 (@tedtheidot) & bosnia123123 (@CzystyWegiel)
-Walk Speed
 Walk Speed
 This build is for fun only; †Requires limited equipment
          * This build does NOTHING besides making you run fast. Walk Speed is the only important stat in this build. All equipment should be Prismatic.
@@ -3263,7 +3217,6 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
-Nothing Burger v2
 Nothing Burger v2
 “Get a nothing” build (any game stage, as long as you have the required runes)
          * You should own all three Annihilation Runes, or at least the first and second one.
@@ -3346,7 +3299,6 @@ If you don’t have one or more of these rings, substitute what you do have.
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel) & borninbalenciaga (@animalfan62)
-Archive
 Historical Archive
 These builds were good in their day, but they have been made obsolete because of better equipment or other game changes.
 These builds have been moved to a separate document:
@@ -3369,3 +3321,5 @@ Contents:
          * Money Printer
          * Hearthflame Farming
          * Treasure/Geode Opening
+Martika (@Martika14)
+last updated 2026.08.10

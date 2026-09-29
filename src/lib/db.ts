@@ -136,6 +136,41 @@ export interface Equipment {
   blueprint: string | null;
 }
 
+export interface QuestStep {
+  text: string;
+  note: string | null;
+  /** Pages the step links to — usually the mineral it asks for. */
+  refs: string[];
+}
+
+export interface Quest {
+  id: string;
+  name: string;
+  summary: string | null;
+  location: string;
+  npc: string | null;
+  steps: QuestStep[];
+  rewards: string | null;
+  /** A permanent stat buff, which is what makes a quest worth prioritising. */
+  buff: string | null;
+  wiki: string;
+}
+
+export interface Npc {
+  id: string;
+  name: string;
+  image: string | null;
+  /** Broad regions from the NPC index page. */
+  regions: string[];
+  /** Specific dig sites or locations, with a landmark hint where the wiki gives one. */
+  places: { name: string; note: string | null }[];
+  summary: string | null;
+  hasPage: boolean;
+  /** Ids of the quests this NPC gives. */
+  quests: string[];
+  wiki: string;
+}
+
 /** How a blueprint is obtained; some equipment can't be crafted without one. */
 export interface Blueprint {
   id: string;
@@ -229,6 +264,8 @@ export const db = raw as unknown as {
   events: LuckEvent[];
   equipment: Equipment[];
   blueprints: Blueprint[];
+  quests: Quest[];
+  npcs: Npc[];
   builds: Build[];
   buildStages: { stage: string; area: string; highest: string | null }[];
   buildGuide: { title: string; url: string; authors: string[]; snapshot: string };
@@ -236,8 +273,13 @@ export const db = raw as unknown as {
 
 export const {
   minerals, digSites, locations, pans, shovels, sluices, rarities, events, equipment,
-  builds, buildGuide, blueprints, buildStages,
+  builds, buildGuide, blueprints, buildStages, quests, npcs,
 } = db;
+
+export const npcByName = new Map(npcs.map((n) => [n.name, n]));
+export const questById = new Map(quests.map((q) => [q.id, q]));
+export const mineralByName = new Map(minerals.map((m) => [m.name.toLowerCase(), m]));
+export const locationByName = new Map(locations.map((l) => [l.name, l]));
 
 export const blueprintById = new Map(blueprints.map((b) => [b.id, b]));
 

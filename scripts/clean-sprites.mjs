@@ -164,8 +164,9 @@ async function main() {
   const db = JSON.parse(readFileSync('src/data/db.json', 'utf8'));
   const key = (f) => f.replace(/^File:/i, '').replace(/_/g, ' ').trim().toLowerCase();
 
-  // Only item art is card-shaped. Location images are in-game screenshots, which
-  // this would happily "extract" into nonsense, so they are copied verbatim.
+  // Only item art is card-shaped. Location shots and NPC portraits are in-game
+  // screenshots, which this would happily "extract" into nonsense, so they are
+  // copied verbatim.
   const itemArt = new Set(
     [...db.minerals, ...db.pans, ...db.shovels, ...db.sluices, ...db.equipment, ...db.blueprints]
       .map((x) => manifest[key(x.image ?? '')])

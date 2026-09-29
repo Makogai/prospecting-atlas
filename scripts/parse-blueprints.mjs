@@ -11,7 +11,7 @@
  *   * '''Quest Name:''' [[Quests#tabber-Meteor_Valley|Galactic Guardian]]
  *   {{Quest |Quest = … |QuestStep1 = … |Rewards = … }}
  */
-import { findTemplates, plain, refs, num, slug } from './parse-util.mjs';
+import { findTemplates, plain, num, slug, renderValues } from './parse-util.mjs';
 
 const MAX_STEPS = 8;
 
@@ -22,18 +22,6 @@ const CURRENCY = /^(Sand Dollars|Candy|Eggs|Ornaments?|Heart Crystals?|Meteor Sh
 const templateArgs = (text) =>
   [...String(text).matchAll(/\{\{([^|{}]+)(?:\|([^{}]*))?\}\}/g)]
     .map((m) => [m[1].trim(), (m[2] ?? '').trim()]);
-
-/**
- * `{{$|4,000}} • {{EXP|5,000}} • {{Meteor Shards|2,000}}` ->
- * `$4,000 • 5,000 EXP • 2,000 Meteor Shards`.
- * plain() alone would keep only the template names and drop every number.
- */
-function renderValues(text) {
-  return String(text ?? '')
-    .replace(/\{\{\s*\$\s*\|([^{}]*)\}\}/g, (_, v) => `$${v.trim()}`)
-    .replace(/\{\{([^|{}]+)\|([^{}]*)\}\}/g, (_, n, v) =>
-      v.trim() ? `${v.trim()} ${n.trim()}` : n.trim());
-}
 
 /** `[[Meteor Guardian]] in {{Astral Caverns}}` -> { who, where } */
 function parseGiver(line) {

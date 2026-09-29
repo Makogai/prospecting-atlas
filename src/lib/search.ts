@@ -1,9 +1,10 @@
 import {
-  minerals, digSites, locations, gearGroups, GEAR_LABEL, equipment,
+  minerals, digSites, locations, gearGroups, GEAR_LABEL, equipment, npcs, quests,
   type GearKind, money, gearPrice,
 } from './db';
 
-export type ResultKind = 'mineral' | 'site' | 'location' | 'gear' | 'equipment';
+export type ResultKind =
+  | 'mineral' | 'site' | 'location' | 'gear' | 'equipment' | 'npc' | 'quest';
 
 export interface SearchItem {
   kind: ResultKind;
@@ -65,6 +66,34 @@ export const searchIndex: SearchItem[] = [
     colors: e.color ? [e.color, e.color] : null,
     haystack: `${e.name} ${e.rarity} ${e.slot} ${e.description} ${e.stats.map((s) => s.stat).join(' ')} ${e.recipe.map((r) => r.item).join(' ')}`.toLowerCase(),
   })),
+  // "Where is X?" is one of the most common questions, so NPCs carry every
+  // place they stand in their haystack and show the first one as their detail.
+  ...npcs.map((n) => ({
+    kind: 'npc' as const,
+    id: n.id,
+    name: n.name,
+    href: `/quests?npc=${encodeURIComponent(n.name)}`,
+    image: n.image,
+    meta: n.places[0]?.name ?? n.regions[0] ?? 'NPC',
+    tag: 'NPC',
+    colors: null,
+    haystack: `${n.name} npc ${n.summary ?? ''} ${n.regions.join(' ')} ${n.places
+      .map((p) => `${p.name} ${p.note ?? ''}`)
+      .join(' ')}`.toLowerCase(),
+  })),
+  ...quests.map((q) => ({
+    kind: 'quest' as const,
+    id: q.id,
+    name: q.name,
+    href: `/quests?q=${encodeURIComponent(q.name)}`,
+    image: null,
+    meta: q.location,
+    tag: 'Quest',
+    colors: null,
+    haystack: `${q.name} quest ${q.summary ?? ''} ${q.npc ?? ''} ${q.location} ${q.steps
+      .map((s) => s.text)
+      .join(' ')}`.toLowerCase(),
+  })),
   ...(Object.keys(gearGroups) as GearKind[]).flatMap((kind) =>
     gearGroups[kind].map((g) => ({
       kind: 'gear' as const,
@@ -104,7 +133,7 @@ function fuzzyScore(needle: string, hay: string): number {
 }
 
 const KIND_WEIGHT: Record<ResultKind, number> = {
-  mineral: 30, site: 20, location: 10, equipment: 5, gear: 0,
+  mineral: 30, site: 20, location: 10, npc: 8, equipment: 5, quest: 3, gear: 0,
 };
 
 export function search(query: string, limit = 24): SearchItem[] {

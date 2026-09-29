@@ -30,6 +30,7 @@ from it.
 | **Equipment & loadouts** | All 67 craftables with recipes, stat ranges and six-star values. Equip 1 necklace, 1 charm and 8 rings, and the totals feed straight back into your Luck. |
 | **Community builds** | 37 loadouts, picked by *where you've got to* and *what you want* rather than a stage number, with the museum ore grid and runes for each. |
 | **Blueprints** | 30 blueprint-gated items say exactly how to unlock them — quest, giver, steps and rewards, or where to buy. |
+| **Quests & NPCs** | All 107 quests grouped by location with steps, rewards and permanent buffs, and all 120 characters with *exactly where they stand*. |
 
 The `100.0%` drop-rate coverage on real dig sites is a useful correctness signal: it means no
 mineral is missing from a site's extracted table. (The Void sums higher because its loot pool
@@ -57,7 +58,16 @@ identically in both places.
 ## Refreshing the data
 
 ```bash
-npm run data:all     # fetch -> parse -> images -> sprites
+npm run data:all     # everything: the build guide, then the whole wiki pipeline
+```
+
+That's the one to run. It pulls a fresh community build-guide snapshot first, then
+fetch → parse → images → sprites off the wiki. A failure fetching the Google Doc is a
+warning, not an error — the last good snapshot stays in place and the wiki refresh
+carries on, because one unreachable third-party doc shouldn't block everything else.
+
+```bash
+npm run data:wiki    # the wiki only, leaving the build-guide snapshot alone
 ```
 
 Individually:
@@ -68,6 +78,7 @@ Individually:
 | `data:parse` | Turns that into `src/data/db.json` — minerals, dig sites (derived), locations, gear. |
 | `data:images` | Resolves every `File:` reference to a 256px thumbnail and caches it in `data/img/`. |
 | `data:sprites` | Extracts clean transparent art from the wiki's "collection card" renders into `public/sprites/`. |
+| `data:builds` | Pulls a fresh snapshot of the community build guide. |
 
 `data:parse` prints a summary; `no chances`, `no image` and the counts are the quick check that a
 wiki edit hasn't broken an assumption.
@@ -176,6 +187,23 @@ npm run data:builds    # pull a fresh snapshot, then data:parse
 
 Deliberately not part of `data:all` — it's someone else's document, so you refresh it when you mean
 to.
+
+## Quests and NPCs
+
+The wiki has no per-quest pages — `Category:Quests` is actually the NPCs who give them — so
+the Quests index page is the source: a tabber per location, with `; NPC:` headings grouping
+`{{Quest}}` templates. That yields all **107 quests** with their giver, steps, rewards and, for
+five of them, a **permanent stat buff**, which the page lets you filter to since those are the
+ones worth not missing.
+
+**Where an NPC stands** is the question people actually arrive with, so it gets first-class
+treatment. Locations come from each NPC's own article — either a `== Locations ==` list with the
+landmark hints ("near the Store, Blacksmith, and the leaderboards") or, for NPCs who stand in one
+spot, the opening sentence. 82 of 120 resolve to a real dig site or location, each linked and
+coloured; the rest fall back to their broad region.
+
+Both quests and NPCs are in `⌘K`, and an NPC's result shows where they are, so "alchemist" answers
+"Fortune River Town" without leaving the keyboard.
 
 ## Blueprints
 
