@@ -1,0 +1,350 @@
+import { Link, useParams } from 'react-router-dom';
+import {
+  mineralById, minerals, rarityByName, sitesFor, bestSiteFor, usedInRecipes,
+  locationForSite, money, odds, percent,
+} from '../lib/db';
+import {
+  Empty, OddsBar, RarityTag, SectionTitle, SiteTag, Sprite, gradientVars,
+} from '../components/ui';
+
+export function MineralDetail() {
+  const { id } = useParams();
+  const m = id ? mineralById.get(id) : undefined;
+
+  if (!m) {
+    return (
+      <Empty>
+        <div>
+          <p className="mb-3">That mineral doesn’t exist.</p>
+          <Link to="/minerals" className="font-semibold text-ore-400 hover:underline">
+            Back to all minerals
+          </Link>
+        </div>
+      </Empty>
+    );
+  }
+
+  const rarity = rarityByName.get(m.rarity);
+  const drops = sitesFor(m);
+  const best = bestSiteFor(m);
+  const usedIn = usedInRecipes(m);
+  const peers = minerals
+    .filter((x) => x.id !== m.id && x.chances.some((c) => m.chances.some((mc) => mc.site === c.site)))
+    .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
+    .slice(0, 6);
+
+  return (
+    <div className="animate-rise">
+      <Link
+        to="/minerals"
+        className="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-400 transition hover:text-ore-400"
+      >
+        ← All minerals
+      </Link>
+
+      {/* --- hero --- */}
+      <div className="panel relative overflow-hidden p-6 sm:p-8">
+        <div
+          aria-hidden
+          className="absolute -top-24 -left-16 h-72 w-72 rounded-full opacity-20 blur-3xl"
+          style={{ background: `linear-gradient(135deg, ${rarity?.colors[0]}, ${rarity?.colors.at(-1)})` }}
+        />
+
+        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
+          <Sprite
+            file={m.image}
+            alt={m.name}
+            className="h-36 w-36 shrink-0 self-center sm:h-44 sm:w-44"
+            glow={`radial-gradient(circle, ${rarity?.colors[0]}66, transparent 70%)`}
+          />
+
+          <div className="min-w-0 flex-1">
+            <RarityTag rarity={m.rarity} />
+            <h1
+              className="gradient-text mt-2 text-4xl font-black tracking-tight sm:text-5xl"
+              style={gradientVars(rarity?.colors)}
+            >
+              {m.name}
+            </h1>
+            <p className="mt-2 max-w-prose text-ink-300">{m.description}</p>
+
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              <Figure label="Value" value={`${money(m.value)}`} sub="per kg" accent="#ffc247" />
+              <Figure label="Dig sites" value={String(drops.length)} sub="that drop it" />
+              {best && (
+                <Figure
+                  label="Best odds"
+                  value={odds(best.chance.oneIn)}
+                  sub={`at ${best.site.name}`}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+        <div className="space-y-6">
+          {/* --- the thing people actually come for --- */}
+          <section>
+            <SectionTitle
+              title="Where to find it"
+              hint={
+                m.ratesKnown
+                  ? 'Ranked by drop rate. Bars are log-scaled — each step is 10× rarer.'
+                  : 'The wiki lists locations for this mineral but no drop rates.'
+              }
+            />
+
+            {drops.length === 0 ? (
+              <Empty>No drop locations recorded.</Empty>
+            ) : (
+              <div className="panel divide-y divide-white/6">
+                {drops.map(({ chance, site }, i) => (
+                  <Link
+                    key={chance.site}
+                    to={`/sites/${site.id}`}
+                    className="block px-4 py-3.5 transition hover:bg-white/4"
+                  >
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <span
+                        className="grid h-5 w-5 shrink-0 place-items-center rounded-md bg-white/6 text-[10px] font-bold text-ink-400"
+                      >
+                        {i + 1}
+                      </span>
+                      <span
+                        className="gradient-text font-bold"
+                        style={gradientVars(site.colors)}
+                      >
+                        {site.name}
+                      </span>
+                      {chance.conditional && (
+                        <span className="rounded bg-white/6 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-ink-400 uppercase">
+                          {chance.conditional}
+                        </span>
+                      )}
+                      <span className="numeric ml-auto text-sm font-bold">
+                        {odds(chance.oneIn)}
+                      </span>
+                      <span className="numeric w-20 shrink-0 text-right text-xs text-ink-500">
+                        {percent(chance.percent)}
+                      </span>
+                    </div>
+                    <div className="mt-2">
+                      <OddsBar percent={chance.percent} colors={site.colors} />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {m.recipes.length > 0 && (
+            <section>
+              <SectionTitle
+                title="Crafts into"
+                hint={`${m.name} is an ingredient in ${m.recipes.length} recipe${m.recipes.length === 1 ? '' : 's'}.`}
+              />
+              <div className="grid gap-3 sm:grid-cols-2">
+                {m.recipes.map((r, i) => (
+                  <div key={r.name + i} className="panel p-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-bold">{r.name}</h3>
+                      {r.rarity && <RarityTag rarity={r.rarity} />}
+                    </div>
+                    {r.note && <p className="mt-0.5 text-xs text-ink-500">{r.note}</p>}
+                    <ul className="mt-3 space-y-1">
+                      {r.ingredients.map((ing, j) => {
+                        const target = minerals.find(
+                          (x) => x.name.toLowerCase() === ing.item.toLowerCase(),
+                        );
+                        return (
+                          <li key={j} className="flex items-center gap-2 text-sm">
+                            <span className="numeric w-7 shrink-0 rounded bg-white/6 py-0.5 text-center text-xs font-bold text-ore-300">
+                              {ing.qty}
+                            </span>
+                            {target ? (
+                              <Link
+                                to={`/minerals/${target.id}`}
+                                className="truncate text-ink-300 hover:text-ore-400"
+                              >
+                                {ing.item}
+                              </Link>
+                            ) : (
+                              <span className="truncate text-ink-300">{ing.item}</span>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {usedIn.length > 0 && (
+            <section>
+              <SectionTitle title="Also needed for" hint="Recipes on other mineral pages that call for this." />
+              <div className="panel divide-y divide-white/6">
+                {usedIn.slice(0, 10).map(({ source, recipe }, i) => (
+                  <Link
+                    key={i}
+                    to={`/minerals/${source.id}`}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm transition hover:bg-white/4"
+                  >
+                    <Sprite file={source.image} alt="" className="h-7 w-7 shrink-0" />
+                    <span className="font-semibold">{recipe.name}</span>
+                    <span className="ml-auto truncate text-xs text-ink-500">via {source.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        {/* --- sidebar --- */}
+        <div className="space-y-6">
+          {m.museum && (m.museum.stats.length > 0 || m.museum.maxBoost) && (
+            <section className="panel p-5">
+              <h2 className="text-sm font-extrabold tracking-[0.1em] text-ink-400 uppercase">
+                Museum donation
+              </h2>
+              <dl className="mt-3 space-y-2.5 text-sm">
+                {m.museum.minWeight && (
+                  <Row label="Min weight for max boost" value={m.museum.minWeight} />
+                )}
+                {m.museum.maxBoost && <Row label="Max boost" value={m.museum.maxBoost} />}
+              </dl>
+              {m.museum.stats.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {m.museum.stats.map((s) => (
+                    <span
+                      key={s}
+                      className="rounded-md bg-vein-500/15 px-2 py-0.5 text-xs font-semibold text-vein-400 ring-1 ring-vein-500/25"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
+          {best && (
+            <section className="panel overflow-hidden">
+              <div className="border-b border-white/8 px-5 py-3">
+                <h2 className="text-sm font-extrabold tracking-[0.1em] text-ink-400 uppercase">
+                  Go here
+                </h2>
+              </div>
+              <div className="p-5">
+                <p className="text-xs text-ink-500">Your best shot at {m.name}</p>
+                <Link
+                  to={`/sites/${best.site.id}`}
+                  className="gradient-text mt-1 block text-2xl font-black"
+                  style={gradientVars(best.site.colors)}
+                >
+                  {best.site.name}
+                </Link>
+                {(() => {
+                  const loc = locationForSite(best.site);
+                  return loc ? (
+                    <Link
+                      to={`/locations/${loc.id}`}
+                      className="mt-1 inline-block text-xs text-ink-400 hover:text-ore-400"
+                    >
+                      in {loc.name} →
+                    </Link>
+                  ) : null;
+                })()}
+                <p className="numeric mt-3 text-sm text-ink-300">
+                  {odds(best.chance.oneIn)} per pull
+                </p>
+                <p className="mt-3 text-xs text-ink-500">
+                  This site holds {best.site.mineralCount} minerals, averaging{' '}
+                  <span className="numeric text-ore-400">{money(best.site.expectedValue)}</span> of
+                  value per pull.
+                </p>
+              </div>
+            </section>
+          )}
+
+          {peers.length > 0 && (
+            <section>
+              <SectionTitle title="Found alongside" />
+              <div className="panel divide-y divide-white/6">
+                {peers.map((p) => (
+                  <Link
+                    key={p.id}
+                    to={`/minerals/${p.id}`}
+                    className="flex items-center gap-3 px-4 py-2.5 transition hover:bg-white/4"
+                  >
+                    <Sprite file={p.image} alt="" className="h-8 w-8 shrink-0" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">{p.name}</span>
+                      <span className="text-[11px] text-ink-500">{p.rarity}</span>
+                    </span>
+                    <span className="numeric text-sm font-bold text-ore-400">{money(p.value)}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {m.locations.length > 0 && (
+            <section className="panel p-5">
+              <h2 className="text-sm font-extrabold tracking-[0.1em] text-ink-400 uppercase">
+                Listed locations
+              </h2>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {m.locations.map((l) => (
+                  <SiteTag key={l} name={l} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          <a
+            href={m.wiki}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="panel panel-hover block px-5 py-3 text-sm text-ink-400"
+          >
+            View “{m.name}” on the official wiki →
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Figure({
+  label, value, sub, accent,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  accent?: string;
+}) {
+  return (
+    <div className="rounded-xl bg-white/5 px-3.5 py-2 ring-1 ring-white/8">
+      <div className="text-[10px] font-semibold tracking-[0.12em] text-ink-500 uppercase">
+        {label}
+      </div>
+      <div className="numeric text-lg font-black" style={accent ? { color: accent } : undefined}>
+        {value}
+      </div>
+      {sub && <div className="text-[11px] text-ink-500">{sub}</div>}
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <dt className="text-ink-500">{label}</dt>
+      <dd className="numeric font-semibold">{value}</dd>
+    </div>
+  );
+}

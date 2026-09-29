@@ -1,0 +1,8 @@
+node_modules
+dist
+.git
+.github
+bot/node_modules
+data/img
+*.md
+!README.md

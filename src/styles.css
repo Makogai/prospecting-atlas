@@ -1,0 +1,128 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Cavern palette: near-black rock, lantern gold, mineral cyan. */
+  --color-rock-950: #06080e;
+  --color-rock-900: #0a0d16;
+  --color-rock-850: #10141f;
+  --color-rock-800: #161b28;
+  --color-rock-700: #222838;
+  --color-rock-600: #333b4f;
+
+  --color-ore-300: #ffd98a;
+  --color-ore-400: #ffc247;
+  --color-ore-500: #f5a623;
+  --color-ore-600: #d4820b;
+
+  --color-vein-400: #3ee0d0;
+  --color-vein-500: #12b5aa;
+
+  --color-ink-100: #eef2fb;
+  --color-ink-300: #aab3c7;
+  --color-ink-400: #7d879e;
+  --color-ink-500: #5a6379;
+}
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    @apply bg-rock-950 text-ink-100 font-sans antialiased;
+    /* Two lantern pools of light over the rock, fixed so they don't scroll away. */
+    background-image:
+      radial-gradient(900px 600px at 12% -5%, rgba(245, 166, 35, 0.11), transparent 65%),
+      radial-gradient(800px 700px at 92% 8%, rgba(18, 181, 170, 0.09), transparent 62%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    @apply bg-ore-400/30;
+  }
+
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-rock-700 rounded-full border-[3px] border-solid border-transparent bg-clip-content;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-rock-600;
+  }
+}
+
+@utility panel {
+  @apply rounded-2xl border border-white/8 bg-white/3 backdrop-blur-xl;
+}
+
+@utility panel-hover {
+  @apply transition duration-200 hover:border-white/16 hover:bg-white/6;
+}
+
+/* Rarity / location tags are painted with gradients that come from the wiki
+   templates themselves, passed in as --g1/--g2 custom properties. */
+@utility gradient-text {
+  background-image: linear-gradient(95deg, var(--g1), var(--g2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@layer utilities {
+  .numeric {
+    font-variant-numeric: tabular-nums;
+    @apply font-mono;
+  }
+
+  /* Pixel-art mineral sprites must not be smoothed when scaled up. */
+  .crisp {
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  .fade-y {
+    mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .animate-rise {
+    animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes shimmer {
+    to {
+      background-position: 200% 0;
+    }
+  }
+  .animate-shimmer {
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
