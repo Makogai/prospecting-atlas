@@ -57,6 +57,9 @@ const CASES = [
   ['find', { mineral: 'aetherium' }, 'find-aetherium'],
   ['find', { mineral: 'emerald' }, 'find-emerald'],          // no drop rates on the wiki
   ['find', { mineral: 'zzzz-nope' }, 'find-miss'],           // no match -> ephemeral reply
+  ['find', { mineral: 'frostshard', luck: 100, boosts: 'blizzard' }, 'find-luck-scoped'],
+  ['find', { mineral: 'pink diamond', luck: 400, boosts: 'totem, meteor shower', friends: 5 }, 'find-luck-stacked'],
+  ['find', { mineral: 'gold', luck: 1000 }, 'find-luck-common'],  // the damped regime
   ['site', { site: 'rubble creek sands' }, 'site-rubble'],
   ['site', { site: 'the void', show: 6 }, 'site-void'],      // fully conditional loot pool
   ['plan', { minerals: 'pink diamond, rose gold, diamond' }, 'plan-three'],

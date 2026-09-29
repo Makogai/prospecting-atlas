@@ -178,10 +178,12 @@ const rarityColors = (name) => rarityByName.get(name)?.colors ?? ['#888888', '#5
 /**
  * "Where to find X" - the headline card. Ranked dig sites with log-scaled bars.
  */
-export async function renderFind(mineral, { limit = 7 } = {}) {
+export async function renderFind(mineral, { limit = 7, luck = null } = {}) {
   const drops = mineral.chances.slice(0, limit);
+  const luckAt = new Map((luck ?? []).map((l) => [l.site, l]));
+  const boosted = luckAt.size > 0;
   const HEAD = 240;
-  const ROW = 50;
+  const ROW = luck ? 56 : 50;
   const h = HEAD + Math.max(drops.length, 1) * ROW + 74;
 
   const canvas = createCanvas(W, h);
@@ -216,7 +218,15 @@ export async function renderFind(mineral, { limit = 7 } = {}) {
     [money(mineral.value), 'per kg', C.ore],
     [String(mineral.chances.length), 'dig sites', C.ink],
   ];
-  if (mineral.ratesKnown && best) figures.push([odds(best.oneIn), 'best odds', C.vein]);
+  if (mineral.ratesKnown && best) {
+    const bestLucky = boosted
+      ? drops
+          .map((c) => luckAt.get(c.site)?.chance)
+          .filter(Boolean)
+          .sort((a, b) => b.percent - a.percent)[0]
+      : null;
+    figures.push([odds(bestLucky ? bestLucky.oneIn : best.oneIn), 'best odds', C.vein]);
+  }
   let fx = W - PAD;
   for (const [val, label, col] of figures.reverse()) {
     ctx.font = font(15, 'Atlas');
@@ -255,13 +265,29 @@ export async function renderFind(mineral, { limit = 7 } = {}) {
     }
 
     if (mineral.ratesKnown) {
-      bar(ctx, PAD + 300, y + 9, 340, 10, oddsBar(c.percent), siteColors);
-      text(ctx, odds(c.oneIn), W - PAD - 108, y + 18, {
-        size: 18, face: 'AtlasMonoBold', fill: C.ink, align: 'right',
+      const here = luckAt.get(c.site);
+      const shown = here?.chance ?? null;
+
+      bar(ctx, PAD + 300, y + 9, boosted ? 290 : 340, 10, oddsBar(shown ? shown.percent : c.percent), siteColors);
+
+      text(ctx, odds(shown ? shown.oneIn : c.oneIn), W - PAD - 152, y + 18, {
+        size: 18, face: 'AtlasMonoBold', fill: shown && shown.gain > 1.01 ? C.vein : C.ink,
+        align: 'right',
       });
-      text(ctx, percent(c.percent), W - PAD, y + 18, {
-        size: 14, face: 'AtlasMono', fill: C.ink5, align: 'right',
-      });
+      text(
+        ctx,
+        shown && shown.gain > 1.01 ? `was ${odds(c.oneIn)}` : percent(c.percent),
+        W - PAD, y + 18,
+        { size: 12, face: 'AtlasMono', fill: C.ink5, align: 'right' },
+      );
+
+      // Say when a toggled event doesn't reach this site, rather than silently
+      // showing a smaller gain than the header implies.
+      if (here?.skipped?.length) {
+        text(ctx, `no ${here.skipped.map((b) => b.name).join(', ')}`, PAD + 300, y + 36, {
+          size: 12, fill: C.ink5,
+        });
+      }
     }
   });
 
@@ -272,11 +298,21 @@ export async function renderFind(mineral, { limit = 7 } = {}) {
   const shown = drops.length < mineral.chances.length
     ? `Showing ${drops.length} of ${mineral.chances.length} sites · `
     : '';
+  const luckNote = boosted
+    ? (() => {
+        const vals = [...new Set([...luckAt.values()].map((l) => Math.round(l.luck)))];
+        const range = vals.length > 1
+          ? `${Math.min(...vals).toLocaleString('en-US')}–${Math.max(...vals).toLocaleString('en-US')}`
+          : vals[0].toLocaleString('en-US');
+        return `at ${range} Luck · modelled, an optimistic upper bound · `;
+      })()
+    : '';
+
   footer(
     ctx,
     h,
     mineral.ratesKnown
-      ? `${shown}bars are log-scaled — each step is 10× rarer`
+      ? `${shown}${luckNote}bars are log-scaled — each step is 10× rarer`
       : `${shown}the wiki lists these locations but publishes no drop rates`,
   );
   return canvas.toBuffer('image/png');

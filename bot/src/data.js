@@ -10,6 +10,7 @@ import {
   RARITY_ORDER, money, odds, percent, oddsBar, statBar,
   readable, readablePair, hexToRgb,
 } from '../../shared/format.mjs';
+import { MANUAL_BOOSTS as MANUAL_BOOST_LIST } from '../../shared/luck.mjs';
 
 export {
   RARITY_ORDER, money, odds, percent, oddsBar, statBar,
@@ -25,8 +26,29 @@ export const db = read('src/data/db.json');
 const imageMap = read('src/data/images.json');
 
 export const {
-  minerals, digSites, locations, pans, shovels, sluices, rarities,
+  minerals, digSites, locations, pans, shovels, sluices, rarities, events,
 } = db;
+
+export {
+  effectiveLuck, siteBands, mineralChance, MANUAL_BOOSTS, MAX_FRIENDS,
+} from '../../shared/luck.mjs';
+
+/** Boost objects for a comma-separated list like "totem, meteor shower". */
+export function parseBoosts(text) {
+  if (!text) return { boosts: [], missed: [] };
+  const pool = [
+    ...MANUAL_BOOST_LIST.map((b) => ({ ...b, name: b.label })),
+    ...events.filter((e) => e.kind !== 'unknown'),
+  ];
+  const boosts = [];
+  const missed = [];
+  for (const term of text.split(',').map((t) => t.trim()).filter(Boolean)) {
+    const hit = rank(term, pool)[0];
+    if (!hit) missed.push(term);
+    else if (!boosts.some((b) => b.name === hit.name)) boosts.push(hit);
+  }
+  return { boosts, missed };
+}
 
 export const gearGroups = { pans, shovels, sluices };
 
