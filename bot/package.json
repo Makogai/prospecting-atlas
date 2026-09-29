@@ -1,18 +1,22 @@
 {
-  "name": "bot",
+  "name": "prospecting-atlas-bot",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Discord bot for Prospecting Atlas",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "register": "node src/deploy-commands.js",
+    "register:guild": "node src/deploy-commands.js --guild",
+    "smoke": "node src/smoke.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@napi-rs/canvas": "^1.0.9",
     "discord.js": "^14.27.0",
     "dotenv": "^18.0.4"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
   }
 }

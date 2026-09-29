@@ -1,5 +1,7 @@
 import raw from '../data/db.json';
 import images from '../data/images.json';
+// Formatting lives in shared/ so the Discord bot renders identical numbers.
+import { money } from '../../shared/format.mjs';
 
 /* ---------- types ------------------------------------------------------ */
 
@@ -233,86 +235,10 @@ export function imgSrc(file: string | null | undefined): string | null {
   return local ? `/sprites/${local}` : null;
 }
 
-/* ---------- colour ------------------------------------------------------ */
+/* ---------- formatting & colour ---------------------------------------- */
 
-function hexToRgb(hex: string): [number, number, number] | null {
-  const m = hex.trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
-  if (!m) return null;
-  const h = m[1].length === 3 ? m[1].replace(/./g, (c) => c + c) : m[1];
-  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
-}
-
-/**
- * The wiki's palette assumes a light page. Several tiers (Rare `#0059ff`,
- * Mythic `#81008a`) and dig sites (Abyssal Depth `#0a0d3a`) are near-invisible
- * on our dark background, so lift each colour to a readable luminance while
- * keeping its hue — the tiers stay recognisable, they just become legible.
- */
-export function readable(hex: string, minLuma = 0.58): string {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-  let [r, g, b] = rgb.map((v) => v / 255) as [number, number, number];
-  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  if (luma >= minLuma) return hex;
-
-  // Scale toward white by the shortfall, which preserves hue better than
-  // simply raising lightness in HSL for already-saturated colours.
-  const t = (minLuma - luma) / (1 - luma);
-  [r, g, b] = [r, g, b].map((v) => v + (1 - v) * t) as [number, number, number];
-  return (
-    '#' +
-    [r, g, b]
-      .map((v) => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0'))
-      .join('')
-  );
-}
-
-/** Readable variants of a wiki gradient, for text and small UI. */
-export const readablePair = (colors: string[] | null | undefined): [string, string] => {
-  const a = colors?.[0] ?? '#9aa3b6';
-  const b = colors?.[colors.length - 1] ?? '#6b7285';
-  return [readable(a), readable(b)];
-};
-
-/* ---------- formatting -------------------------------------------------- */
-
-const COMPACT = [
-  { at: 1e12, suffix: 'T' },
-  { at: 1e9, suffix: 'B' },
-  { at: 1e6, suffix: 'M' },
-  { at: 1e3, suffix: 'K' },
-];
-
-/** 44444444 -> "$44.4M". Keeps big mineral values readable in a grid. */
-export function money(n: number | null | undefined, compact = true): string {
-  if (n == null) return '—';
-  if (!compact || Math.abs(n) < 1000) return '$' + Math.round(n).toLocaleString('en-US');
-  const unit = COMPACT.find((u) => Math.abs(n) >= u.at)!;
-  const v = n / unit.at;
-  return '$' + (v >= 100 ? Math.round(v) : parseFloat(v.toFixed(v >= 10 ? 1 : 2))) + unit.suffix;
-}
-
-/** 0.00002085 -> "1 in 4.8M" — far easier to reason about than a percentage. */
-export function odds(oneIn: number | null | undefined): string {
-  if (oneIn == null) return 'unknown';
-  if (oneIn < 1000) return `1 in ${Math.round(oneIn).toLocaleString('en-US')}`;
-  const unit = COMPACT.find((u) => oneIn >= u.at)!;
-  const v = oneIn / unit.at;
-  return `1 in ${v >= 100 ? Math.round(v) : parseFloat(v.toFixed(1))}${unit.suffix}`;
-}
-
-export function percent(p: number | null | undefined): string {
-  if (p == null) return '—';
-  if (p >= 1) return p.toFixed(1) + '%';
-  if (p >= 0.01) return p.toFixed(3) + '%';
-  if (p >= 0.000001) return p.toPrecision(2) + '%';
-  return p.toExponential(1) + '%';
-}
-
-/** Log-scaled bar width: drop rates span 1% to 0.0000000015%. */
-export function oddsBar(percentValue: number | null | undefined): number {
-  if (!percentValue) return 2;
-  const clamped = Math.max(percentValue, 1e-9);
-  // Map 1e-9%..100% onto 2..100 so even the rarest bar stays visible.
-  return Math.max(2, Math.min(100, ((Math.log10(clamped) + 9) / 11) * 100));
-}
+// These live in shared/ because the Discord bot renders the same numbers and
+// has to format them identically. Re-exported so callers import from one place.
+export {
+  money, odds, percent, oddsBar, statBar, readable, readablePair,
+} from '../../shared/format.mjs';

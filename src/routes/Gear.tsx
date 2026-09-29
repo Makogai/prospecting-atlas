@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   gearGroups, gearStatMax, GEAR_LABEL, GEAR_STATS, STAT_LABEL,
-  gearPrice, gearPriceOrder, digSiteByName, type Gear, type GearKind,
+  gearPrice, gearPriceOrder, statBar, digSiteByName, type Gear, type GearKind,
 } from '../lib/db';
 import { Empty, SectionTitle, SiteTag, Sprite, cx } from '../components/ui';
 
@@ -85,7 +85,7 @@ export function GearPage() {
         <section className="mb-8">
           <SectionTitle
             title="Side by side"
-            hint="Pick up to three. Bars are scaled against the best in this category."
+            hint="Pick up to three. Bars are log-scaled against the best in this category."
             action={
               <button
                 onClick={() => setPicked([])}
@@ -195,7 +195,7 @@ function StatBar({
         <div
           className="h-full rounded-full transition-[width] duration-500"
           style={{
-            width: `${Math.max(2, (value / max) * 100)}%`,
+            width: `${statBar(value, max)}%`,
             background: best
               ? 'linear-gradient(90deg,#f5a623,#ffd98a)'
               : 'linear-gradient(90deg,#48526b,#6b7285)',

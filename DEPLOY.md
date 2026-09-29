@@ -119,6 +119,16 @@ SPA?" toggle on Nixpacks, or the wrong build pack on Docker.
 
 ---
 
+## The Discord bot
+
+The bot is a **separate resource** in Coolify, and a worker rather than a web service: no port, no
+domain, no HTTP health check. Its build context is the repo root, not `bot/`. Full walkthrough in
+**[bot/README.md](bot/README.md#deploying-on-coolify)**.
+
+Both services read the same committed data, so after a `npm run data:all` refresh, redeploy both.
+
+---
+
 ## Local production check
 
 Always worth doing before pushing a deploy — it catches build-only breakage that `npm run dev`

@@ -2,7 +2,10 @@ node_modules
 dist
 .git
 .github
-bot/node_modules
+
+# The web image doesn't need the bot or the raw image cache.
+bot
 data/img
+
 *.md
 !README.md

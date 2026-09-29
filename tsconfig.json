@@ -19,9 +19,11 @@
     "verbatimModuleSyntax": true,
     "types": [
       "vite/client"
-    ]
+    ],
+    "allowJs": true
   },
   "include": [
-    "src"
+    "src",
+    "shared"
   ]
 }

@@ -34,15 +34,20 @@ rotates — every entry there is conditional.)
 
 ```
 scripts/           four-stage data pipeline (see below)
+shared/format.mjs  money / odds / bar-scaling, imported by the site AND the bot
 data/raw/          cached wikitext, committed
 data/img/          raw image downloads, gitignored build input
 public/sprites/    published item art, committed
 src/data/          generated db.json + images.json — do not hand-edit
-src/lib/db.ts      typed accessors, derived indexes, formatting
+src/lib/db.ts      typed accessors, derived indexes
 src/lib/search.ts  the search index
 src/components/    shared UI + command palette
 src/routes/        one file per page
+bot/               Discord bot — see bot/README.md
 ```
+
+Formatting lives in `shared/` because the bot renders the same numbers; a drop rate has to read
+identically in both places.
 
 ## Refreshing the data
 
@@ -80,10 +85,23 @@ To eyeball the result:
 node scripts/contact-sheet.mjs public/sprites out.png 40
 ```
 
+## Discord bot
+
+`bot/` is a companion bot that answers the same questions in chat, rendering each reply as a
+canvas card rather than a plain embed — `/find`, `/site`, `/plan`, `/gear`, `/top`. It reads the
+same generated database, so there's no second scrape. See **[bot/README.md](bot/README.md)**.
+
+```bash
+cd bot && npm install && npm run smoke   # renders every card, no Discord token needed
+```
+
 ## Deploying
 
-Static output, SPA routing. `vercel.json` and `public/_redirects` cover Vercel and
-Netlify/Cloudflare Pages. For GitHub Pages you'd need a `404.html` copy of `index.html`.
+Static output, SPA routing. The `Dockerfile` (nginx, SPA fallback, caching, `/healthz`) targets
+Coolify; `vercel.json` and `public/_redirects` cover Vercel and Netlify/Cloudflare Pages.
+
+**[DEPLOY.md](DEPLOY.md)** has the full walkthrough, including the two settings people usually
+miss. The bot deploys separately as a worker — see bot/README.md.
 
 ```bash
 npm run build && npm run preview
