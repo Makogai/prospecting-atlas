@@ -5,10 +5,11 @@ import { minerals, digSites } from '../lib/db';
 import { RarityTag, Sprite, cx, gradientVars } from './ui';
 
 const KIND_ICON: Record<SearchItem['kind'], string> = {
-  mineral: '◆', // ◆
-  site: '⛏',    // ⛏
-  location: '▲', // ▲
-  gear: '●',    // ●
+  mineral: '◆',
+  site: '⛏',
+  location: '▲',
+  equipment: '◇',
+  gear: '●',
 };
 
 /** Shown before the user types: the things people look up most. */

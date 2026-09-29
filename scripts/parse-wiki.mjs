@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { findTemplates, plain, refs, num, slug } from './parse-util.mjs';
 import { parseEvents } from './parse-events.mjs';
+import { parseEquipment } from './parse-equipment.mjs';
 
 const raw = JSON.parse(readFileSync('data/raw/pages.json', 'utf8'));
 const { pages, templates, byCategory } = raw;
@@ -247,6 +248,9 @@ const events = parseEvents(pages['Events']).map(e => ({
   sites: e.sites.filter(knownSite),
 })).map(e => ({ ...e, global: e.global || e.sites.length === 0 }));
 
+/* ---------- equipment --------------------------------------------------- */
+const equipment = parseEquipment(pages['Equipment']);
+
 /* ---------- emit ------------------------------------------------------- */
 mkdirSync('src/data', { recursive: true });
 const db = {
@@ -257,6 +261,7 @@ const db = {
   locations: locations.sort((a, b) => a.name.localeCompare(b.name)),
   pans, shovels, sluices,
   events,
+  equipment,
 };
 writeFileSync('src/data/db.json', JSON.stringify(db));
 
@@ -264,6 +269,7 @@ console.log(`minerals  ${db.minerals.length}`);
 console.log(`digSites  ${db.digSites.length}`);
 console.log(`locations ${db.locations.length}`);
 console.log(`pans ${pans.length} | shovels ${shovels.length} | sluices ${sluices.length}`);
+console.log(`equipment ${equipment.length} (${equipment.filter(e => e.limited).length} limited) · slots ${[...new Set(equipment.map(e => e.slot))].join('/')}`);
 console.log(`luck events ${events.length} (${events.filter(e => e.kind === 'multiplicative').length} multiplicative, ${events.filter(e => e.kind === 'additive').length} additive, ${events.filter(e => e.kind === 'unknown').length} unquantified)`);
 console.log(`no chances: ${minerals.filter(m => !m.chances.length).map(m => m.name).join(', ') || 'none'}`);
 console.log(`no image:   ${minerals.filter(m => !m.image).map(m => m.name).join(', ') || 'none'}`);

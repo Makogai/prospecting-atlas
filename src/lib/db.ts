@@ -101,6 +101,39 @@ export interface Gear {
 
 export type GearKind = 'pans' | 'shovels' | 'sluices';
 
+export type EquipSlot = 'Ring' | 'Charm' | 'Necklace';
+
+export interface StatRange {
+  min: number;
+  max: number;
+  unit: '%' | null;
+}
+
+export interface EquipStat {
+  stat: string;
+  /** Range on a normal item. */
+  base: StatRange;
+  /** Range once merged to six stars at the Magma Forge. */
+  sixStar: StatRange;
+}
+
+export interface Equipment {
+  id: string;
+  name: string;
+  rarity: string;
+  /** Event-only, from the wiki's Limited-Time Equipment tabber. */
+  limited: boolean;
+  slot: EquipSlot | null;
+  image: string | null;
+  description: string;
+  color: string | null;
+  recipe: { qty: number; item: string; minWeight: number | null; catalyst: boolean }[];
+  stats: EquipStat[];
+  price: number | null;
+  currency: string | null;
+  currencyAmount: number | null;
+}
+
 /** A luck-affecting event, scraped from the wiki's Events page. */
 export interface LuckEvent {
   id: string;
@@ -128,9 +161,38 @@ export const db = raw as unknown as {
   shovels: Gear[];
   sluices: Gear[];
   events: LuckEvent[];
+  equipment: Equipment[];
 };
 
-export const { minerals, digSites, locations, pans, shovels, sluices, rarities, events } = db;
+export const {
+  minerals, digSites, locations, pans, shovels, sluices, rarities, events, equipment,
+} = db;
+
+export const equipmentById = new Map(equipment.map((e) => [e.id, e]));
+
+/** How many of each slot you can wear at once. */
+export const SLOT_LIMITS: Record<EquipSlot, number> = { Necklace: 1, Charm: 1, Ring: 8 };
+
+/** Equipment rarity order, including the Ascended tier above Exotic. */
+export const EQUIP_RARITY_ORDER = [
+  'Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic', 'Ascended',
+];
+
+/** Colours for equipment tiers, reusing the mineral scale and extending it. */
+export function equipRarityColors(rarity: string): string[] {
+  const hit = rarities.find((r) => r.name === rarity);
+  if (hit) return hit.colors;
+  if (rarity === 'Ascended') return ['#BAB398', '#927F2C'];
+  return ['#888888', '#555555'];
+}
+
+/** Every mineral an equipment recipe calls for, resolved where we know it. */
+export function recipeMinerals(item: Equipment) {
+  return item.recipe.map((r) => ({
+    ...r,
+    mineral: minerals.find((m) => m.name.toLowerCase() === r.item.toLowerCase()) ?? null,
+  }));
+}
 
 export const RARITY_ORDER = rarities.map((r) => r.name);
 

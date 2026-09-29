@@ -12,6 +12,7 @@ import { DigSiteDetail } from './routes/DigSiteDetail';
 import { Locations } from './routes/Locations';
 import { LocationDetail } from './routes/LocationDetail';
 import { GearPage } from './routes/Gear';
+import { EquipmentPage } from './routes/Equipment';
 import { Compare } from './routes/Compare';
 import { NotFound } from './routes/NotFound';
 
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="locations" element={<Locations />} />
           <Route path="locations/:id" element={<LocationDetail />} />
           <Route path="gear/:kind" element={<GearPage />} />
+          <Route path="equipment" element={<EquipmentPage />} />
           <Route path="compare" element={<Compare />} />
           <Route path="*" element={<NotFound />} />
         </Route>

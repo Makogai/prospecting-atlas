@@ -1,6 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
-import { siteBands, mineralChance, effectiveLuck } from '../../shared/luck.mjs';
-import { LuckPanel, LuckCaveat, useLuck, activeBoosts } from '../components/LuckPanel';
+import { siteBands, mineralChance } from '../../shared/luck.mjs';
+import { LuckPanel, LuckCaveat, useLuck, activeBoosts, luckAt } from '../components/LuckPanel';
+import { GrindPanel, useGrind, grindRate } from '../components/GrindPanel';
+import { hoursFor, pullsForConfidence, duration } from '../../shared/estimate.mjs';
 import {
   mineralById, minerals, rarityByName, sitesFor, bestSiteFor, usedInRecipes,
   locationForSite, money, odds, percent,
@@ -13,6 +15,7 @@ export function MineralDetail() {
   const { id } = useParams();
   const m = id ? mineralById.get(id) : undefined;
   const [luck, setLuck] = useLuck();
+  const [grind, setGrind] = useGrind();
 
   if (!m) {
     return (
@@ -29,26 +32,37 @@ export function MineralDetail() {
 
   const rarity = rarityByName.get(m.rarity);
   const boosts = activeBoosts(luck);
+  const rate = grindRate(grind);
 
   // Luck is worked out per dig site, because several events only fire at
   // particular ones — a Blizzard is worth nothing outside Snowy Mountain.
   const drops = sitesFor(m).map((d) => {
-    const at = effectiveLuck(luck.base, {
+    const at = luckAt(luck.base, {
       boosts,
       friends: luck.friends,
       siteName: d.site.name,
     });
+    const lucky = d.chance.percent == null
+      ? null
+      : mineralChance(siteBands(d.site), m.id, at.luck);
+    const p = (lucky?.percent ?? d.chance.percent ?? 0) / 100;
     return {
       ...d,
       luckHere: at,
-      lucky: d.chance.percent == null
-        ? null
-        : mineralChance(siteBands(d.site), m.id, at.luck),
+      lucky,
+      // Median is the fairer headline: the mean of a geometric distribution is
+      // dragged a long way out by the unlucky tail.
+      medianHours: p > 0 ? pullsForConfidence(p, 0.5) / rate : Infinity,
+      meanHours: hoursFor(p, rate),
     };
   });
 
+  // A skipped boost is only worth calling out on a row when some other row here
+  // does get it. If it reaches none of them, saying so seven times is just noise.
+  const differentiating = new Set(drops.flatMap((d) => d.luckHere.applied.map((b) => b.id)));
+
   // The headline luck ignores scoping; each row shows its own.
-  const effectiveLuckValue = effectiveLuck(luck.base, { boosts, friends: luck.friends }).luck;
+  const effectiveLuckValue = luckAt(luck.base, { boosts, friends: luck.friends }).luck;
   const boosted = drops.some((d) => d.luckHere.luck > 1);
   const best = bestSiteFor(m);
   const usedIn = usedInRecipes(m);
@@ -129,9 +143,15 @@ export function MineralDetail() {
               hint={
                 !m.ratesKnown
                   ? 'The wiki lists locations for this mineral but no drop rates.'
-                  : boosted
-                    ? `Odds at ${Math.round(effectiveLuckValue).toLocaleString('en-US')} Luck. Bars are log-scaled — each step is 10× rarer.`
-                    : 'Ranked by drop rate. Bars are log-scaled — each step is 10× rarer.'
+                  : [
+                      boosted
+                        ? `Odds at ${Math.round(effectiveLuckValue).toLocaleString('en-US')} Luck.`
+                        : 'Ranked by drop rate.',
+                      rate > 0
+                        ? `Times are when you'd have one half the time, at ${Math.round(rate).toLocaleString('en-US')} minerals/hour.`
+                        : '',
+                      'Bars are log-scaled — each step is 10× rarer.',
+                    ].filter(Boolean).join(' ')
               }
             />
 
@@ -139,7 +159,7 @@ export function MineralDetail() {
               <Empty>No drop locations recorded.</Empty>
             ) : (
               <div className="panel divide-y divide-white/6">
-                {drops.map(({ chance, site, lucky, luckHere }, i) => (
+                {drops.map(({ chance, site, lucky, luckHere, medianHours }, i) => (
                   <Link
                     key={chance.site}
                     to={`/sites/${site.id}`}
@@ -175,6 +195,14 @@ export function MineralDetail() {
                           ? `was ${odds(chance.oneIn)}`
                           : percent(chance.percent)}
                       </span>
+                      {rate > 0 && Number.isFinite(medianHours) && (
+                        <span
+                          className="numeric w-full text-right text-[11px] text-ore-400 sm:w-auto"
+                          title="Half the time you'll have one by here, at your current pace"
+                        >
+                          ~{duration(medianHours)}
+                        </span>
+                      )}
                     </div>
                     <div className="mt-2">
                       <OddsBar percent={lucky ? lucky.percent : chance.percent} colors={site.colors} />
@@ -190,19 +218,21 @@ export function MineralDetail() {
                         Luck is close to guaranteeing this, where the model is least reliable.
                       </p>
                     )}
-                    {luckHere.skipped.length > 0 && (
-                      <p className="mt-1.5 text-[11px] text-ink-500">
-                        Not here:{' '}
-                        {luckHere.skipped
-                          .map((b: { label?: string; name?: string }) => b.label ?? b.name)
-                          .join(', ')}{' '}
-                        — so this site sits at{' '}
-                        <span className="numeric">
-                          {Math.round(luckHere.luck).toLocaleString('en-US')}
-                        </span>{' '}
-                        Luck.
-                      </p>
-                    )}
+                    {(() => {
+                      const missing = luckHere.skipped.filter((b) => differentiating.has(b.id));
+                      if (!missing.length) return null;
+                      return (
+                        <p className="mt-1.5 text-[11px] text-ink-500">
+                          Not here:{' '}
+                          {missing.map((b) => b.label).join(', ')}{' '}
+                          — so this site sits at{' '}
+                          <span className="numeric">
+                            {Math.round(luckHere.luck).toLocaleString('en-US')}
+                          </span>{' '}
+                          Luck.
+                        </p>
+                      );
+                    })()}
                   </Link>
                 ))}
               </div>
@@ -278,6 +308,7 @@ export function MineralDetail() {
           {m.ratesKnown && (
             <>
               <LuckPanel luck={luck} onChange={setLuck} />
+              <GrindPanel grind={grind} onChange={setGrind} />
               <LuckCaveat className="-mt-2 px-1" />
             </>
           )}

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   effectiveLuck, appliesAt, MANUAL_BOOSTS, MAX_FRIENDS,
 } from '../../shared/luck.mjs';
-import { pans, events, type LuckEvent } from '../lib/db';
+import { pans, events, equipmentById, type LuckEvent } from '../lib/db';
+import { useLoadout, loadoutTotals } from './Loadout';
 import { cx } from './ui';
 
 export interface LuckState {
@@ -72,6 +73,24 @@ const EVENTS: Boost[] = events.map((e: LuckEvent) => ({
 const ALL_BOOSTS: Boost[] = [...MANUAL, ...EVENTS];
 const boostById = new Map(ALL_BOOSTS.map((b) => [b.id, b]));
 
+/** shared/luck.mjs is plain JS; this is its result shape, typed once. */
+export interface LuckResult {
+  luck: number;
+  multiplier: number;
+  stacked: number;
+  meteor: number;
+  applied: Boost[];
+  skipped: Boost[];
+}
+
+/** Typed wrapper around effectiveLuck, so callers don't cast at every use. */
+export function luckAt(
+  base: number,
+  opts: { boosts?: Boost[]; friends?: number; siteName?: string | null },
+): LuckResult {
+  return effectiveLuck(base, opts) as LuckResult;
+}
+
 /** Resolve the player's selection into boost objects the model understands. */
 export function activeBoosts(luck: LuckState): Boost[] {
   return luck.boosts
@@ -96,6 +115,14 @@ export function LuckPanel({
 }) {
   const [showAdmin, setShowAdmin] = useState(false);
   const [showPans, setShowPans] = useState(false);
+  const [loadout] = useLoadout();
+
+  // Base Luck is pan + equipment + enchants, so offer the loadout's contribution
+  // rather than making people add it up by hand.
+  const loadoutLuck = loadoutTotals(
+    loadout.items.map((id) => equipmentById.get(id)).filter((e) => e != null),
+    { quality: loadout.quality },
+  ).find((t) => t.stat === 'Luck')?.value ?? 0;
 
   const boosts = activeBoosts(luck);
   const { luck: effective, stacked, meteor } = effectiveLuck(luck.base, {
@@ -167,6 +194,20 @@ export function LuckPanel({
             onChange={(e) => onChange({ ...luck, base: Math.max(0, Number(e.target.value) || 0) })}
             className="w-full rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-sm outline-none transition focus:border-vein-500/50 focus:bg-white/7"
           />
+          {loadoutLuck > 0 && (
+            <button
+              onClick={() =>
+                onChange({ ...luck, base: Math.round((luck.base + loadoutLuck) * 100) / 100 })
+              }
+              className="mt-2 w-full rounded-lg bg-vein-500/15 px-3 py-1.5 text-left text-[11px] font-semibold text-vein-400 ring-1 ring-vein-500/25 transition hover:bg-vein-500/25"
+            >
+              + Add your loadout’s{' '}
+              <span className="numeric">+{loadoutLuck.toFixed(2)}</span> Luck
+              <span className="ml-1 font-normal opacity-70">
+                ({loadout.items.length} equipped)
+              </span>
+            </button>
+          )}
           {showPans && (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {PAN_PRESETS.map((p) => (

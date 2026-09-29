@@ -167,7 +167,7 @@ async function main() {
   // Only item art is card-shaped. Location images are in-game screenshots, which
   // this would happily "extract" into nonsense, so they are copied verbatim.
   const itemArt = new Set(
-    [...db.minerals, ...db.pans, ...db.shovels, ...db.sluices]
+    [...db.minerals, ...db.pans, ...db.shovels, ...db.sluices, ...db.equipment]
       .map((x) => manifest[key(x.image ?? '')])
       .filter(Boolean),
   );

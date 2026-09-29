@@ -1,9 +1,9 @@
 import {
-  minerals, digSites, locations, gearGroups, GEAR_LABEL,
+  minerals, digSites, locations, gearGroups, GEAR_LABEL, equipment,
   type GearKind, money, gearPrice,
 } from './db';
 
-export type ResultKind = 'mineral' | 'site' | 'location' | 'gear';
+export type ResultKind = 'mineral' | 'site' | 'location' | 'gear' | 'equipment';
 
 export interface SearchItem {
   kind: ResultKind;
@@ -54,6 +54,17 @@ export const searchIndex: SearchItem[] = [
     colors: l.colors,
     haystack: `${l.name} location ${l.summary}`.toLowerCase(),
   })),
+  ...equipment.map((e) => ({
+    kind: 'equipment' as const,
+    id: e.id,
+    name: e.name,
+    href: `/equipment?q=${encodeURIComponent(e.name)}`,
+    image: e.image,
+    meta: e.slot ?? 'Equipment',
+    tag: e.rarity,
+    colors: e.color ? [e.color, e.color] : null,
+    haystack: `${e.name} ${e.rarity} ${e.slot} ${e.description} ${e.stats.map((s) => s.stat).join(' ')} ${e.recipe.map((r) => r.item).join(' ')}`.toLowerCase(),
+  })),
   ...(Object.keys(gearGroups) as GearKind[]).flatMap((kind) =>
     gearGroups[kind].map((g) => ({
       kind: 'gear' as const,
@@ -93,7 +104,7 @@ function fuzzyScore(needle: string, hay: string): number {
 }
 
 const KIND_WEIGHT: Record<ResultKind, number> = {
-  mineral: 30, site: 20, location: 10, gear: 0,
+  mineral: 30, site: 20, location: 10, equipment: 5, gear: 0,
 };
 
 export function search(query: string, limit = 24): SearchItem[] {

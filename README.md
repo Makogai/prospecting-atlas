@@ -26,6 +26,8 @@ from it.
 | **Global search** | `Ctrl/⌘ K` or `/` — fuzzy over minerals, dig sites, locations and gear. |
 | **Gear comparison** | Up to three pans/shovels/sluices side by side, bars scaled to the best in the category, with the winning stat flagged. |
 | **Luck model** | Enter your Luck, tick the events that are running, and every drop rate re-prices. Location-locked events only apply where they actually fire. |
+| **Time estimates** | Set your pace and each dig site shows when you'd have one, half the time. |
+| **Equipment & loadouts** | All 67 craftables with recipes, stat ranges and six-star values. Equip 1 necklace, 1 charm and 8 rings, and the totals feed straight back into your Luck. |
 
 The `100.0%` drop-rate coverage on real dig sites is a useful correctness signal: it means no
 mineral is missing from a site's extracted table. (The Void sums higher because its loot pool
@@ -111,6 +113,37 @@ chance to either be weakened or not apply at all… so common items don't become
 high luck") is unquantified. Without it the maths says Gold at Rubble Creek Sands falls to 1-in-10¹⁴⁰
 at Luck 1000, which plainly doesn't happen. So the numbers are an **optimistic upper bound**, most
 trustworthy while a mineral is still a long shot — which is when you'd ask.
+
+## Estimating a grind
+
+Two formulas come straight off the wiki's Stats page, and the estimator rests on them:
+
+- **Pan Capacity** — "square root of capacity = average minerals" per cycle.
+- **Sluice Efficiency** — "the amount of minerals a given sluice will accumulate each 10 minutes",
+  so sluice output is exact and needs nothing from you.
+
+**What the wiki does not give is how long a pan cycle takes.** Dig Speed and Shake Speed obviously
+drive it, but no page states a base rate in seconds, and inventing one would put a fabricated
+number under every estimate on the site. So panning asks you to time a cycle yourself, and the
+input says so rather than dressing it up as game data.
+
+Times shown are the **median** — when you'd have one half the time. The mean of a geometric
+distribution is dragged a long way out by the unlucky tail, which makes it a worse thing to plan
+around.
+
+## Equipment and crafting
+
+`scripts/parse-equipment.mjs` reads all 67 rings, charms and necklaces off the Equipment page:
+slot, recipe (with catalyst markers and minimum ore weights), price, and both stat ranges — normal
+and the six-star values you get from merging two five-stars at the Magma Forge.
+
+The loadout builder enforces the real slot limits (1 necklace, 1 charm, 8 rings) and totals every
+stat. Its Luck total feeds into the luck model with one click, so the chain runs end to end:
+**equipment → base Luck → drop rates → time to get one.**
+
+The roll-quality slider interpolates across each stat's range. The wiki gives the ranges and
+describes the reforge percentage, but not exactly how the two combine — so it's a slider you can
+move, not a claim about the game.
 
 ## Discord bot
 
