@@ -28,10 +28,56 @@ export interface Recipe {
   ingredients: { qty: number; item: string }[];
 }
 
+/** One stat a museum ore moves. Negative means it's a debuff, not a bonus. */
+export interface MuseumBoost {
+  stat: string;
+  value: number;
+}
+
 export interface Museum {
-  minWeight: string | null;
+  /** Kilograms needed for the full boost; below this it scales down. */
+  minWeight: number | null;
+  boosts: MuseumBoost[];
+  /** Displays only accept their own rarity, so this is which one takes it. */
+  displayRarity: RarityName;
+}
+
+export interface MuseumDisplay {
+  rarity: RarityName;
+  free: number;
+  locked: number;
+  /** Cost of the money-unlocked display, or null where there isn't one. */
+  money: number | null;
+  shards: number | null;
+  total: number;
+}
+
+export interface MuseumOre {
+  id: string;
+  name: string;
+  rarity: RarityName;
+  minWeight: number | null;
+  boosts: MuseumBoost[];
+}
+
+export interface MuseumModifier {
+  name: string;
   stats: string[];
-  maxBoost: string | null;
+  /** Percent chance per dig, or null when it can't be dug at all. */
+  chance: number | null;
+  source: string | null;
+  diggable: boolean;
+}
+
+export interface MuseumData {
+  displays: MuseumDisplay[];
+  slots: number;
+  ores: MuseumOre[];
+  modifiers: MuseumModifier[];
+  modifierMultipliers: { rarity: RarityName; value: number }[];
+  treasuredMultiplier: number;
+  stats: string[];
+  wiki: string;
 }
 
 export interface Mineral {
@@ -266,6 +312,7 @@ export const db = raw as unknown as {
   blueprints: Blueprint[];
   quests: Quest[];
   npcs: Npc[];
+  museum: MuseumData;
   builds: Build[];
   buildStages: { stage: string; area: string; highest: string | null }[];
   buildGuide: { title: string; url: string; authors: string[]; snapshot: string };
@@ -273,7 +320,7 @@ export const db = raw as unknown as {
 
 export const {
   minerals, digSites, locations, pans, shovels, sluices, rarities, events, equipment,
-  builds, buildGuide, blueprints, buildStages, quests, npcs,
+  builds, buildGuide, blueprints, buildStages, quests, npcs, museum,
 } = db;
 
 export const npcByName = new Map(npcs.map((n) => [n.name, n]));
@@ -340,6 +387,64 @@ export const locationById = byId(locations);
 export const digSiteByName = new Map(digSites.map((s) => [s.name, s]));
 
 export const rarityByName = new Map(rarities.map((r) => [r.name, r]));
+
+/* ---------- museum ------------------------------------------------------ */
+
+export const museumOreById = byId(museum.ores);
+export const museumDisplayByRarity = new Map(museum.displays.map((d) => [d.rarity, d]));
+
+/** What one ore does for one stat, or 0 if it doesn't touch it. */
+export const boostFor = (ore: MuseumOre | null | undefined, stat: string) =>
+  ore?.boosts.find((b) => b.stat === stat)?.value ?? 0;
+
+/**
+ * Every ore that moves a stat, best first, keyed by stat.
+ *
+ * Debuffs are included rather than filtered out — an ore that gives +1.2× Dig
+ * Strength and −0.8× Dig Speed belongs in both lists, and hiding it from the
+ * second would make it look strictly better than it is.
+ */
+export const museumOresByStat = new Map<string, MuseumOre[]>(
+  museum.stats.map((stat) => [
+    stat,
+    museum.ores
+      .filter((o) => o.boosts.some((b) => b.stat === stat))
+      .sort((a, b) => boostFor(b, stat) - boostFor(a, stat)),
+  ]),
+);
+
+/**
+ * The best ores you could slot for one stat, given how many displays each
+ * rarity has.
+ *
+ * Displays only accept their own rarity, so this isn't "take the top 18" — it's
+ * a separate pick per rarity, which is why a Common display can still be worth
+ * filling when Exotics exist. Ores whose net effect on the stat is zero or
+ * negative are left out; an empty display beats one that costs you the stat.
+ */
+export function bestMuseumPicks(stat: string): Map<RarityName, MuseumOre[]> {
+  const out = new Map<RarityName, MuseumOre[]>();
+  for (const display of museum.displays) {
+    const picks = (museumOresByStat.get(stat) ?? [])
+      .filter((o) => o.rarity === display.rarity && boostFor(o, stat) > 0)
+      .slice(0, display.total);
+    out.set(display.rarity, picks);
+  }
+  return out;
+}
+
+/** Summed stat totals for a set of slotted ores, including their debuffs. */
+export function museumTotals(ores: (MuseumOre | null | undefined)[]) {
+  const totals: Record<string, number> = {};
+  for (const ore of ores) {
+    for (const b of ore?.boosts ?? []) totals[b.stat] = (totals[b.stat] ?? 0) + b.value;
+  }
+  return totals;
+}
+
+/** `0.88×`, and `−0.5×` for a debuff. */
+export const boostLabel = (v: number) =>
+  `${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(2).replace(/\.?0+$/, '')}×`;
 
 export const gearGroups: Record<GearKind, Gear[]> = { pans, shovels, sluices };
 

@@ -12,6 +12,7 @@ const KIND_ICON: Record<SearchItem['kind'], string> = {
   npc: '☺',
   quest: '❯',
   gear: '●',
+  museum: '★',
 };
 
 /** Shown before the user types: the things people look up most. */

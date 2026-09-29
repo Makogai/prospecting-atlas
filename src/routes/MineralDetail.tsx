@@ -5,7 +5,7 @@ import { GrindPanel, useGrind, grindRate, sessionLabel } from '../components/Gri
 import { yieldLabel } from '../../shared/estimate.mjs';
 import {
   mineralById, minerals, rarityByName, sitesFor, bestSiteFor, usedInRecipes,
-  locationForSite, money, odds, percent,
+  locationForSite, money, odds, percent, boostLabel, museumDisplayByRarity,
 } from '../lib/db';
 import {
   Empty, OddsBar, RarityTag, SectionTitle, SiteTag, Sprite, cx, gradientVars,
@@ -319,29 +319,42 @@ export function MineralDetail() {
             </>
           )}
 
-          {m.museum && (m.museum.stats.length > 0 || m.museum.maxBoost) && (
+          {m.museum && m.museum.boosts.length > 0 && (
             <section className="panel p-5">
-              <h2 className="text-sm font-extrabold tracking-[0.1em] text-ink-400 uppercase">
-                Museum donation
-              </h2>
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="text-sm font-extrabold tracking-[0.1em] text-ink-400 uppercase">
+                  Museum donation
+                </h2>
+                <Link to="/museum" className="text-xs font-semibold text-ore-400 hover:underline">
+                  Plan it →
+                </Link>
+              </div>
               <dl className="mt-3 space-y-2.5 text-sm">
-                {m.museum.minWeight && (
-                  <Row label="Min weight for max boost" value={m.museum.minWeight} />
+                <Row label="Goes in a display" value={`${m.museum.displayRarity} × ${
+                  museumDisplayByRarity.get(m.museum.displayRarity)?.total ?? 0
+                }`} />
+                {m.museum.minWeight != null && (
+                  <Row label="Min weight for max boost" value={`${m.museum.minWeight}kg`} />
                 )}
-                {m.museum.maxBoost && <Row label="Max boost" value={m.museum.maxBoost} />}
               </dl>
-              {m.museum.stats.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {m.museum.stats.map((s) => (
+              <ul className="mt-3 space-y-1.5">
+                {m.museum.boosts.map((b) => (
+                  <li
+                    key={b.stat}
+                    className="flex items-baseline justify-between gap-2 rounded-md bg-white/4 px-2.5 py-1.5 text-sm"
+                  >
+                    <span className="truncate text-ink-300">{b.stat}</span>
                     <span
-                      key={s}
-                      className="rounded-md bg-vein-500/15 px-2 py-0.5 text-xs font-semibold text-vein-400 ring-1 ring-vein-500/25"
+                      className={cx(
+                        'numeric shrink-0 font-bold',
+                        b.value > 0 ? 'text-vein-400' : 'text-red-400',
+                      )}
                     >
-                      {s}
+                      {boostLabel(b.value)}
                     </span>
-                  ))}
-                </div>
-              )}
+                  </li>
+                ))}
+              </ul>
             </section>
           )}
 

@@ -87,7 +87,7 @@ export function Home() {
       </section>
 
       {/* --- what makes this different --- */}
-      <section className="mt-10 grid gap-3 sm:grid-cols-3">
+      <section className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Feature
           title="Reverse the lookup"
           body="The wiki makes you open every mineral to learn where it drops. Open a dig site here and see its whole loot table, ranked."
@@ -99,6 +99,12 @@ export function Home() {
           body="0.00002085% means nothing. “1 in 4.8M” means something. Every rate is shown both ways, on a log-scaled bar."
           to="/minerals"
           cta="See all minerals"
+        />
+        <Feature
+          title="Fill the museum"
+          body="Displays only take their own rarity, so it's 18 separate picks. Choose a stat and see the best ore for every slot."
+          to="/museum"
+          cta="Plan your museum"
         />
         <Feature
           title="Plan the run"

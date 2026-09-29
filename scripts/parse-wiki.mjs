@@ -6,6 +6,7 @@ import { parseEquipment } from './parse-equipment.mjs';
 import { parseBuilds } from './parse-builds.mjs';
 import { parseBlueprints } from './parse-blueprints.mjs';
 import { parseQuests, parseNpcs } from './parse-quests.mjs';
+import { parseMuseum } from './parse-museum.mjs';
 
 const raw = JSON.parse(readFileSync('data/raw/pages.json', 'utf8'));
 const { pages, templates, byCategory } = raw;
@@ -98,24 +99,8 @@ const minerals = byCategory.Minerals.map(title => {
   if (!p) return null;
 
   const name = plain(p.name) || title;
-  const museumWt = section(wt, 'Museum Usage');
-  let museum = null;
-  if (museumWt) {
-    // Line-anchored: "Minimum weight for maximum boost:" would otherwise also
-    // satisfy a bare /Boost:/ and /Maximum Boost:/ match.
-    const line = (re) => {
-      const m = museumWt.match(re);
-      return m ? plain(m[1]) : null;
-    };
-    const boostsRaw = (museumWt.match(/^\s*\*\s*Boosts?:\s*(.+)$/im) || [])[1] || '';
-    museum = {
-      minWeight: line(/^\s*\*\s*Minimum weight[^:]*:\s*(.+)$/im),
-      // "Boosts: {{Stat|Luck}}, {{Stat|Shake Speed}}" -> ['Luck', 'Shake Speed']
-      stats: [...boostsRaw.matchAll(/\{\{Stat\|([^{}]+)\}\}/gi)].map(m => m[1].trim()),
-      maxBoost: line(/^\s*\*\s*Maximum Boost:\s*(.+)$/im),
-    };
-    if (!museum.minWeight && !museum.stats.length && !museum.maxBoost) museum = null;
-  }
+  // Museum data is filled in below from the Museum page, which is the authority.
+  const hasMuseumSection = section(wt, 'Museum Usage') != null;
 
   const locations = [...new Set(refs(p.locations))].filter(l => siteTags[l]);
   let chances = parseChances(p.chances);
@@ -136,11 +121,32 @@ const minerals = byCategory.Minerals.map(title => {
     chances,
     ratesKnown: chances.some(c => c.percent != null),
     recipes: parseRecipes(p.recipes),
-    museum,
+    hasMuseumSection,
+    museum: null,
     trivia: p.trivia ? p.trivia.split('\n').map(l => plain(l.replace(/^\s*\*/, ''))).filter(Boolean) : [],
     wiki: `https://prospecting.miraheze.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`,
   };
 }).filter(Boolean);
+
+/* ---------- museum ----------------------------------------------------- */
+// The Museum page is the authority: it groups ores by the rarity of the display
+// that accepts them, and it signs the handful of boosts that are really debuffs.
+// Each mineral's own `== Museum Usage ==` section says the same thing less
+// precisely, so it gets overwritten here rather than kept as a second answer.
+const museum = parseMuseum(pages.Museum);
+const museumById = new Map((museum?.ores ?? []).map(o => [o.id, o]));
+// A mineral whose own page documents a museum boost but which the Museum page
+// never lists is a gap worth seeing, not something to paper over.
+const museumUnmatched = [];
+for (const mineral of minerals) {
+  const ore = museumById.get(mineral.id);
+  if (!ore) {
+    if (mineral.hasMuseumSection) museumUnmatched.push(mineral.name);
+    continue;
+  }
+  mineral.museum = { minWeight: ore.minWeight, boosts: ore.boosts, displayRarity: ore.rarity };
+}
+for (const mineral of minerals) delete mineral.hasMuseumSection;
 
 /* ---------- gear (pans / shovels / sluices) ---------------------------- */
 // Event gear is priced in an event currency, given as a parameter named after
@@ -336,6 +342,7 @@ const db = {
   blueprints,
   quests,
   npcs,
+  museum,
   builds,
   buildStages,
   buildGuide: {
@@ -357,6 +364,11 @@ console.log(
   (guessed.length ? ` · ${guessed.length} named by fallback: ${guessed.map(b => b.name).join(', ')}` : ''),
 );
 console.log(`quests ${quests.length} across ${new Set(quests.map(q => q.location)).size} locations · ${quests.filter(q => q.buff).length} grant a permanent buff`);
+console.log(
+  `museum ${museum ? museum.ores.length : 0} ores over ${museum ? museum.slots : 0} display slots` +
+  ` · ${museum ? museum.stats.length : 0} stats · ${museum ? museum.modifiers.length : 0} modifiers` +
+  (museumUnmatched.length ? ` · NOT on the Museum page: ${museumUnmatched.join(', ')}` : ''),
+);
 console.log(`npcs ${npcs.length} (${npcs.filter(n => n.quests.length).length} give quests, ${npcs.filter(n => n.places.length).length} placed, ${npcs.filter(n => n.summary).length} described)`);
 console.log(`blueprints ${blueprints.length} (${blueprints.filter(b => b.kind === 'quest').length} quest, ${blueprints.filter(b => b.kind === 'purchase').length} bought, ${blueprints.filter(b => b.kind === 'found').length} found) · matched to ${equipment.filter(e => e.blueprint).length} items`);
 console.log(`equipment ${equipment.length} (${equipment.filter(e => e.limited).length} limited) · slots ${[...new Set(equipment.map(e => e.slot))].join('/')}`);

@@ -1,10 +1,11 @@
 import {
   minerals, digSites, locations, gearGroups, GEAR_LABEL, equipment, npcs, quests,
+  museum, museumOresByStat, boostFor, boostLabel,
   type GearKind, money, gearPrice,
 } from './db';
 
 export type ResultKind =
-  | 'mineral' | 'site' | 'location' | 'gear' | 'equipment' | 'npc' | 'quest';
+  | 'mineral' | 'site' | 'location' | 'gear' | 'equipment' | 'npc' | 'quest' | 'museum';
 
 export interface SearchItem {
   kind: ResultKind;
@@ -31,7 +32,9 @@ export const searchIndex: SearchItem[] = [
     meta: money(m.value),
     tag: m.rarity,
     colors: null,
-    haystack: `${m.name} ${m.rarity} ${m.description} ${m.locations.join(' ')}`.toLowerCase(),
+    haystack: `${m.name} ${m.rarity} ${m.description} ${m.locations.join(' ')} ${
+      m.museum ? `museum ${m.museum.boosts.map((b) => b.stat).join(' ')}` : ''
+    }`.toLowerCase(),
   })),
   ...digSites.map((s) => ({
     kind: 'site' as const,
@@ -107,6 +110,25 @@ export const searchIndex: SearchItem[] = [
       haystack: `${g.name} ${kind} ${g.description} ${g.source}`.toLowerCase(),
     })),
   ),
+  // One entry per museum stat, because "where do I get more luck" is a question
+  // about a stat, not about a page. Each jumps straight to that stat selected.
+  ...museum.stats.map((stat) => {
+    const top = (museumOresByStat.get(stat) ?? [])[0];
+    return {
+      kind: 'museum' as const,
+      id: `museum-${stat}`,
+      name: `Museum — ${stat}`,
+      href: `/museum?stat=${encodeURIComponent(stat)}`,
+      image: null,
+      meta: top ? `best ${boostLabel(boostFor(top, stat))} ${top.name}` : '',
+      tag: 'Museum',
+      colors: null,
+      haystack: `museum ${stat} donation display pedestal boost ${(museumOresByStat.get(stat) ?? [])
+        .slice(0, 8)
+        .map((o) => o.name)
+        .join(' ')}`.toLowerCase(),
+    };
+  }),
 ];
 
 /**
@@ -133,7 +155,7 @@ function fuzzyScore(needle: string, hay: string): number {
 }
 
 const KIND_WEIGHT: Record<ResultKind, number> = {
-  mineral: 30, site: 20, location: 10, npc: 8, equipment: 5, quest: 3, gear: 0,
+  mineral: 30, site: 20, location: 10, npc: 8, museum: 6, equipment: 5, quest: 3, gear: 0,
 };
 
 export function search(query: string, limit = 24): SearchItem[] {
