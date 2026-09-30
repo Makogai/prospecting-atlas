@@ -1,11 +1,13 @@
 import {
   minerals, digSites, locations, gearGroups, GEAR_LABEL, equipment, npcs, quests,
   museum, museumOresByStat, boostFor, boostLabel,
-  type GearKind, money, gearPrice,
+  modifiers, codes, enchants, relics, potions, runes, excavations, mastery,
+  type GearKind, money, gearPrice, percent,
 } from './db';
 
 export type ResultKind =
-  | 'mineral' | 'site' | 'location' | 'gear' | 'equipment' | 'npc' | 'quest' | 'museum';
+  | 'mineral' | 'site' | 'location' | 'gear' | 'equipment' | 'npc' | 'quest' | 'museum'
+  | 'modifier' | 'code' | 'enchant' | 'relic' | 'potion' | 'rune' | 'excavation' | 'mastery';
 
 export interface SearchItem {
   kind: ResultKind;
@@ -129,6 +131,102 @@ export const searchIndex: SearchItem[] = [
         .join(' ')}`.toLowerCase(),
     };
   }),
+
+  ...modifiers.map((m) => ({
+    kind: 'modifier' as const,
+    id: `mod-${m.id}`,
+    name: m.name,
+    href: `/modifiers`,
+    image: null,
+    meta: m.sellMultiplier != null ? `${m.sellMultiplier}× sell` : '',
+    tag: 'Modifier',
+    colors: m.color ? [m.color, m.color] : null,
+    haystack: `${m.name} modifier sell value multiplier ${m.description ?? ''} ${m.source ?? ''}`.toLowerCase(),
+  })),
+
+  ...codes.map((c) => ({
+    kind: 'code' as const,
+    id: `code-${c.code}`,
+    name: c.code,
+    href: '/codes',
+    image: null,
+    meta: c.active ? c.rewards.map((r) => `${r.value} ${r.name}`).join(', ') : 'expired',
+    tag: c.active ? 'Code' : 'Expired',
+    colors: null,
+    haystack: `${c.code} code redeem free ${c.active ? 'active working' : 'expired dead'}`.toLowerCase(),
+  })),
+
+  ...enchants.map((e) => ({
+    kind: 'enchant' as const,
+    id: `ench-${e.id}`,
+    name: e.name,
+    href: '/enchanting',
+    image: null,
+    meta: e.bestChance != null ? `${percent(e.bestChance)} on a ${e.slot.toLowerCase()}` : e.slot,
+    tag: 'Enchant',
+    colors: null,
+    haystack: `${e.name} enchant ${e.slot} ${e.effect} ${e.stats.join(' ')}`.toLowerCase(),
+  })),
+
+  ...relics.map((r) => ({
+    kind: 'relic' as const,
+    id: `relic-${r.id}`,
+    name: r.name,
+    href: '/relics',
+    image: r.image,
+    meta: `${r.category} relic`,
+    tag: 'Relic',
+    colors: null,
+    haystack: `${r.name} relic ${r.category} ${r.description ?? ''} ${r.triggers.join(' ')}`.toLowerCase(),
+  })),
+
+  ...potions.map((p) => ({
+    kind: 'potion' as const,
+    id: `potion-${p.id}`,
+    name: p.name,
+    href: '/items',
+    image: p.image,
+    meta: p.money != null ? money(p.money) : (p.priceLabel ?? ''),
+    tag: 'Potion',
+    colors: null,
+    haystack: `${p.name} potion ${p.effect} ${p.shop ?? ''} ${p.stats.join(' ')}`.toLowerCase(),
+  })),
+
+  ...runes.runes.map((r) => ({
+    kind: 'rune' as const,
+    id: `rune-${r.id}`,
+    name: r.name,
+    href: '/progression',
+    image: r.image,
+    meta: 'Rune',
+    tag: 'Rune',
+    colors: r.color ? [r.color, r.color] : null,
+    haystack: `${r.name} rune ${r.effect ?? ''} ${r.where ?? ''}`.toLowerCase(),
+  })),
+
+  ...excavations.sites.map((s) => ({
+    kind: 'excavation' as const,
+    id: `exc-${s.id}`,
+    name: s.name,
+    href: '/excavations',
+    image: null,
+    meta: `${s.region} · ${s.duration ?? ''}`,
+    tag: 'Excavation',
+    colors: null,
+    haystack: `${s.name} excavation site ${s.code ?? ''} ${s.region} permit`.toLowerCase(),
+  })),
+
+  ...mastery.tracks.map((t) => ({
+    kind: 'mastery' as const,
+    id: `mastery-${t.id}`,
+    name: `${t.name} mastery`,
+    href: '/progression',
+    image: null,
+    meta: t.boost ?? `${t.tiers.length} tiers`,
+    tag: 'Mastery',
+    colors: null,
+    haystack: `${t.name} mastery ${t.boost ?? ''} milestones`.toLowerCase(),
+  })),
 ];
 
 /**
@@ -155,7 +253,9 @@ function fuzzyScore(needle: string, hay: string): number {
 }
 
 const KIND_WEIGHT: Record<ResultKind, number> = {
-  mineral: 30, site: 20, location: 10, npc: 8, museum: 6, equipment: 5, quest: 3, gear: 0,
+  mineral: 30, site: 20, location: 10, npc: 8, museum: 6, equipment: 5,
+  code: 12, modifier: 9, enchant: 7, relic: 7, rune: 6, potion: 5,
+  excavation: 5, mastery: 4, quest: 3, gear: 0,
 };
 
 export function search(query: string, limit = 24): SearchItem[] {

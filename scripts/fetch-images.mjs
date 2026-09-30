@@ -19,6 +19,11 @@ db.locations.forEach(l => add(l.image));
 db.equipment.forEach(e => add(e.image));
 db.blueprints.forEach(b => add(b.image));
 db.npcs.forEach(n => add(n.image));
+db.potions.forEach(p => add(p.image));
+db.trinkets.forEach(t => add(t.image));
+db.relics.forEach(r => add(r.image));
+db.runes.runes.forEach(r => add(r.image));
+db.modifiers.forEach(m => add(m.image));
 
 const files = [...wanted];
 console.log(`${files.length} distinct images referenced`);

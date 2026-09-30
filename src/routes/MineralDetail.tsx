@@ -7,7 +7,7 @@ import { MobileDock } from '../components/MobileDock';
 import { yieldLabel } from '../../shared/estimate.mjs';
 import {
   mineralById, minerals, rarityByName, sitesFor, bestSiteFor, usedInRecipes,
-  locationForSite, money, odds, percent, boostLabel, museumDisplayByRarity,
+  locationForSite, money, odds, percent, boostLabel, museumDisplayByRarity, modifiers,
 } from '../lib/db';
 import {
   Empty, OddsBar, RarityTag, SectionTitle, SiteTag, Sprite, cx, gradientVars,
@@ -18,6 +18,12 @@ export function MineralDetail() {
   const m = id ? mineralById.get(id) : undefined;
   const [luck, setLuck] = useLuck();
   const luckRef = useRef<HTMLDivElement>(null);
+
+  // The handful worth showing beside a price: the best multipliers you can
+  // realistically dig for, rather than all 23.
+  const topModifiers = modifiers
+    .filter((mod) => mod.sellMultiplier != null && mod.sellMultiplier > 1)
+    .slice(0, 5);
   const [grind, setGrind] = useGrind();
 
   if (!m) {
@@ -320,6 +326,40 @@ export function MineralDetail() {
               <GrindPanel grind={grind} onChange={setGrind} />
               <LuckCaveat className="-mt-2 px-1" />
             </div>
+          )}
+
+          {m.value != null && topModifiers.length > 0 && (
+            <section className="panel p-5">
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="text-sm font-extrabold tracking-[0.1em] text-ink-400 uppercase">
+                  With a modifier
+                </h2>
+                <Link to="/modifiers" className="text-xs font-semibold text-ore-400 hover:underline">
+                  All {modifiers.length} →
+                </Link>
+              </div>
+              <p className="mt-1 text-[11px] text-ink-500">
+                {money(m.value)}/kg is the unmodified price. A modifier multiplies it.
+              </p>
+              <ul className="mt-3 space-y-1.5">
+                {topModifiers.map((mod) => (
+                  <li
+                    key={mod.id}
+                    className="flex items-baseline justify-between gap-2 rounded-md bg-white/4 px-2.5 py-1.5 text-sm"
+                  >
+                    <span className="truncate" style={mod.color ? { color: mod.color } : undefined}>
+                      {mod.name}
+                      <span className="numeric ml-1.5 text-[10px] text-ink-500">
+                        {mod.sellMultiplier}×
+                      </span>
+                    </span>
+                    <span className="numeric shrink-0 font-bold text-ore-400">
+                      {money((m.value ?? 0) * (mod.sellMultiplier ?? 1))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
 
           {m.museum && m.museum.boosts.length > 0 && (

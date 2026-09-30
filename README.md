@@ -225,6 +225,29 @@ equipment card, a one-line hint under any blueprint-gated item inside a build, a
 "needs N blueprints" count on the build itself. Ore names inside quest steps link to their drop
 tables, so "Collect 150 Glowmoss" is one click from knowing where Glowmoss comes from.
 
+## Systems coverage
+
+The wiki has ~409 article pages. Stage 1 now pulls **all** of them rather than a
+hand-picked list, so adding a parser never needs a re-fetch and nothing goes missing
+because we forgot to name it.
+
+| Parser | Covers |
+| --- | --- |
+| `parse-codes` | Redeemable codes, active and expired |
+| `parse-modifiers` | Sell multipliers (Perfect is 24x base), colours, dig chances |
+| `parse-enchants` | Pan and shovel enchants, per-ore altar odds |
+| `parse-excavations` | Six sites, permits, the 15-level table, reward pools |
+| `parse-relics` | Event / boost / enchant / misc relics and where each drops |
+| `parse-progression` | Levels, titles, runes, mastery tracks, permanent buffs |
+| `parse-items` | Potions by alchemist, trinkets, geodes, chest lootpools |
+| `parse-world` | Regions, currencies, and whether gear is still obtainable |
+| `parse-table` | Shared wikitable / tabber / section reading for all of the above |
+
+Two reconciliations happen in `parse-wiki.mjs` rather than in a parser, because they
+need two pages at once: a modifier's museum bonus is merged into its Modifiers-page
+record, and a mineral's museum entry is taken from the Museum page, which is the only
+one that signs debuffs.
+
 ## Announcing a change
 
 `src/data/changelog.ts` drives both the `/changelog` page and the corner popup. To announce

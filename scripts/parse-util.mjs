@@ -47,14 +47,27 @@ export function findTemplates(text, name) {
 export function plain(s) {
   if (!s) return '';
   return s
+    // A <br> is a real break; dropping it with the other tags glues the lines
+    // either side of it into one word.
+    .replace(/<br\s*\/?>/gi, ' ')
     .replace(/<[^>]+>/g, '')
     // {{Stat|Dig Speed}} renders as its argument, not the template name.
     .replace(/\{\{Stat\|([^{}]+)\}\}/gi, '$1')
+    // Same for {{Enchant|Blessed}} and {{Enchant|Mastered|solid}}, where only
+    // the first argument is the name — the second is a styling flag.
+    .replace(/\{\{Enchant\|([^|{}]+)(?:\|[^{}]*)?\}\}/gi, '$1')
     .replace(/\{\{([^{}|]+)(?:\|[^{}]*)?\}\}/g, '$1')
     .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2')
     .replace(/\[\[([^\]]+)\]\]/g, '$1')
     .replace(/'''?/g, '')
+    // Entities the wiki writes by hand. Left encoded, `&times;` shows up
+    // verbatim in reward lines like "Rubble Creek Luck: 1.05&times;".
     .replace(/&nbsp;/g, ' ')
+    .replace(/&times;/gi, '×')
+    .replace(/&[nm]dash;/gi, '–')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&amp;/gi, '&')
     .replace(/\s+/g, ' ')
     .trim();
 }

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { locations, digSiteById, money } from '../lib/db';
+import { locations, digSiteById, money, regions } from '../lib/db';
 import { Sprite, gradientVars } from '../components/ui';
 
 export function Locations() {
@@ -14,6 +14,35 @@ export function Locations() {
           The places you travel to, and the dig sites inside each one.
         </p>
       </header>
+
+      {/* Regions are how players talk about the map — "it's on Snowy Mountain" —
+          but the wiki's Locations page is a flat list, so this is the only
+          place the grouping exists. */}
+      <div className="mb-6 flex flex-wrap gap-2">
+        {regions.map((r) => (
+          <span key={r.id} className="rounded-xl bg-white/4 px-3 py-2 ring-1 ring-white/8">
+            <span className="block text-[10px] font-bold tracking-[0.12em] text-ink-500 uppercase">
+              {r.name}
+            </span>
+            <span className="mt-0.5 flex flex-wrap gap-x-2 gap-y-0.5">
+              {r.locations.map((name) => {
+                const hit = locations.find((l) => l.name === name);
+                return hit ? (
+                  <Link
+                    key={name}
+                    to={`/locations/${hit.id}`}
+                    className="text-xs font-semibold text-ink-300 hover:text-ore-400"
+                  >
+                    {name}
+                  </Link>
+                ) : (
+                  <span key={name} className="text-xs text-ink-400">{name}</span>
+                );
+              })}
+            </span>
+          </span>
+        ))}
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {withSites.map((l) => {

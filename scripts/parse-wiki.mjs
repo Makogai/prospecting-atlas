@@ -7,6 +7,14 @@ import { parseBuilds } from './parse-builds.mjs';
 import { parseBlueprints } from './parse-blueprints.mjs';
 import { parseQuests, parseNpcs } from './parse-quests.mjs';
 import { parseMuseum } from './parse-museum.mjs';
+import { parseCodes } from './parse-codes.mjs';
+import { parseModifiers } from './parse-modifiers.mjs';
+import { parseEnchants, parseEnchantHowTo } from './parse-enchants.mjs';
+import { parseExcavations } from './parse-excavations.mjs';
+import { parseRelics } from './parse-relics.mjs';
+import { parseLevels, parseRunes, parsePermanentBuffs, parseMastery } from './parse-progression.mjs';
+import { parsePotions, parseTrinkets, parseGeodes, parseTreasureChests } from './parse-items.mjs';
+import { parseRegions, parseCurrencies, gearObtainability } from './parse-world.mjs';
 
 const raw = JSON.parse(readFileSync('data/raw/pages.json', 'utf8'));
 const { pages, templates, byCategory } = raw;
@@ -328,6 +336,60 @@ try {
   console.warn('data/raw/builds.txt missing — skipping community builds');
 }
 
+/* ---------- systems ---------------------------------------------------- */
+
+const codes = parseCodes(pages.Codes);
+const enchants = parseEnchants(pages.Enchanting);
+const excavations = parseExcavations(pages.Excavations);
+const relicData = parseRelics(pages.Relics);
+const levels = parseLevels(pages.Level);
+const runes = parseRunes(pages.Runes);
+const permanentBuffs = parsePermanentBuffs(pages['Permanent Buffs']);
+const mastery = parseMastery(pages.Mastery);
+const potions = parsePotions(pages.Potions);
+const trinkets = parseTrinkets(pages.Trinkets);
+const geodes = parseGeodes(pages.Geodes);
+const treasureChests = parseTreasureChests(pages['Treasure Chest']);
+const currencies = parseCurrencies(pages);
+
+// Reuses the place index built for NPC locations, so a region only ever lists
+// somewhere that exists.
+const regions = parseRegions(pages, knownPlaces);
+
+// A location's region, so a dig-site page can say where in the world it is.
+const regionOf = new Map();
+for (const r of regions) for (const l of r.locations) regionOf.set(l, r.name);
+for (const l of locations) l.region = regionOf.get(l.name) ?? null;
+
+/**
+ * Modifiers are described twice: the Modifiers page has the sell multiplier and
+ * how to get one, the Museum page has what it does on a pedestal. One record.
+ */
+const modifiers = parseModifiers(pages.Modifiers);
+const museumMods = new Map((museum?.modifiers ?? []).map(m => [m.name.toLowerCase(), m]));
+let modsWithoutSource = [];
+for (const mod of modifiers) {
+  const fromMuseum = museumMods.get(mod.name.toLowerCase());
+  if (fromMuseum) {
+    if (!mod.museumStats.length) mod.museumStats = fromMuseum.stats;
+    if (mod.percent == null) mod.percent = fromMuseum.chance;
+    mod.source = mod.note ?? fromMuseum.source ?? null;
+  } else {
+    mod.source = mod.note ?? null;
+  }
+  const hasRoute = mod.source || mod.tools.length || mod.locations.length || mod.events.length;
+  if (mod.percent == null && !hasRoute) modsWithoutSource.push(mod.name);
+}
+
+// Discontinued gear, which only the individual item pages record.
+const allGear = [...pans, ...shovels, ...sluices];
+const { byId: obtain, matched: obtainMatched } = gearObtainability(pages, allGear);
+for (const item of allGear) {
+  const hit = obtain.get(item.id);
+  item.obtained = hit?.obtained ?? null;
+  item.obtainable = hit ? hit.obtainable : true;
+}
+
 /* ---------- emit ------------------------------------------------------- */
 mkdirSync('src/data', { recursive: true });
 const db = {
@@ -343,6 +405,23 @@ const db = {
   quests,
   npcs,
   museum,
+  modifiers,
+  codes,
+  enchants,
+  enchantHowTo: parseEnchantHowTo(pages.Enchanting),
+  excavations,
+  relics: relicData.relics,
+  relicAcquisition: relicData.acquisition,
+  levels,
+  runes,
+  permanentBuffs,
+  mastery,
+  potions,
+  trinkets,
+  geodes,
+  treasureChests,
+  currencies,
+  regions,
   builds,
   buildStages,
   buildGuide: {
@@ -369,6 +448,17 @@ console.log(
   ` · ${museum ? museum.stats.length : 0} stats · ${museum ? museum.modifiers.length : 0} modifiers` +
   (museumUnmatched.length ? ` · NOT on the Museum page: ${museumUnmatched.join(', ')}` : ''),
 );
+console.log(
+  `modifiers ${modifiers.length} (top ${modifiers[0]?.sellMultiplier}x sell)` +
+  (modsWithoutSource.length ? ` · no route given: ${modsWithoutSource.join(', ')}` : ''),
+);
+console.log(`codes ${codes.length} (${codes.filter(c => c.active).length} active)`);
+console.log(`enchants ${enchants.length} (${enchants.filter(e => e.slot === 'Pan').length} pan, ${enchants.filter(e => e.slot === 'Shovel').length} shovel)`);
+console.log(`excavations ${excavations?.sites.length ?? 0} sites, ${excavations?.levels.length ?? 0} levels` + (excavations?.unmatchedRewards.length ? ` · no rewards: ${excavations.unmatchedRewards.join(', ')}` : ''));
+console.log(`relics ${relicData.relics.length} (${[...new Set(relicData.relics.map(r => r.category))].join(', ')})`);
+console.log(`progression: ${levels?.maxLevel ?? 0} levels · ${levels?.titles.length ?? 0} titles · ${runes?.runes.length ?? 0} runes · ${mastery?.tracks.length ?? 0} mastery tracks · ${permanentBuffs.length} permanent buffs`);
+console.log(`items: ${potions.length} potions · ${trinkets.length} trinkets · ${treasureChests?.loot.length ?? 0} chest lootpools`);
+console.log(`regions ${regions.length} · gear obtainability ${obtainMatched}/${allGear.length} (${allGear.filter(g => !g.obtainable).length} discontinued)`);
 console.log(`npcs ${npcs.length} (${npcs.filter(n => n.quests.length).length} give quests, ${npcs.filter(n => n.places.length).length} placed, ${npcs.filter(n => n.summary).length} described)`);
 console.log(`blueprints ${blueprints.length} (${blueprints.filter(b => b.kind === 'quest').length} quest, ${blueprints.filter(b => b.kind === 'purchase').length} bought, ${blueprints.filter(b => b.kind === 'found').length} found) · matched to ${equipment.filter(e => e.blueprint).length} items`);
 console.log(`equipment ${equipment.length} (${equipment.filter(e => e.limited).length} limited) · slots ${[...new Set(equipment.map(e => e.slot))].join('/')}`);

@@ -143,6 +143,10 @@ export interface Gear {
   passive: string | null;
   source: string;
   sourceRefs: string[];
+  /** What the item's own page says under "Obtained"; null when it has no page. */
+  obtained: string | null;
+  /** False for gear that was removed from the game. */
+  obtainable: boolean;
 }
 
 export type GearKind = 'pans' | 'shovels' | 'sluices';
@@ -296,6 +300,204 @@ export interface LuckEvent {
   note: string | null;
 }
 
+
+/* ---------- systems ----------------------------------------------------- */
+
+/** A modifier multiplies a mineral's sell value — Perfect is 24x base. */
+export interface Modifier {
+  id: string;
+  name: string;
+  sellMultiplier: number | null;
+  color: string | null;
+  colorName: string | null;
+  description: string | null;
+  image: string | null;
+  tools: string[];
+  equipment: string[];
+  locations: string[];
+  events: string[];
+  museumStats: string[];
+  /** Percent chance per dig, or null when it can't be dug for. */
+  percent: number | null;
+  oneIn: number | null;
+  note: string | null;
+  /** Where it comes from when there's no dig chance. */
+  source: string | null;
+}
+
+export interface CodeReward {
+  name: string;
+  value: string;
+  /** Set for timed boosts: "30m", "2h". */
+  duration: string | null;
+  amount: number | null;
+}
+
+export interface GameCode {
+  code: string;
+  active: boolean;
+  rewards: CodeReward[];
+}
+
+export interface Enchant {
+  id: string;
+  name: string;
+  slot: 'Pan' | 'Shovel';
+  effect: string;
+  refs: string[];
+  stats: string[];
+  /** Per-ore odds for pans; a single flat entry for shovels. */
+  chances: { via: string | null; percent: number }[];
+  bestChance: number | null;
+  note: string | null;
+  locked: string | null;
+}
+
+export interface ExcavationSite {
+  id: string;
+  name: string;
+  /** A–F; the level table refers to sites by this letter. */
+  code: string | null;
+  region: string;
+  where: string | null;
+  permit: number | null;
+  runCost: number | null;
+  itemsLabel: string | null;
+  duration: string | null;
+  places: string[];
+  rewards: { name: string; description: string | null; effect: string | null; percent: number | null }[];
+}
+
+export interface ExcavationLevel {
+  level: number;
+  luck: number | null;
+  items: Record<string, string | null>;
+  speedMultiplier: number | null;
+  durations: Record<string, string | null>;
+}
+
+export interface Excavations {
+  summary: string;
+  levelCap: number | null;
+  places: string[];
+  unmatchedRewards: string[];
+  sites: ExcavationSite[];
+  levels: ExcavationLevel[];
+  wiki: string;
+}
+
+export interface RelicLine {
+  text: string;
+  depth: number;
+  refs: string[];
+}
+
+export interface Relic {
+  id: string;
+  name: string;
+  category: string;
+  image: string | null;
+  description: string | null;
+  effect: string | null;
+  triggers: string[];
+  obtainment: RelicLine[];
+  usage: RelicLine[];
+}
+
+export interface Levels {
+  xpByRarity: { rarity: string; xp: number | null }[];
+  steps: { from: number; to: number; cost: number | null; total: number }[];
+  maxLevel: number | null;
+  titles: { name: string; range: string; color: string | null }[];
+  wiki: string;
+}
+
+export interface Rune {
+  id: string;
+  name: string;
+  color: string | null;
+  image: string | null;
+  effect: string | null;
+  where: string | null;
+  places: string[];
+}
+
+export interface MasteryTier {
+  name: string;
+  tier: number | null;
+  steps: string[];
+  rewards: string | null;
+}
+
+export interface MasteryTrack {
+  id: string;
+  name: string;
+  boost: string | null;
+  kind: 'Location' | 'Activity';
+  tiers: MasteryTier[];
+}
+
+export interface Mastery {
+  overview: string | null;
+  /** The wiki is explicit that location mastery luck does not stack. */
+  stacks: boolean;
+  tracks: MasteryTrack[];
+  wiki: string;
+}
+
+export interface PermanentBuff {
+  id: string;
+  name: string;
+  source: string | null;
+  lines: string[];
+}
+
+export interface Potion {
+  id: string;
+  name: string;
+  shop: string | null;
+  money: number | null;
+  shards: number | null;
+  priceLabel: string | null;
+  effect: string;
+  stats: string[];
+  duration: string | null;
+  description: string | null;
+  image: string | null;
+}
+
+export interface Trinket {
+  id: string;
+  name: string;
+  color: string | null;
+  perk: string | null;
+  image: string | null;
+  obtained: string | null;
+  where: string | null;
+  places: string[];
+}
+
+export interface PageSection {
+  heading: string;
+  lines: string[];
+  prose: string[];
+}
+
+export interface Currency {
+  id: string;
+  name: string;
+  summary: string | null;
+  obtain: string[];
+  spend: string[];
+}
+
+export interface Region {
+  id: string;
+  name: string;
+  summary: string | null;
+  locations: string[];
+}
+
 /* ---------- the database ----------------------------------------------- */
 
 export const db = raw as unknown as {
@@ -313,6 +515,23 @@ export const db = raw as unknown as {
   quests: Quest[];
   npcs: Npc[];
   museum: MuseumData;
+  modifiers: Modifier[];
+  codes: GameCode[];
+  enchants: Enchant[];
+  enchantHowTo: string[];
+  excavations: Excavations;
+  relics: Relic[];
+  relicAcquisition: { text: string; refs: string[] }[];
+  levels: Levels;
+  runes: { slots: { level: number; slots: number }[]; runes: Rune[]; mechanics: string[]; wiki: string };
+  permanentBuffs: PermanentBuff[];
+  mastery: Mastery;
+  potions: Potion[];
+  trinkets: Trinket[];
+  geodes: { sections: Record<string, PageSection>; wiki: string };
+  treasureChests: { sections: Record<string, PageSection>; loot: { id: string; place: string; items: string[] }[]; wiki: string };
+  currencies: Currency[];
+  regions: Region[];
   builds: Build[];
   buildStages: { stage: string; area: string; highest: string | null }[];
   buildGuide: { title: string; url: string; authors: string[]; snapshot: string };
@@ -321,6 +540,9 @@ export const db = raw as unknown as {
 export const {
   minerals, digSites, locations, pans, shovels, sluices, rarities, events, equipment,
   builds, buildGuide, blueprints, buildStages, quests, npcs, museum,
+  modifiers, codes, enchants, enchantHowTo, excavations, relics, relicAcquisition,
+  levels, runes, permanentBuffs, mastery, potions, trinkets, geodes, treasureChests,
+  currencies, regions,
 } = db;
 
 export const npcByName = new Map(npcs.map((n) => [n.name, n]));

@@ -264,6 +264,13 @@ function GearCard({
       )}
 
       <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/6 pt-3">
+        {/* Only the individual wiki pages record this, and without it the site
+            lists removed gear as though you could still go and buy it. */}
+        {!g.obtainable && (
+          <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-bold text-red-300 ring-1 ring-red-500/25">
+            {g.obtained ?? 'No longer obtainable'}
+          </span>
+        )}
         <span className="text-[11px] text-ink-500">From</span>
         {g.sourceRefs.length > 0 ? (
           g.sourceRefs.map((r) =>

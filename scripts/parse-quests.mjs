@@ -44,7 +44,7 @@ function tabs(wikitext) {
  * `{{Quest |Quest = … }}` bodies in order, with the character offset of each,
  * so a quest can be tied to the `; NPC:` heading above it.
  */
-function questBlocks(text) {
+export function questBlocks(text) {
   const out = [];
   const needle = '{{Quest';
   let idx = 0;
@@ -69,7 +69,7 @@ function questBlocks(text) {
 }
 
 /** `|Quest = X |QuestStep1 = Y` -> { quest: 'X', queststep1: 'Y' } */
-function questFields(body) {
+export function questFields(body) {
   const out = {};
   // Fields are top level; a value can contain [[links]] and {{templates}}.
   let depth = 0;

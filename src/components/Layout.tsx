@@ -5,18 +5,60 @@ import { WhatsNew, useUnseen } from './WhatsNew';
 import { db } from '../lib/db';
 import { cx } from './ui';
 
-const NAV = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/minerals', label: 'Minerals' },
-  { to: '/sites', label: 'Dig Sites' },
-  { to: '/locations', label: 'Locations' },
-  { to: '/gear/pans', label: 'Gear' },
-  { to: '/equipment', label: 'Equipment' },
-  { to: '/builds', label: 'Builds' },
-  { to: '/quests', label: 'Quests' },
-  { to: '/museum', label: 'Museum' },
-  { to: '/compare', label: 'Compare' },
+/**
+ * Grouped navigation.
+ *
+ * A flat bar worked at six pages and falls apart at fifteen, so the sections
+ * are grouped by the question you arrived with rather than by which wiki page
+ * the data came from — "where do I find this" is one menu whether the answer
+ * is a mineral, a dig site or a region.
+ */
+interface NavItem {
+  to: string;
+  label: string;
+  hint: string;
+  end?: boolean;
+}
+
+const NAV: { label: string; items: NavItem[] }[] = [
+  {
+    label: 'Find',
+    items: [
+      { to: '/minerals', label: 'Minerals', hint: 'Every ore, value and drop rate' },
+      { to: '/sites', label: 'Dig Sites', hint: 'Full loot table per site' },
+      { to: '/locations', label: 'Locations', hint: 'The map, by region' },
+      { to: '/compare', label: 'Compare', hint: 'One site that covers your list' },
+    ],
+  },
+  {
+    label: 'Gear',
+    items: [
+      { to: '/gear/pans', label: 'Pans, Shovels & Sluices', hint: 'Stats side by side' },
+      { to: '/equipment', label: 'Equipment', hint: 'Rings, charms, necklaces' },
+      { to: '/enchanting', label: 'Enchanting', hint: 'Altar odds per ore' },
+      { to: '/builds', label: 'Builds', hint: 'Community loadouts by stage' },
+    ],
+  },
+  {
+    label: 'Progress',
+    items: [
+      { to: '/quests', label: 'Quests & NPCs', hint: 'Who gives what, and where' },
+      { to: '/museum', label: 'Museum', hint: 'Plan all 18 displays' },
+      { to: '/progression', label: 'Levels & Mastery', hint: 'XP, titles, runes, buffs' },
+      { to: '/excavations', label: 'Excavations', hint: 'Permits, timers, rewards' },
+    ],
+  },
+  {
+    label: 'Items',
+    items: [
+      { to: '/relics', label: 'Relics', hint: 'Events, boosts and enchant books' },
+      { to: '/items', label: 'Potions & Trinkets', hint: 'Consumables and currencies' },
+      { to: '/modifiers', label: 'Modifiers', hint: 'What multiplies a sell price' },
+      { to: '/codes', label: 'Codes', hint: 'Free rewards, active first' },
+    ],
+  },
 ];
+
 
 const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform);
 
@@ -24,6 +66,7 @@ export function Layout() {
   const { unseen } = useUnseen();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const { pathname } = useLocation();
 
   // Global ⌘K / Ctrl-K, plus "/" as a bare shortcut when not already typing.
@@ -41,6 +84,7 @@ export function Layout() {
 
   useEffect(() => {
     setMenuOpen(false);
+    setOpenMenu(null);
     window.scrollTo({ top: 0 });
   }, [pathname]);
 
@@ -58,23 +102,55 @@ export function Layout() {
           </Link>
 
           <nav className="ml-2 hidden items-center gap-0.5 md:flex">
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.end}
-                className={({ isActive }) =>
-                  cx(
-                    'rounded-lg px-3 py-1.5 text-sm font-semibold transition',
-                    isActive || (!n.end && pathname.startsWith(n.to.split('/').slice(0, 2).join('/')))
-                      ? 'bg-white/8 text-ink-100'
-                      : 'text-ink-400 hover:bg-white/5 hover:text-ink-100',
-                  )
-                }
-              >
-                {n.label}
-              </NavLink>
-            ))}
+            {NAV.map((group) => {
+              const active = group.items.some((i) => pathname.startsWith(i.to.split('/').slice(0, 2).join('/')));
+              const open = openMenu === group.label;
+              return (
+                <div
+                  key={group.label}
+                  className="relative"
+                  onMouseEnter={() => setOpenMenu(group.label)}
+                  onMouseLeave={() => setOpenMenu(null)}
+                >
+                  <button
+                    onClick={() => setOpenMenu(open ? null : group.label)}
+                    aria-expanded={open}
+                    className={cx(
+                      'flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-semibold transition',
+                      active || open ? 'bg-white/8 text-ink-100' : 'text-ink-400 hover:bg-white/5 hover:text-ink-100',
+                    )}
+                  >
+                    {group.label}
+                    <span aria-hidden className={cx('text-[9px] transition', open && 'rotate-180')}>
+                      ▼
+                    </span>
+                  </button>
+
+                  {open && (
+                    <div className="absolute left-0 z-50 w-72 pt-2">
+                      <div className="overflow-hidden rounded-xl border border-white/12 bg-rock-900/98 p-1.5 shadow-2xl shadow-black/60 backdrop-blur-xl">
+                        {group.items.map((item) => (
+                          <NavLink
+                            key={item.to}
+                            to={item.to}
+                            onClick={() => setOpenMenu(null)}
+                            className={({ isActive }) =>
+                              cx(
+                                'block rounded-lg px-3 py-2 transition',
+                                isActive ? 'bg-white/10' : 'hover:bg-white/6',
+                              )
+                            }
+                          >
+                            <span className="block text-sm font-bold">{item.label}</span>
+                            <span className="block text-[11px] text-ink-500">{item.hint}</span>
+                          </NavLink>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
           <button
@@ -122,21 +198,29 @@ export function Layout() {
         </div>
 
         {menuOpen && (
-          <nav className="grid gap-1 border-t border-white/8 px-4 py-3 md:hidden">
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.end}
-                className={({ isActive }) =>
-                  cx(
-                    'rounded-lg px-3 py-2 text-sm font-semibold',
-                    isActive ? 'bg-white/8' : 'text-ink-400',
-                  )
-                }
-              >
-                {n.label}
-              </NavLink>
+          <nav className="max-h-[70vh] overflow-y-auto border-t border-white/8 px-4 py-3 md:hidden">
+            {NAV.map((group) => (
+              <div key={group.label} className="mb-3 last:mb-0">
+                <p className="mb-1 px-1 text-[10px] font-bold tracking-[0.14em] text-ink-500 uppercase">
+                  {group.label}
+                </p>
+                <div className="grid gap-0.5">
+                  {group.items.map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      className={({ isActive }) =>
+                        cx(
+                          'rounded-lg px-3 py-2 text-sm font-semibold',
+                          isActive ? 'bg-white/8 text-ink-100' : 'text-ink-400',
+                        )
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
         )}

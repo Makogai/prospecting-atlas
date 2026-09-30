@@ -26,6 +26,37 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-everything-else',
+    date: '2026-09-30',
+    title: 'Codes, enchanting, excavations, relics, progression and more',
+    tag: 'new',
+    body: 'Seven new sections covering the systems the site had nothing on: redeemable codes, altar enchant odds, excavation permits and timers, relics, levels and mastery, potions and trinkets, and what a modifier does to a sell price.',
+    href: '/codes',
+  },
+  {
+    id: '2026-09-30-modifier-values',
+    date: '2026-09-30',
+    title: 'Prices now account for modifiers',
+    tag: 'fixed',
+    body: 'Every value on the site was the unmodified price with no hint that a Perfect roll is worth 24 times it. Mineral pages now show what the top modifiers would make a kilo worth.',
+    href: '/modifiers',
+  },
+  {
+    id: '2026-09-30-nav-groups',
+    date: '2026-09-30',
+    title: 'Navigation grouped into four menus',
+    tag: 'improved',
+    body: 'Fifteen sections do not fit in a flat bar, so they are grouped by what you came to find out rather than by which wiki page the data came from.',
+  },
+  {
+    id: '2026-09-30-discontinued-gear',
+    date: '2026-09-30',
+    title: 'Removed gear is marked as removed',
+    tag: 'fixed',
+    body: 'The Galactic Pan and Shovel were listed like anything else you could go and buy. Only the individual wiki pages record that, so the site never knew.',
+    href: '/gear/pans',
+  },
+  {
     id: '2026-09-30-mobile-panels',
     date: '2026-09-30',
     title: 'Phone layout: the panel you care about comes first',

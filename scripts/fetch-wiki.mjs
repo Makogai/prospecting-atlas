@@ -17,6 +17,25 @@ const INDEX_PAGES = [
   'Quests', 'NPCs',
   // Blueprint (singular) is the page that says how each one is obtained.
   'Blueprint',
+
+  // Progression systems. None of these sit in a category, and between them
+  // they're the answer to "why am I not getting better at this".
+  'Level', 'Mastery', 'Titles', 'Runes', 'Mutations', 'Permanent Buffs',
+  'Stat Systems Guide',
+
+  // Activities and the things they hand out.
+  'Excavations', 'Relic Crafting', 'Treasure Chest', 'Fallen Crate',
+  'Daily Login Bonus', 'Shrines', 'MVP',
+
+  // Economy: what the currencies are and who takes them.
+  'Meteor Shards', "Prospector's Shop", 'Traveling Merchant',
+
+  // Fixed world objects people ask where to find.
+  'Crafting Anvil', 'Magma Forge', 'Vault', 'Warp Device',
+  'Manage Museums Board', 'Visit Museums Globe',
+
+  // Regions group locations; the Locations page itself is a flat list.
+  'Mainland', 'Snowy Mountain', 'Sunscorched Desert',
 ];
 
 const CATEGORIES = [
@@ -32,7 +51,21 @@ async function main() {
     return;
   }
 
+  // Every article on the wiki, not just the ones we currently parse. The list
+  // is ~400 pages, and pulling the lot means adding a parser never needs a
+  // re-fetch — and nothing can be missing because we forgot to name it.
   const titles = new Set(INDEX_PAGES);
+  let apcont;
+  do {
+    const j = await api({
+      action: 'query', list: 'allpages', apnamespace: '0', aplimit: '500',
+      ...(apcont ? { apcontinue: apcont } : {}),
+    });
+    j.query.allpages.forEach(p => titles.add(p.title));
+    apcont = j.continue?.apcontinue;
+  } while (apcont);
+  console.log(`mainspace articles -> ${titles.size}`);
+
   const byCategory = {};
   for (const cat of CATEGORIES) {
     const members = await categoryMembers(cat);

@@ -17,6 +17,13 @@ import { BuildsPage } from './routes/Builds';
 import { QuestsPage } from './routes/Quests';
 import { MuseumPage } from './routes/Museum';
 import { ChangelogPage } from './routes/Changelog';
+import { CodesPage } from './routes/Codes';
+import { ModifiersPage } from './routes/Modifiers';
+import { EnchantingPage } from './routes/Enchanting';
+import { ExcavationsPage } from './routes/Excavations';
+import { RelicsPage } from './routes/Relics';
+import { ProgressionPage } from './routes/Progression';
+import { ItemsPage } from './routes/Items';
 import { Compare } from './routes/Compare';
 import { NotFound } from './routes/NotFound';
 
@@ -38,6 +45,13 @@ createRoot(document.getElementById('root')!).render(
           <Route path="quests" element={<QuestsPage />} />
           <Route path="museum" element={<MuseumPage />} />
           <Route path="changelog" element={<ChangelogPage />} />
+          <Route path="codes" element={<CodesPage />} />
+          <Route path="modifiers" element={<ModifiersPage />} />
+          <Route path="enchanting" element={<EnchantingPage />} />
+          <Route path="excavations" element={<ExcavationsPage />} />
+          <Route path="relics" element={<RelicsPage />} />
+          <Route path="progression" element={<ProgressionPage />} />
+          <Route path="items" element={<ItemsPage />} />
           <Route path="compare" element={<Compare />} />
           <Route path="*" element={<NotFound />} />
         </Route>
