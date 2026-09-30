@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { excavations, money, percent, digSiteByName, locationByName } from '../lib/db';
 import { SectionTitle, cx } from '../components/ui';
+import { useHighlight } from '../lib/useHighlight';
 
 /** A place name links through when it's somewhere we have a page for. */
 function Place({ name }: { name: string }) {
@@ -17,8 +18,14 @@ function Place({ name }: { name: string }) {
 }
 
 export function ExcavationsPage() {
+  const found = useHighlight('site');
   const [level, setLevel] = useState(1);
-  const [siteId, setSiteId] = useState(excavations.sites[0]?.id ?? '');
+  const [siteId, setSiteId] = useState(
+    // A searched site should be the one selected, not just present on the page.
+    (found.wanted && excavations.sites.some((s) => s.id === found.wanted)
+      ? found.wanted
+      : excavations.sites[0]?.id) ?? '',
+  );
 
   const site = excavations.sites.find((s) => s.id === siteId) ?? excavations.sites[0];
   const row = excavations.levels.find((l) => l.level === level) ?? excavations.levels[0];
@@ -64,12 +71,14 @@ export function ExcavationsPage() {
             {excavations.sites.map((s) => (
               <button
                 key={s.id}
+                ref={found.ref(s.id)}
                 onClick={() => setSiteId(s.id)}
                 className={cx(
                   'rounded-lg px-3 py-1.5 text-xs font-semibold transition',
                   s.id === siteId
                     ? 'bg-ore-400 text-rock-950'
                     : 'bg-white/5 text-ink-400 hover:bg-white/10 hover:text-ink-100',
+                  found.is(s.id) && 'is-found',
                 )}
               >
                 {s.code} · {s.name}

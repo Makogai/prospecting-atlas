@@ -4,7 +4,8 @@ import {
   modifiers, minerals, mineralById, money, percent, odds,
   type Modifier,
 } from '../lib/db';
-import { Empty, NumberField, RarityTag, SectionTitle, Sprite } from '../components/ui';
+import { Empty, NumberField, RarityTag, SectionTitle, Sprite, cx } from '../components/ui';
+import { useHighlight } from '../lib/useHighlight';
 
 /** `Events#tabber-Rose_Rain-_Limited` is a wiki anchor, not a sentence. */
 const prettyRef = (ref: string) =>
@@ -22,6 +23,7 @@ function routeOf(mod: Modifier): string {
 }
 
 export function ModifiersPage() {
+  const found = useHighlight('mod');
   // The default is the most valuable ore, because "what could this be worth"
   // is the question the page exists to answer.
   const [oreId, setOreId] = useState(minerals[0]?.id ?? '');
@@ -45,7 +47,13 @@ export function ModifiersPage() {
   const Row = ({ mod }: { mod: Modifier }) => {
     const worth = mod.sellMultiplier != null ? base * mod.sellMultiplier : null;
     return (
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
+      <div
+        ref={found.ref(mod.id)}
+        className={cx(
+          'flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3',
+          found.is(mod.id) && 'is-found rounded-xl',
+        )}
+      >
         <span
           className="w-28 shrink-0 text-sm font-bold"
           style={mod.color ? { color: mod.color } : undefined}

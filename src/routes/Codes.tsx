@@ -1,9 +1,16 @@
 import { useMemo, useState } from 'react';
 import { codes, db, type GameCode } from '../lib/db';
 import { Empty, SectionTitle, cx } from '../components/ui';
+import { useHighlight } from '../lib/useHighlight';
 
 /** Copy-to-clipboard is the entire job of this page, so it's the whole row. */
-function CodeRow({ entry }: { entry: GameCode }) {
+function CodeRow({
+  entry, rowRef, highlighted,
+}: {
+  entry: GameCode;
+  rowRef?: (node: HTMLElement | null) => void;
+  highlighted?: boolean;
+}) {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -19,9 +26,11 @@ function CodeRow({ entry }: { entry: GameCode }) {
 
   return (
     <div
+      ref={rowRef}
       className={cx(
         'flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3',
         !entry.active && 'opacity-55',
+        highlighted && 'is-found rounded-xl',
       )}
     >
       <button
@@ -55,7 +64,13 @@ function CodeRow({ entry }: { entry: GameCode }) {
 }
 
 export function CodesPage() {
-  const [showExpired, setShowExpired] = useState(false);
+  const found = useHighlight('code');
+  // An expired code is hidden by default, so searching one has to open the list
+  // it lives in or the link goes nowhere visible.
+  const targetExpired = found.wanted
+    ? codes.some((c) => c.code === found.wanted && !c.active)
+    : false;
+  const [showExpired, setShowExpired] = useState(targetExpired);
 
   const active = useMemo(() => codes.filter((c) => c.active), []);
   const expired = useMemo(() => codes.filter((c) => !c.active), []);
@@ -94,7 +109,12 @@ export function CodesPage() {
         ) : (
           <div className="panel divide-y divide-white/6">
             {active.map((c) => (
-              <CodeRow key={c.code} entry={c} />
+              <CodeRow
+                key={c.code}
+                entry={c}
+                rowRef={found.ref(c.code)}
+                highlighted={found.is(c.code)}
+              />
             ))}
           </div>
         )}
@@ -116,7 +136,12 @@ export function CodesPage() {
         {showExpired ? (
           <div className="panel divide-y divide-white/6">
             {expired.map((c) => (
-              <CodeRow key={c.code} entry={c} />
+              <CodeRow
+                key={c.code}
+                entry={c}
+                rowRef={found.ref(c.code)}
+                highlighted={found.is(c.code)}
+              />
             ))}
           </div>
         ) : (

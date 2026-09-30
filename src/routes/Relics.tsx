@@ -1,12 +1,19 @@
 import { useMemo, useState } from 'react';
 import { relics, relicAcquisition, type Relic } from '../lib/db';
 import { Empty, SectionTitle, Sprite, cx } from '../components/ui';
+import { useHighlight } from '../lib/useHighlight';
 
 const ORDER = ['Event', 'Boost', 'Enchant', 'Miscellaneous'];
 
 export function RelicsPage() {
-  const [category, setCategory] = useState<string>('Event');
-  const [open, setOpen] = useState<string | null>(null);
+  const found = useHighlight('relic');
+  const target = found.wanted ? relics.find((r) => r.id === found.wanted) : null;
+
+  // A searched relic may sit in a category the page isn't showing, so the
+  // category follows it and the card opens — otherwise the link lands on a tab
+  // that doesn't contain what you asked for.
+  const [category, setCategory] = useState<string>(target?.category ?? 'Event');
+  const [open, setOpen] = useState<string | null>(target?.id ?? null);
 
   const categories = useMemo(
     () =>
@@ -81,6 +88,8 @@ export function RelicsPage() {
                 key={r.id}
                 relic={r}
                 open={open === r.id}
+                cardRef={found.ref(r.id)}
+                highlighted={found.is(r.id)}
                 onToggle={() => setOpen(open === r.id ? null : r.id)}
               />
             ))}
@@ -92,14 +101,23 @@ export function RelicsPage() {
 }
 
 function RelicCard({
-  relic, open, onToggle,
+  relic, open, onToggle, cardRef, highlighted,
 }: {
   relic: Relic;
   open: boolean;
   onToggle: () => void;
+  cardRef?: (node: HTMLElement | null) => void;
+  highlighted?: boolean;
 }) {
   return (
-    <div className={cx('panel overflow-hidden transition', open && 'ring-1 ring-vein-500/30')}>
+    <div
+      ref={cardRef}
+      className={cx(
+        'panel overflow-hidden transition',
+        open && 'ring-1 ring-vein-500/30',
+        highlighted && 'is-found',
+      )}
+    >
       <button onClick={onToggle} aria-expanded={open} className="flex w-full items-start gap-3 p-4 text-left">
         <Sprite file={relic.image} alt="" className="h-12 w-12 shrink-0" />
         <span className="min-w-0 flex-1">

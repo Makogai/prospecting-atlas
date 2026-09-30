@@ -4,6 +4,7 @@ import {
   potions, trinkets, currencies, treasureChests, geodes, money,
 } from '../lib/db';
 import { Empty, SectionTitle, Sprite, cx } from '../components/ui';
+import { useHighlight } from '../lib/useHighlight';
 
 type Tab = 'potions' | 'trinkets' | 'chests' | 'currency';
 
@@ -69,6 +70,7 @@ export function ItemsPage() {
 }
 
 function Potions() {
+  const found = useHighlight('potion');
   const [shop, setShop] = useState<string | null>(null);
   const shops = useMemo(() => [...new Set(potions.map((p) => p.shop).filter(Boolean))] as string[], []);
   const shown = shop ? potions.filter((p) => p.shop === shop) : potions;
@@ -105,7 +107,11 @@ function Potions() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {shown.map((p) => (
-          <div key={p.id} className="panel flex items-start gap-3 p-4">
+          <div
+            key={p.id}
+            ref={found.ref(p.id)}
+            className={cx('panel flex items-start gap-3 p-4', found.is(p.id) && 'is-found')}
+          >
             <Sprite file={p.image} alt="" className="h-12 w-12 shrink-0" />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-baseline gap-2">

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { enchants, enchantHowTo, relics, percent, type Enchant } from '../lib/db';
 import { Empty, SectionTitle, cx } from '../components/ui';
+import { useHighlight } from '../lib/useHighlight';
 
 type Slot = 'Pan' | 'Shovel';
 
@@ -10,7 +11,10 @@ type Slot = 'Pan' | 'Shovel';
  * Aetherium, what am I likely to get", not one global list.
  */
 export function EnchantingPage() {
-  const [slot, setSlot] = useState<Slot>('Pan');
+  const found = useHighlight('e');
+  // A searched enchant may belong to the other tool, so the slot follows it.
+  const target = found.wanted ? enchants.find((x) => x.id === found.wanted) : null;
+  const [slot, setSlot] = useState<Slot>(target?.slot ?? 'Pan');
 
   const list = useMemo(() => enchants.filter((e) => e.slot === slot), [slot]);
 
@@ -41,7 +45,13 @@ export function EnchantingPage() {
   const Row = ({ e }: { e: Enchant }) => {
     const pct = chanceFor(e);
     return (
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-4 py-3">
+      <div
+        ref={found.ref(e.id)}
+        className={cx(
+          'flex flex-wrap items-center gap-x-4 gap-y-1.5 px-4 py-3',
+          found.is(e.id) && 'is-found rounded-xl',
+        )}
+      >
         <span className="w-32 shrink-0">
           <span className="block text-sm font-bold">{e.name}</span>
           {e.locked && (

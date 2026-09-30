@@ -118,6 +118,25 @@
     animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
+  /* What a search result landed on. Rings rather than a background change, so
+     it reads on top of whatever the card already looks like, and it settles
+     instead of pulsing forever. */
+  @keyframes found {
+    0% {
+      box-shadow: 0 0 0 0 rgb(255 194 71 / 0.55), 0 0 26px 4px rgb(255 194 71 / 0.28);
+    }
+    70% {
+      box-shadow: 0 0 0 4px rgb(255 194 71 / 0.28), 0 0 22px 2px rgb(255 194 71 / 0.16);
+    }
+    100% {
+      box-shadow: 0 0 0 2px rgb(255 194 71 / 0.5);
+    }
+  }
+  .is-found {
+    animation: found 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    border-radius: inherit;
+  }
+
   @keyframes shimmer {
     to {
       background-position: 200% 0;

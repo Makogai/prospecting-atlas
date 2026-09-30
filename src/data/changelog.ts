@@ -28,9 +28,9 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-09-30-search-tabs',
     date: '2026-09-30',
-    title: 'Search results open the right tab',
+    title: 'Search results take you to the thing itself',
     tag: 'fixed',
-    body: 'Searching a rune, a mastery track or a potion dropped you on the first tab of the page instead of the one holding what you searched for. Mastery results now open the exact track too.',
+    body: 'Searching a rune, relic, potion, code, enchant or modifier dropped you on a page and left you to find it. Results now open the right tab, expand the right card, and ring the item you asked for.',
   },
   {
     id: '2026-09-30-event-timer',
