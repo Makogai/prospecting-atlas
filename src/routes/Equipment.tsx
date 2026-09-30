@@ -141,14 +141,31 @@ export function EquipmentPage() {
   const canAdd = (item: Item) =>
     !item.slot || countInSlot(item.slot) < SLOT_LIMITS[item.slot];
 
+  const countOf = (item: Item) => loadout.items.filter((id) => id === item.id).length;
+
+  const addOne = (item: Item) => {
+    if (canAdd(item)) setLoadout({ ...loadout, items: [...loadout.items, item.id] });
+  };
+
+  const removeOne = (item: Item) => {
+    const i = loadout.items.lastIndexOf(item.id);
+    if (i !== -1) setLoadout({ ...loadout, items: loadout.items.filter((_, n) => n !== i) });
+  };
+
+  /**
+   * A single-slot piece toggles; a ring counts up.
+   *
+   * Eight ring slots means eight of the same ring is a normal build, and a
+   * plain toggle made that impossible — clicking an equipped ring took one off
+   * instead of adding another.
+   */
   const toggle = (item: Item) => {
-    const has = loadout.items.includes(item.id);
-    if (has) {
-      const i = loadout.items.indexOf(item.id);
-      setLoadout({ ...loadout, items: loadout.items.filter((_, n) => n !== i) });
-    } else if (canAdd(item)) {
-      setLoadout({ ...loadout, items: [...loadout.items, item.id] });
+    if (item.slot && SLOT_LIMITS[item.slot] > 1) {
+      addOne(item);
+      return;
     }
+    if (countOf(item) > 0) removeOne(item);
+    else addOne(item);
   };
 
   return (
@@ -297,8 +314,11 @@ export function EquipmentPage() {
                   item={e}
                   sixStar={sixStar}
                   highlight={stat}
-                  equipped={loadout.items.includes(e.id)}
-                  disabled={!loadout.items.includes(e.id) && !canAdd(e)}
+                  count={countOf(e)}
+                  max={e.slot ? SLOT_LIMITS[e.slot] : 1}
+                  canAdd={canAdd(e)}
+                  onAdd={() => addOne(e)}
+                  onRemove={() => removeOne(e)}
                   onToggle={() => toggle(e)}
                 />
               ))}
@@ -422,13 +442,18 @@ export function EquipmentPage() {
 }
 
 function EquipCard({
-  item, sixStar, highlight, equipped, disabled, onToggle,
+  item, sixStar, highlight, count, max, canAdd, onAdd, onRemove, onToggle,
 }: {
   item: Item;
   sixStar: boolean;
   highlight: string;
-  equipped: boolean;
-  disabled: boolean;
+  /** How many of this exact item are equipped. */
+  count: number;
+  /** How many the slot holds — 8 for rings, 1 for everything else. */
+  max: number;
+  canAdd: boolean;
+  onAdd: () => void;
+  onRemove: () => void;
   onToggle: () => void;
 }) {
   const colors = equipRarityColors(item.rarity);
@@ -439,7 +464,7 @@ function EquipCard({
     <div
       className={cx(
         'panel flex flex-col p-4 transition',
-        equipped ? 'border-ore-400/50 bg-ore-400/6' : 'panel-hover',
+        count > 0 ? 'border-ore-400/50 bg-ore-400/6' : 'panel-hover',
       )}
     >
       <div className="flex items-start gap-3">
@@ -472,20 +497,46 @@ function EquipCard({
             )}
           </div>
         </div>
-        <button
-          onClick={onToggle}
-          disabled={disabled}
-          aria-pressed={equipped}
-          title={disabled ? `No free ${item.slot} slot` : undefined}
-          className={cx(
-            'shrink-0 rounded-lg px-2 py-1 text-[11px] font-bold transition',
-            equipped && 'bg-ore-400 text-rock-950',
-            !equipped && !disabled && 'bg-white/6 text-ink-400 hover:bg-white/12 hover:text-ink-100',
-            disabled && 'cursor-not-allowed bg-white/4 text-ink-500 opacity-50',
-          )}
-        >
-          {equipped ? 'Equipped' : 'Equip'}
-        </button>
+        {max > 1 && count > 0 ? (
+          // Stacking slot with something in it: a counter, so a second copy is
+          // one tap away and removing one doesn't mean clearing the stack.
+          <span className="flex shrink-0 items-center gap-0.5 rounded-lg bg-ore-400/15 p-0.5 ring-1 ring-ore-400/30">
+            <button
+              onClick={onRemove}
+              aria-label={`Remove one ${item.name}`}
+              className="rounded px-1.5 py-0.5 text-[11px] font-bold text-ore-300 transition hover:bg-ore-400/20"
+            >
+              −
+            </button>
+            <span className="numeric min-w-5 text-center text-[11px] font-black text-ore-300">
+              {count}
+            </span>
+            <button
+              onClick={onAdd}
+              disabled={!canAdd}
+              aria-label={`Equip another ${item.name}`}
+              title={canAdd ? undefined : `All ${max} ${item.slot} slots are full`}
+              className="rounded px-1.5 py-0.5 text-[11px] font-bold text-ore-300 transition hover:bg-ore-400/20 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              +
+            </button>
+          </span>
+        ) : (
+          <button
+            onClick={onToggle}
+            disabled={count === 0 && !canAdd}
+            aria-pressed={count > 0}
+            title={count === 0 && !canAdd ? `No free ${item.slot} slot` : undefined}
+            className={cx(
+              'shrink-0 rounded-lg px-2 py-1 text-[11px] font-bold transition',
+              count > 0 && 'bg-ore-400 text-rock-950',
+              count === 0 && canAdd && 'bg-white/6 text-ink-400 hover:bg-white/12 hover:text-ink-100',
+              count === 0 && !canAdd && 'cursor-not-allowed bg-white/4 text-ink-500 opacity-50',
+            )}
+          >
+            {count > 0 ? 'Equipped' : 'Equip'}
+          </button>
+        )}
       </div>
 
       <p className="mt-2.5 line-clamp-2 h-8 text-xs text-ink-400">{item.description}</p>

@@ -26,6 +26,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-stack-rings',
+    date: '2026-09-30',
+    title: 'You can equip the same ring more than once',
+    tag: 'fixed',
+    body: 'Eight ring slots means eight of the same ring is a normal build, but clicking an equipped ring took one off instead of adding another. Rings now have a counter.',
+    href: '/equipment',
+  },
+  {
     id: '2026-09-30-seo',
     date: '2026-09-30',
     title: 'Every page is now a real page',

@@ -67,6 +67,26 @@ export function loadoutTotals(
 
 const SLOTS: EquipSlot[] = ['Necklace', 'Charm', 'Ring'];
 
+/**
+ * Collapse repeats of the same item into one row.
+ *
+ * `lastIndex` is what the remove button acts on, so clicking it takes one copy
+ * off the stack rather than all of them.
+ */
+function groupById(entries: { id: string; index: number }[]) {
+  const out: { id: string; count: number; lastIndex: number }[] = [];
+  for (const { id, index } of entries) {
+    const hit = out.find((g) => g.id === id);
+    if (hit) {
+      hit.count++;
+      hit.lastIndex = Math.max(hit.lastIndex, index);
+    } else {
+      out.push({ id, count: 1, lastIndex: index });
+    }
+  }
+  return out;
+}
+
 export function LoadoutSummary({
   loadout, onChange, equipped, sixStar,
 }: {
@@ -120,11 +140,13 @@ export function LoadoutSummary({
                     {slot} <span className="opacity-60">{inSlot.length}/{SLOT_LIMITS[slot]}</span>
                   </p>
                   <div className="space-y-1">
-                    {inSlot.map(({ id, index }) => {
+                    {/* Eight of the same ring is a normal build, so duplicates
+                        are one row with a count rather than eight rows. */}
+                    {groupById(inSlot).map(({ id, count, lastIndex }) => {
                       const item = equipped.find((e) => e.id === id)!;
                       return (
                         <div
-                          key={`${id}-${index}`}
+                          key={id}
                           className="flex items-center gap-2 rounded-lg bg-white/5 py-1 pr-1 pl-1.5"
                         >
                           <Sprite file={item.image} alt="" className="h-7 w-7 shrink-0" />
@@ -142,9 +164,14 @@ export function LoadoutSummary({
                               {item.rarity}
                             </span>
                           </span>
+                          {count > 1 && (
+                            <span className="numeric shrink-0 rounded bg-ore-400/15 px-1.5 text-[10px] font-black text-ore-300">
+                              ×{count}
+                            </span>
+                          )}
                           <button
-                            onClick={() => removeAt(index)}
-                            aria-label={`Remove ${item.name}`}
+                            onClick={() => removeAt(lastIndex)}
+                            aria-label={count > 1 ? `Remove one ${item.name}` : `Remove ${item.name}`}
                             className="shrink-0 rounded px-1.5 py-0.5 text-ink-500 transition hover:bg-white/10 hover:text-ore-400"
                           >
                             ✕
