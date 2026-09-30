@@ -26,6 +26,29 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-mobile-panels',
+    date: '2026-09-30',
+    title: 'Phone layout: the panel you care about comes first',
+    tag: 'improved',
+    body: 'Your loadout and museum totals used to sit below the whole list on a phone, where nobody scrolled to them. They now come first, and once you scroll past, a bar at the bottom keeps them one tap away.',
+    href: '/equipment',
+  },
+  {
+    id: '2026-09-30-picker-fix',
+    date: '2026-09-30',
+    title: 'The museum ore picker opens where you can see it',
+    tag: 'fixed',
+    body: 'Picking an ore for a display further down the page opened the chooser off-screen above the fold. It now opens centred, wherever you are on the page.',
+    href: '/museum',
+  },
+  {
+    id: '2026-09-30-favicon',
+    date: '2026-09-30',
+    title: 'New tab icon',
+    tag: 'improved',
+    body: 'A gold pan with a handful of crystals in it, which suits the game rather better than the old letter mark did.',
+  },
+  {
     id: '2026-09-29-equipment-share',
     date: '2026-09-29',
     title: 'Save and share equipment loadouts',

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   equipment, equipmentById, recipeMinerals, equipRarityColors, blueprintById,
@@ -7,7 +7,8 @@ import {
 } from '../lib/db';
 import { BlueprintPanel } from '../components/Blueprint';
 import { Empty, Sprite, cx, gradientVars } from '../components/ui';
-import { useLoadout, LoadoutSummary, type LoadoutState } from '../components/Loadout';
+import { useLoadout, LoadoutSummary, loadoutTotals, type LoadoutState } from '../components/Loadout';
+import { MobileDock } from '../components/MobileDock';
 import { BuildLibrary, ShareBox } from '../components/BuildLibrary';
 import {
   decodeLoadout, decodeQuality, encodeLoadout, isEmptyLoadout, EQUIP_BUILDS_KEY,
@@ -71,6 +72,7 @@ export function EquipmentPage() {
 
   const [shareOpen, setShareOpen] = useState(false);
   const [library, setLibrary] = useState<SavedBuild[]>(() => readBuilds(EQUIP_BUILDS_KEY));
+  const loadoutRef = useRef<HTMLDivElement>(null);
 
   const shareUrl = useMemo(() => {
     const origin = typeof window === 'undefined' ? '' : window.location.origin;
@@ -127,6 +129,13 @@ export function EquipmentPage() {
   }, [slot, stat, q, sixStar, showLimited, needsBlueprint]);
 
   const equipped = loadout.items.map((id) => equipmentById.get(id)).filter(Boolean) as Item[];
+
+  // Luck is the number people watch while browsing, so it's what the phone
+  // dock shows without being opened.
+  const dockLuck = useMemo(() => {
+    const totals = loadoutTotals(equipped, { sixStar, quality: loadout.quality });
+    return totals.find((t) => t.stat === 'Luck')?.value ?? null;
+  }, [equipped, sixStar, loadout.quality]);
 
   const countInSlot = (s: EquipSlot) => equipped.filter((e) => e.slot === s).length;
   const canAdd = (item: Item) =>
@@ -297,8 +306,13 @@ export function EquipmentPage() {
           )}
         </div>
 
-        {/* --- loadout --- */}
-        <div className="space-y-3 lg:sticky lg:top-16 lg:self-start">
+        {/* --- loadout ---
+            First on a phone: it's the thing you're building, and it used to sit
+            below all 67 items where you'd never scroll to it. */}
+        <div
+          ref={loadoutRef}
+          className="order-first space-y-3 lg:order-none lg:sticky lg:top-16 lg:self-start"
+        >
           <LoadoutSummary
             loadout={loadout}
             onChange={setLoadout}
@@ -343,6 +357,24 @@ export function EquipmentPage() {
           />
         </div>
       </div>
+
+      <MobileDock
+        label="Loadout"
+        meta={
+          equipped.length
+            ? `${equipped.length} equipped${sixStar ? ' · at ★6' : ''}`
+            : 'Nothing equipped yet'
+        }
+        value={dockLuck != null ? `+${dockLuck.toFixed(1)}` : undefined}
+        anchorRef={loadoutRef}
+      >
+        <LoadoutSummary
+          loadout={loadout}
+          onChange={setLoadout}
+          equipped={equipped}
+          sixStar={sixStar}
+        />
+      </MobileDock>
     </div>
   );
 }

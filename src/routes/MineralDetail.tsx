@@ -1,7 +1,9 @@
+import { useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { siteBands, mineralChance } from '../../shared/luck.mjs';
 import { LuckPanel, LuckCaveat, useLuck, activeBoosts, luckAt } from '../components/LuckPanel';
 import { GrindPanel, useGrind, grindRate, sessionLabel } from '../components/GrindPanel';
+import { MobileDock } from '../components/MobileDock';
 import { yieldLabel } from '../../shared/estimate.mjs';
 import {
   mineralById, minerals, rarityByName, sitesFor, bestSiteFor, usedInRecipes,
@@ -15,6 +17,7 @@ export function MineralDetail() {
   const { id } = useParams();
   const m = id ? mineralById.get(id) : undefined;
   const [luck, setLuck] = useLuck();
+  const luckRef = useRef<HTMLDivElement>(null);
   const [grind, setGrind] = useGrind();
 
   if (!m) {
@@ -312,11 +315,11 @@ export function MineralDetail() {
         {/* --- sidebar --- */}
         <div className="space-y-6">
           {m.ratesKnown && (
-            <>
+            <div ref={luckRef} className="space-y-6">
               <LuckPanel luck={luck} onChange={setLuck} />
               <GrindPanel grind={grind} onChange={setGrind} />
               <LuckCaveat className="-mt-2 px-1" />
-            </>
+            </div>
           )}
 
           {m.museum && m.museum.boosts.length > 0 && (
@@ -442,6 +445,20 @@ export function MineralDetail() {
           </a>
         </div>
       </div>
+
+      {m.ratesKnown && (
+        <MobileDock
+          label="Your luck & pace"
+          meta={`${boosts.length} boost${boosts.length === 1 ? '' : 's'} on · ${Math.round(rate).toLocaleString('en-US')}/h`}
+          value={Math.round(effectiveLuckValue).toLocaleString('en-US')}
+          anchorRef={luckRef}
+        >
+          <div className="space-y-6">
+            <LuckPanel luck={luck} onChange={setLuck} />
+            <GrindPanel grind={grind} onChange={setGrind} />
+          </div>
+        </MobileDock>
+      )}
     </div>
   );
 }

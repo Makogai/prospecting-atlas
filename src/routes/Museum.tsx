@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   museum, museumOreById, museumOresByStat, museumTotals, bestMuseumPicks,
@@ -13,6 +14,7 @@ import {
   Empty, RarityTag, SectionTitle, Sprite, cx, gradientVars,
 } from '../components/ui';
 import { BuildLibrary, ShareBox } from '../components/BuildLibrary';
+import { MobileDock } from '../components/MobileDock';
 
 /* ---------- slot state -------------------------------------------------- */
 
@@ -93,6 +95,7 @@ export function MuseumPage() {
 
   const [picking, setPicking] = useState<{ rarity: RarityName; index: number } | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const totalsRef = useRef<HTMLDivElement>(null);
   const [library, setLibrary] = useState<SavedBuild[]>(() => readBuilds(MUSEUM_BUILDS_KEY));
 
   const saveBuild = (name: string) => {
@@ -332,7 +335,9 @@ export function MuseumPage() {
           </div>
         </div>
 
-        <Totals totals={totals} stat={stat} filled={filled} />
+        <div ref={totalsRef} className="order-first lg:order-none">
+          <Totals totals={totals} stat={stat} filled={filled} />
+        </div>
       </section>
 
       {/* ---------- browse ---------- */}
@@ -353,6 +358,15 @@ export function MuseumPage() {
       </section>
 
       <Reference />
+
+      <MobileDock
+        label="What you'd gain"
+        meta={`${filled} of ${museum.slots} displays · ${stat}`}
+        value={boostLabel(totals[stat] ?? 0)}
+        anchorRef={totalsRef}
+      >
+        <Totals totals={totals} stat={stat} filled={filled} />
+      </MobileDock>
 
       {picking && (
         <OrePicker
@@ -447,7 +461,7 @@ function Totals({
     .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
 
   return (
-    <div className="panel sticky top-20 p-5">
+    <div className="panel p-5 lg:sticky lg:top-20">
       <h2 className="text-[11px] font-semibold tracking-[0.12em] text-ink-500 uppercase">
         What you'd gain
       </h2>
@@ -569,7 +583,10 @@ function OrePicker({
       .sort((a, b) => boostFor(b, stat) - boostFor(a, stat) || a.name.localeCompare(b.name));
   }, [rarity, stat, q]);
 
-  return (
+  // Portalled for the same reason as the dock: `animate-rise` on the page root
+  // leaves a transform behind, which would make `inset-0` cover the document
+  // rather than the viewport and strand this above the fold.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-rock-950/80 p-4 pt-[10vh] backdrop-blur-sm">
       {/* Click-away layer sits behind the dialog, not over it. */}
       <button aria-label="Close" onClick={onClose} className="fixed inset-0 cursor-default" />
@@ -577,8 +594,11 @@ function OrePicker({
         <div className="border-b border-white/8 p-4">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="font-extrabold">
-              <span className="text-ink-400">Fill a</span> {rarity}{' '}
-              <span className="text-ink-400">display</span>
+              {/* Epic, Uncommon and Exotic all need "an". */}
+              <span className="text-ink-400">
+                Fill a{/^[AEIOU]/.test(rarity) ? 'n' : ''}
+              </span>{' '}
+              {rarity} <span className="text-ink-400">display</span>
             </h2>
             <span className="text-[11px] text-ink-500">ranked by {stat}</span>
           </div>
@@ -631,7 +651,8 @@ function OrePicker({
           })}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
