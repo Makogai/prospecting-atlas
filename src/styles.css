@@ -33,6 +33,10 @@
 @layer base {
   html {
     scrollbar-gutter: stable;
+    /* `clip`, not `hidden`: hidden would make this a scroll container and break
+       every position:sticky on the site. This stops a transient effect from
+       widening the page. */
+    overflow-x: clip;
   }
 
   body {
@@ -118,23 +122,75 @@
     animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  /* What a search result landed on. Rings rather than a background change, so
-     it reads on top of whatever the card already looks like, and it settles
-     instead of pulsing forever. */
-  @keyframes found {
+  /* What a search result landed on.
+     A quick bloom and a spring, then it settles into a ring that stays — the
+     landing should be obvious, but so should the item ten seconds later when
+     you have finished reading the rest of the page. */
+  @keyframes found-pop {
     0% {
-      box-shadow: 0 0 0 0 rgb(255 194 71 / 0.55), 0 0 26px 4px rgb(255 194 71 / 0.28);
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgb(255 194 71 / 0);
     }
-    70% {
-      box-shadow: 0 0 0 4px rgb(255 194 71 / 0.28), 0 0 22px 2px rgb(255 194 71 / 0.16);
+    14% {
+      transform: scale(1.018);
+      box-shadow:
+        0 0 0 6px rgb(255 194 71 / 0.5),
+        0 0 48px 12px rgb(255 194 71 / 0.45);
+    }
+    45% {
+      transform: scale(0.996);
+    }
+    68% {
+      transform: scale(1.004);
     }
     100% {
-      box-shadow: 0 0 0 2px rgb(255 194 71 / 0.5);
+      transform: scale(1);
+      box-shadow:
+        0 0 0 2px rgb(255 194 71 / 0.7),
+        0 0 26px 2px rgb(255 194 71 / 0.2);
     }
   }
+
+  /* A single sheen crossing the card, once.
+     Moves the gradient inside a box pinned to the card rather than sliding the
+     box itself — a transform would carry it past the card's edges, and with
+     nothing clipping it that widened the page and produced a horizontal
+     scrollbar for the length of the animation. */
+  @keyframes found-sheen {
+    from {
+      background-position: 0% 0;
+      opacity: 0.9;
+    }
+    to {
+      background-position: 100% 0;
+      opacity: 0;
+    }
+  }
+
   .is-found {
-    animation: found 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    position: relative;
+    z-index: 1;
     border-radius: inherit;
+    background-color: rgb(255 194 71 / 0.07);
+    animation: found-pop 1.1s cubic-bezier(0.22, 1.4, 0.4, 1) both;
+  }
+
+  .is-found::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    overflow: hidden;
+    background-image: linear-gradient(
+      100deg,
+      transparent 38%,
+      rgb(255 214 138 / 0.38) 50%,
+      transparent 62%
+    );
+    background-size: 300% 100%;
+    background-repeat: no-repeat;
+    animation: found-sheen 1.05s cubic-bezier(0.3, 0, 0.2, 1) 0.12s both;
   }
 
   @keyframes shimmer {
@@ -155,5 +211,14 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* No bloom and no sheen, but the ring still has to mark the item — that is
+     the whole point of the highlight, not decoration. */
+  .is-found {
+    box-shadow: 0 0 0 2px rgb(255 194 71 / 0.7);
+  }
+  .is-found::after {
+    display: none;
   }
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { enchants, enchantHowTo, relics, percent, type Enchant } from '../lib/db';
 import { Empty, SectionTitle, cx } from '../components/ui';
 import { useHighlight } from '../lib/useHighlight';
@@ -11,10 +11,16 @@ type Slot = 'Pan' | 'Shovel';
  * Aetherium, what am I likely to get", not one global list.
  */
 export function EnchantingPage() {
-  const found = useHighlight('e');
+  const found = useHighlight('e', 'rounded-xl');
   // A searched enchant may belong to the other tool, so the slot follows it.
   const target = found.wanted ? enchants.find((x) => x.id === found.wanted) : null;
   const [slot, setSlot] = useState<Slot>(target?.slot ?? 'Pan');
+
+  // Same as Relics: a second search from this page doesn't remount anything, so
+  // the slot has to follow the target rather than only initialising from it.
+  useEffect(() => {
+    if (target) setSlot(target.slot);
+  }, [target?.id]);
 
   const list = useMemo(() => enchants.filter((e) => e.slot === slot), [slot]);
 
@@ -45,13 +51,7 @@ export function EnchantingPage() {
   const Row = ({ e }: { e: Enchant }) => {
     const pct = chanceFor(e);
     return (
-      <div
-        ref={found.ref(e.id)}
-        className={cx(
-          'flex flex-wrap items-center gap-x-4 gap-y-1.5 px-4 py-3',
-          found.is(e.id) && 'is-found rounded-xl',
-        )}
-      >
+      <div {...found.mark(e.id)} className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-4 py-3">
         <span className="w-32 shrink-0">
           <span className="block text-sm font-bold">{e.name}</span>
           {e.locked && (

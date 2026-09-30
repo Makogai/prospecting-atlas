@@ -107,11 +107,7 @@ function Potions() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {shown.map((p) => (
-          <div
-            key={p.id}
-            ref={found.ref(p.id)}
-            className={cx('panel flex items-start gap-3 p-4', found.is(p.id) && 'is-found')}
-          >
+          <div key={p.id} {...found.mark(p.id)} className="panel flex items-start gap-3 p-4">
             <Sprite file={p.image} alt="" className="h-12 w-12 shrink-0" />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-baseline gap-2">

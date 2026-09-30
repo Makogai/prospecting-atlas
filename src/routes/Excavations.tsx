@@ -71,14 +71,13 @@ export function ExcavationsPage() {
             {excavations.sites.map((s) => (
               <button
                 key={s.id}
-                ref={found.ref(s.id)}
+                {...found.mark(s.id)}
                 onClick={() => setSiteId(s.id)}
                 className={cx(
                   'rounded-lg px-3 py-1.5 text-xs font-semibold transition',
                   s.id === siteId
                     ? 'bg-ore-400 text-rock-950'
                     : 'bg-white/5 text-ink-400 hover:bg-white/10 hover:text-ink-100',
-                  found.is(s.id) && 'is-found',
                 )}
               >
                 {s.code} · {s.name}

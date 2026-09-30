@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { relics, relicAcquisition, type Relic } from '../lib/db';
 import { Empty, SectionTitle, Sprite, cx } from '../components/ui';
 import { useHighlight } from '../lib/useHighlight';
@@ -14,6 +14,14 @@ export function RelicsPage() {
   // that doesn't contain what you asked for.
   const [category, setCategory] = useState<string>(target?.category ?? 'Event');
   const [open, setOpen] = useState<string | null>(target?.id ?? null);
+
+  // Following a second search from this page: the component stays mounted, so
+  // the state initialisers above never run again.
+  useEffect(() => {
+    if (!target) return;
+    setCategory(target.category);
+    setOpen(target.id);
+  }, [target?.id]);
 
   const categories = useMemo(
     () =>
@@ -88,8 +96,7 @@ export function RelicsPage() {
                 key={r.id}
                 relic={r}
                 open={open === r.id}
-                cardRef={found.ref(r.id)}
-                highlighted={found.is(r.id)}
+                mark={found.mark(r.id)}
                 onToggle={() => setOpen(open === r.id ? null : r.id)}
               />
             ))}
@@ -101,22 +108,17 @@ export function RelicsPage() {
 }
 
 function RelicCard({
-  relic, open, onToggle, cardRef, highlighted,
+  relic, open, onToggle, mark,
 }: {
   relic: Relic;
   open: boolean;
   onToggle: () => void;
-  cardRef?: (node: HTMLElement | null) => void;
-  highlighted?: boolean;
+  mark?: Record<string, string>;
 }) {
   return (
     <div
-      ref={cardRef}
-      className={cx(
-        'panel overflow-hidden transition',
-        open && 'ring-1 ring-vein-500/30',
-        highlighted && 'is-found',
-      )}
+      {...mark}
+      className={cx('panel overflow-hidden transition', open && 'ring-1 ring-vein-500/30')}
     >
       <button onClick={onToggle} aria-expanded={open} className="flex w-full items-start gap-3 p-4 text-left">
         <Sprite file={relic.image} alt="" className="h-12 w-12 shrink-0" />

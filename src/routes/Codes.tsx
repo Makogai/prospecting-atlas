@@ -5,11 +5,10 @@ import { useHighlight } from '../lib/useHighlight';
 
 /** Copy-to-clipboard is the entire job of this page, so it's the whole row. */
 function CodeRow({
-  entry, rowRef, highlighted,
+  entry, mark,
 }: {
   entry: GameCode;
-  rowRef?: (node: HTMLElement | null) => void;
-  highlighted?: boolean;
+  mark?: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -26,11 +25,10 @@ function CodeRow({
 
   return (
     <div
-      ref={rowRef}
+      {...mark}
       className={cx(
         'flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3',
         !entry.active && 'opacity-55',
-        highlighted && 'is-found rounded-xl',
       )}
     >
       <button
@@ -64,7 +62,7 @@ function CodeRow({
 }
 
 export function CodesPage() {
-  const found = useHighlight('code');
+  const found = useHighlight('code', 'rounded-xl');
   // An expired code is hidden by default, so searching one has to open the list
   // it lives in or the link goes nowhere visible.
   const targetExpired = found.wanted
@@ -112,8 +110,7 @@ export function CodesPage() {
               <CodeRow
                 key={c.code}
                 entry={c}
-                rowRef={found.ref(c.code)}
-                highlighted={found.is(c.code)}
+                mark={found.mark(c.code)}
               />
             ))}
           </div>
@@ -139,8 +136,7 @@ export function CodesPage() {
               <CodeRow
                 key={c.code}
                 entry={c}
-                rowRef={found.ref(c.code)}
-                highlighted={found.is(c.code)}
+                mark={found.mark(c.code)}
               />
             ))}
           </div>

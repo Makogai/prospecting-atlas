@@ -281,7 +281,7 @@ function Runes() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {runes.runes.map((r) => (
-          <div key={r.id} ref={found.ref(r.id)} className={cx('panel p-4', found.is(r.id) && 'is-found')}>
+          <div key={r.id} {...found.mark(r.id)} className="panel p-4">
             <h3 className="text-sm font-extrabold" style={r.color ? { color: r.color } : undefined}>
               {r.name}
             </h3>

@@ -4,6 +4,7 @@ import { CommandPalette } from './CommandPalette';
 import { WhatsNew, useUnseen } from './WhatsNew';
 import { db } from '../lib/db';
 import { metaForPath, SITE_URL } from '../lib/seo';
+import { namesATarget } from '../lib/useHighlight';
 import { cx } from './ui';
 
 /**
@@ -68,7 +69,7 @@ export function Layout() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
 
   // Global ⌘K / Ctrl-K, plus "/" as a bare shortcut when not already typing.
   useEffect(() => {
@@ -86,8 +87,10 @@ export function Layout() {
   useEffect(() => {
     setMenuOpen(false);
     setOpenMenu(null);
-    window.scrollTo({ top: 0 });
-  }, [pathname]);
+    // A link that names a specific item scrolls to it instead; resetting to the
+    // top here would win the race and leave the highlight off screen.
+    if (!namesATarget(search)) window.scrollTo({ top: 0 });
+  }, [pathname, search]);
 
   // Every page is prerendered with its own head, but a client-side navigation
   // leaves that head in place — so the title and canonical would still describe
