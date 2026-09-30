@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { CommandPalette } from './CommandPalette';
 import { WhatsNew, useUnseen } from './WhatsNew';
 import { db } from '../lib/db';
+import { metaForPath, SITE_URL } from '../lib/seo';
 import { cx } from './ui';
 
 /**
@@ -86,6 +87,25 @@ export function Layout() {
     setMenuOpen(false);
     setOpenMenu(null);
     window.scrollTo({ top: 0 });
+  }, [pathname]);
+
+  // Every page is prerendered with its own head, but a client-side navigation
+  // leaves that head in place — so the title and canonical would still describe
+  // whichever page happened to be loaded first.
+  useEffect(() => {
+    const meta = metaForPath(pathname);
+    if (!meta) return;
+    document.title = meta.title;
+
+    const set = (selector: string, attr: string, value: string) => {
+      const el = document.head.querySelector(selector);
+      if (el) el.setAttribute(attr, value);
+    };
+    set('meta[name="description"]', 'content', meta.description);
+    set('meta[property="og:title"]', 'content', meta.title);
+    set('meta[property="og:description"]', 'content', meta.description);
+    set('link[rel="canonical"]', 'href', `${SITE_URL}${meta.path}`);
+    set('meta[property="og:url"]', 'content', `${SITE_URL}${meta.path}`);
   }, [pathname]);
 
   return (

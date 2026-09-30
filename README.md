@@ -248,6 +248,31 @@ need two pages at once: a modifier's museum bonus is merged into its Modifiers-p
 record, and a mineral's museum entry is taken from the Museum page, which is the only
 one that signs debuffs.
 
+## Search engines
+
+`npm run build` is three steps: the client bundle, an SSR bundle, then
+`scripts/prerender.mjs`, which renders **every route to static HTML**. Without it a
+crawler gets `<div id="root"></div>` and the whole atlas is invisible — the entire
+database is baked into the bundle, so there is nothing to fetch at request time and
+prerendering costs nothing at runtime.
+
+Each of the 194 pages ships its own `<title>`, meta description, canonical URL, Open
+Graph tags and JSON-LD. `src/lib/seo.ts` is the single source for that copy; it also
+feeds `sitemap.xml` and the head-sync on client-side navigation, so the three can't
+disagree.
+
+Two things keep it honest:
+
+- The prerenderer **fails the build** if a route in `App.tsx` has no entry in `seo.ts`.
+  Since nginx now returns a real 404 for unknown paths rather than falling back to the
+  SPA shell, an unprerendered route would 404 in production.
+- A route that throws during server rendering is reported and the build exits non-zero,
+  rather than shipping a blank page.
+
+`scripts/serve-dist.mjs` serves `dist/` exactly the way `nginx.conf` does. Use it rather
+than `vite preview`, which rewrites every path to the root `index.html` and so hides
+whether the prerendered pages are reachable at all.
+
 ## Announcing a change
 
 `src/data/changelog.ts` drives both the `/changelog` page and the corner popup. To announce

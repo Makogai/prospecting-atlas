@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.tsx --outDir dist-ssr && node scripts/prerender.mjs",
     "preview": "vite preview",
     "data:all": "node scripts/fetch-builds.mjs --keep-going && npm run data:wiki",
     "data:wiki": "npm run data:fetch && npm run data:parse && npm run data:images && npm run data:sprites",
@@ -12,7 +12,8 @@
     "data:builds": "node scripts/fetch-builds.mjs",
     "data:parse": "node scripts/parse-wiki.mjs",
     "data:images": "node scripts/fetch-images.mjs",
-    "data:sprites": "node scripts/clean-sprites.mjs"
+    "data:sprites": "node scripts/clean-sprites.mjs",
+    "build:client": "vite build"
   },
   "keywords": [],
   "author": "",

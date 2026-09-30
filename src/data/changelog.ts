@@ -26,6 +26,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-seo',
+    date: '2026-09-30',
+    title: 'Every page is now a real page',
+    tag: 'improved',
+    body: 'The site used to be one blank shell that filled itself in with JavaScript, so search engines saw nothing. All 194 pages are now built as actual HTML, each with its own title and description, plus a sitemap.',
+  },
+  {
     id: '2026-09-30-home-hub',
     date: '2026-09-30',
     title: 'A front page you can launch from',

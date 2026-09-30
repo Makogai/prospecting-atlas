@@ -1,1 +1,3 @@
-/*    /index.html   200
+# Prerendered pages are real files; only genuinely unknown paths land here,
+# and they should say so rather than returning the home page with a 200.
+/*    /404.html   404

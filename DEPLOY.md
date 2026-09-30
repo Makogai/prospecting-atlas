@@ -1,17 +1,23 @@
 # Deploying Prospecting Atlas
 
-The site is a static SPA — a build step, then a folder of files. The only thing a host has to
-get right is **SPA fallback**: `/minerals/pink-diamond` is a client-side route, so any unknown
-path must serve `index.html` rather than 404.
+The site is prerendered: `npm run build` writes real HTML for all 194 routes, so
+`/minerals/pink-diamond` is a directory containing its own `index.html` rather than a client-side
+route that needs a fallback. The one thing a host has to get right is **serving a directory's
+`index.html`** — `try_files $uri $uri/` in nginx terms.
 
-Everything in this repo is already wired for that.
+Unknown paths should return a genuine 404 rather than the home page with a 200. `dist/404.html`
+carries the full app bundle, so a visitor who lands there still sees the right page rendered
+client-side while a crawler gets the right status.
+
+Everything in this repo is already wired for that, and `npm run build` fails rather than shipping
+a route it couldn't prerender.
 
 ---
 
 ## Recommended: Coolify, via the Dockerfile
 
 This is the best option for Coolify because it pins exactly how the site is built *and* served.
-The `Dockerfile` builds with Node 22 and serves the result from nginx with SPA fallback, gzip,
+The `Dockerfile` builds with Node 22 and serves the result from nginx with directory indexes, gzip,
 correct caching and a health endpoint — nothing left to Coolify's autodetection.
 
 ### One-time setup
@@ -32,7 +38,7 @@ the wiki data is baked into the bundle at build time.
 
 The container exposes `GET /healthz` → `200 ok`, and the Dockerfile declares a `HEALTHCHECK`
 against it. If you also set a health check in the Coolify UI, point it at `/healthz` and not
-`/`, so a failing SPA fallback can't mask a broken deploy.
+`/`, so a failing deploy can't hide behind a page that happens to render.
 
 ### Redeploying after a wiki update
 
@@ -85,11 +91,11 @@ Configs for these are already committed, so they need no dashboard settings:
 
 ### GitHub Pages
 
-Pages has no rewrite support, so the SPA fallback needs the 404 trick — Pages serves `404.html`
+Pages serves a directory's `index.html`, so the prerendered pages work as-is; `404.html` covers
 for unknown paths, and if that file *is* the app, the router takes over:
 
 ```bash
-npm run build && cp dist/index.html dist/404.html
+npm run build   # writes dist/404.html itself
 ```
 
 If you serve from a subpath (`user.github.io/prospecting-atlas/`) you also need
@@ -103,7 +109,7 @@ Four checks, in the order things actually break:
 
 ```bash
 curl -I  https://your-domain/                      # 200, text/html
-curl -I  https://your-domain/minerals/pink-diamond # 200 — SPA fallback works
+curl -I  https://your-domain/minerals/pink-diamond # 200 — prerendered page is served
 curl -I  https://your-domain/sprites/amethysthd.png # 200 — assets copied
 curl -sI https://your-domain/assets/ -o /dev/null -w '%{http_code}\n'
 ```
@@ -111,7 +117,7 @@ curl -sI https://your-domain/assets/ -o /dev/null -w '%{http_code}\n'
 Then open the site and press <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd>. If search returns
 results, the data bundle loaded.
 
-**If deep links 404 but the root works**, SPA fallback isn't configured — that's the "Is it a
+**If deep links 404 but the root works**, directory indexes aren't configured — that's the "Is it a
 SPA?" toggle on Nixpacks, or the wrong build pack on Docker.
 
 **If the page is blank with 404s on `/assets/...`**, the site is being served from a subpath and
@@ -135,8 +141,12 @@ Always worth doing before pushing a deploy — it catches build-only breakage th
 hides:
 
 ```bash
-npm run build && npm run preview   # http://localhost:4173
+npm run build && node scripts/serve-dist.mjs   # http://localhost:5191
 ```
+
+Use `serve-dist.mjs` rather than `npm run preview`: Vite's preview server rewrites every path to
+the root `index.html`, which makes all 194 prerendered pages look identical and hides the one
+thing worth checking. `serve-dist.mjs` resolves paths exactly the way `nginx.conf` does.
 
 To test the real container:
 
