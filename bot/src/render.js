@@ -12,6 +12,7 @@ import { dirname, join } from 'node:path';
 import {
   money, odds, percent, oddsBar, statBar, readablePair, readable,
   spritePath, rarityByName, mineralById, locationForSite, digSites,
+  boostFor, boostLabel,
 } from './data.js';
 
 // Dig-site gradients, looked up by display name while drawing rows.
@@ -536,6 +537,87 @@ function gearPriceLabel(g) {
 }
 
 /** Discord embed accent colour for a rarity, as an integer. */
+/**
+ * The best museum ore for each display, for one stat.
+ *
+ * Laid out a row per rarity because that is the actual constraint — a display
+ * only takes its own rarity, so this is a separate pick per row rather than a
+ * ranked list, and the empty rows are the point when only six ores in the game
+ * boost Luck at all.
+ */
+export async function renderMuseum(stat, groups) {
+  const rows = groups.filter((g) => g.display.total > 0);
+  const HEAD = 176;
+  const ROW = 74;
+  const h = HEAD + rows.length * ROW + 76;
+
+  const canvas = createCanvas(W, h);
+  const ctx = canvas.getContext('2d');
+  panel(ctx, h, C.vein);
+
+  text(ctx, 'MUSEUM — BEST ORE PER DISPLAY', PAD, 64, {
+    size: 15, face: 'AtlasBold', fill: C.ink5,
+  });
+  text(ctx, stat, PAD, 116, { size: 50, face: 'AtlasBold', fill: C.ink });
+
+  const total = rows.reduce(
+    (t, g) => t + g.picks.reduce((n, o) => n + boostFor(o, stat), 0),
+    0,
+  );
+  const filled = rows.reduce((n, g) => n + g.picks.length, 0);
+  const slots = rows.reduce((n, g) => n + g.display.total, 0);
+
+  text(ctx, boostLabel(total), W - PAD, 96, {
+    size: 44, face: 'AtlasMonoBold', fill: C.vein, align: 'right',
+  });
+  text(ctx, `${filled} of ${slots} displays`, W - PAD, 120, {
+    size: 15, fill: C.ink5, align: 'right',
+  });
+
+  let y = HEAD;
+  for (const { display, picks } of rows) {
+    const colors = rarityColors(display.rarity);
+    const [c1] = readablePair(colors);
+
+    roundRect(ctx, PAD - 10, y - 6, W - (PAD - 10) * 2, ROW - 10, 14);
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.fill();
+
+    ctx.font = font(17, 'AtlasBold');
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = gradientFill(ctx, PAD + 4, 0, 150, colors);
+    ctx.fillText(display.rarity.toUpperCase(), PAD + 4, y + 26);
+    text(ctx, `${display.total} slot${display.total === 1 ? '' : 's'}`, PAD + 4, y + 46, {
+      size: 14, fill: C.ink5,
+    });
+
+    if (picks.length === 0) {
+      text(ctx, `nothing here boosts ${stat}`, PAD + 190, y + 36, { size: 17, fill: C.ink5 });
+    } else {
+      let x = PAD + 190;
+      for (const ore of picks) {
+        const label = `${ore.name}  ${boostLabel(boostFor(ore, stat))}`;
+        ctx.font = font(16, 'AtlasSemi');
+        const w = ctx.measureText(label).width + 26;
+        if (x + w > W - PAD) break;
+        roundRect(ctx, x, y + 14, w, 32, 9);
+        ctx.fillStyle = hexA(c1, 0.12);
+        ctx.fill();
+        ctx.strokeStyle = hexA(c1, 0.34);
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        text(ctx, label, x + 13, y + 36, { size: 16, face: 'AtlasSemi', fill: C.ink });
+        x += w + 10;
+      }
+    }
+    y += ROW;
+  }
+
+  footer(ctx, h, 'Maximum boosts — assumes every ore meets its minimum weight');
+  return canvas.encode('png');
+}
+
 export function rarityInt(rarity) {
   const [c] = readablePair(rarityColors(rarity));
   return parseInt(c.replace('#', ''), 16);

@@ -33,6 +33,7 @@ function fakeInteraction(name, options, label) {
     options: {
       getString: get,
       getInteger: get,
+      getBoolean: get,
       getFocused: () => options.__focused ?? '',
     },
     isAutocomplete: () => false,
@@ -70,6 +71,21 @@ const CASES = [
   ['top', { board: 'value' }, 'top-value'],
   ['top', { board: 'sites' }, 'top-sites'],
   ['top', { board: 'rarest', rarity: 'Mythic' }, 'top-rarest-mythic'],
+
+  ['codes', {}, 'codes-active'],
+  ['codes', { expired: true }, 'codes-all'],
+  ['museum', { stat: 'Luck' }, 'museum-luck'],               // only 6 displays can boost it
+  ['museum', { stat: 'Dig Speed' }, 'museum-dig-speed'],     // nearly every display can
+  ['museum', { stat: 'zzzz-nope' }, 'museum-miss'],
+  ['enchant', { slot: 'Pan' }, 'enchant-pan'],               // defaults to the first ore
+  ['enchant', { slot: 'Pan', ore: 'Aetherium' }, 'enchant-pan-aetherium'],
+  ['enchant', { slot: 'Shovel' }, 'enchant-shovel'],         // one flat chance, no ore column
+  ['quest', { name: 'special order' }, 'quest-by-name'],
+  ['quest', { name: 'Trader' }, 'quest-by-npc'],
+  ['quest', { name: 'zzzz-nope' }, 'quest-miss'],
+  ['relic', { name: 'meteor fragment' }, 'relic-event'],
+  ['relic', { name: 'blessed enchant book' }, 'relic-book'], // table-shaped category
+  ['relic', { name: 'zzzz-nope' }, 'relic-miss'],
 ];
 
 for (const [name, options, label] of CASES) {
@@ -93,6 +109,10 @@ const AUTOCOMPLETE = [
   ['find', { __focused: '' }],
   ['site', { __focused: 'rubb' }],
   ['gear', { kind: 'pans', __focused: 'diamond, aur' }],
+  ['museum', { __focused: 'lu' }],
+  ['enchant', { __focused: 'aeth' }],
+  ['quest', { __focused: 'trad' }],       // mixes quests and NPCs in one list
+  ['relic', { __focused: 'meteor' }],
 ];
 
 for (const [name, options] of AUTOCOMPLETE) {

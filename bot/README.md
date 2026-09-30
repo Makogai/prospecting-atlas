@@ -15,6 +15,11 @@ span 1% down to 0.0000000015%, so a bar chart is the only way to read them at a 
 | `/plan <minerals>` | Comma-separated wanted list → the one site that covers most of it, and what you'd give up. |
 | `/gear <kind> [items]` | Pans, shovels or sluices; up to three side by side. Leave `items` blank for the best of each stat. |
 | `/top <board> [rarity]` | Most valuable minerals, richest dig sites, or rarest drops. |
+| `/codes [expired]` | Codes that currently work, in backticks so they're one tap to copy. |
+| `/museum <stat>` | The best ore for every display, as a rendered card. A display only takes its own rarity, so this is a pick per row. |
+| `/enchant <slot> [ore]` | Altar odds, re-ranked by which ore you'd feed it. |
+| `/quest <name>` | A quest's steps and rewards, or everything one NPC gives — the same box takes either. |
+| `/relic <name>` | What a relic does and every place it drops. |
 
 ## Running it
 

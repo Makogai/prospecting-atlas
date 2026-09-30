@@ -27,6 +27,9 @@ const imageMap = read('src/data/images.json');
 
 export const {
   minerals, digSites, locations, pans, shovels, sluices, rarities, events,
+  equipment, quests, npcs, museum, modifiers, codes, enchants, relics,
+  potions, trinkets, excavations, levels, runes, mastery, permanentBuffs,
+  currencies, regions, mutations, blueprints,
 } = db;
 
 export {
@@ -150,7 +153,66 @@ export function rank(query, items, nameOf = (x) => x.name) {
 export const findMineral = (q) => rank(q, minerals)[0] ?? null;
 export const findSite = (q) => rank(q, digSites)[0] ?? null;
 
-export const SITE_URL = process.env.SITE_URL || 'https://prospecting-atlas.example';
+/* ---------- museum ------------------------------------------------------ */
+
+export const museumOreById = byId(museum.ores);
+
+/** What one ore does for one stat, or 0 if it doesn't touch it. */
+export const boostFor = (ore, stat) =>
+  ore?.boosts.find((b) => b.stat === stat)?.value ?? 0;
+
+/** `0.88x`, and `-0.5x` for a debuff. */
+export const boostLabel = (v) =>
+  `${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(2).replace(/\.?0+$/, '')}×`;
+
+/**
+ * The best ores you could slot for one stat, given how many displays each
+ * rarity has. Displays only accept their own rarity, so this is a separate
+ * pick per rarity rather than "take the top 18".
+ */
+export function bestMuseumPicks(stat) {
+  return museum.displays.map((display) => ({
+    display,
+    picks: museum.ores
+      .filter((o) => o.rarity === display.rarity && boostFor(o, stat) > 0)
+      .sort((a, b) => boostFor(b, stat) - boostFor(a, stat))
+      .slice(0, display.total),
+  }));
+}
+
+/* ---------- lookups for the newer commands ------------------------------ */
+
+export const npcByName = new Map(npcs.map((n) => [n.name.toLowerCase(), n]));
+export const questById = byId(quests);
+
+/** Quests an NPC gives, resolved from the ids on the NPC record. */
+export const questsOf = (npc) => npc.quests.map((id) => questById.get(id)).filter(Boolean);
+
+export const activeCodes = () => codes.filter((c) => c.active);
+
+/** Enchants for one slot, ranked by the odds of the ore you'd feed the altar. */
+export function enchantsFor(slot, via = null) {
+  const list = enchants.filter((e) => e.slot === slot);
+  const chanceOf = (e) =>
+    via
+      ? (e.chances.find((c) => c.via === via)?.percent ?? 0)
+      : (e.chances[0]?.percent ?? 0);
+  return list
+    .map((e) => ({ enchant: e, percent: chanceOf(e) }))
+    .sort((a, b) => b.percent - a.percent || a.enchant.name.localeCompare(b.enchant.name));
+}
+
+/** Ore names the altar accepts for a slot; a shovel has a single flat roll. */
+export function enchantOres(slot) {
+  const names = new Set();
+  for (const e of enchants) {
+    if (e.slot !== slot) continue;
+    for (const c of e.chances) if (c.via) names.add(c.via);
+  }
+  return [...names];
+}
+
+export const SITE_URL = process.env.SITE_URL || 'https://prospecting.mrh.lol';
 
 export const mineralUrl = (m) => `${SITE_URL}/minerals/${m.id}`;
 export const siteUrl = (s) => `${SITE_URL}/sites/${s.id}`;

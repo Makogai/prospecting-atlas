@@ -5,7 +5,7 @@ import {
 
 import {
   minerals, rank, money, odds, bestSiteFor, locationForSite,
-  mineralUrl, siteUrl, SITE_URL,
+  mineralUrl, siteUrl, SITE_URL, modifiers,
   parseBoosts, effectiveLuck, siteBands, mineralChance, digSiteByName,
 } from '../data.js';
 import { renderFind, rarityInt } from '../render.js';
@@ -110,6 +110,24 @@ export async function execute(interaction) {
 Location-locked: ${[...new Set(scoped.flatMap((l) => l.skipped.map((b) => b.name)))].join(', ')} doesn't reach every site above.`
           : ''),
     });
+  }
+
+  // The headline value is what an unmodified ore sells for, and a Perfect roll
+  // is worth 24 times it — quoting the base price alone understates the pull.
+  if (mineral.value != null) {
+    const top = modifiers
+      .filter((m) => m.sellMultiplier != null && m.sellMultiplier > 1)
+      .slice(0, 3);
+    if (top.length) {
+      embed.addFields({
+        name: 'With a modifier',
+        value:
+          `${money(mineral.value)}/kg is the plain price. ` +
+          top
+            .map((m) => `**${m.name}** ${m.sellMultiplier}× → ${money(mineral.value * m.sellMultiplier)}`)
+            .join(' · '),
+      });
+    }
   }
 
   const notes = [];

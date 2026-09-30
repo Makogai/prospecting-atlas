@@ -90,6 +90,9 @@ export async function execute(interaction) {
 
   for (const g of picks.slice(0, 3)) {
     const lines = [`${gearPrice(g)} · from ${g.source || 'unknown'}`];
+    // Only the item's own wiki page records this, and without it the bot
+    // recommends gear nobody can get any more.
+    if (g.obtainable === false) lines.push(`⚠️ **${g.obtained ?? 'No longer obtainable'}**`);
     if (g.passive) lines.push(`*${g.passive}*`);
     if (g.description) lines.push(g.description);
     embed.addFields({ name: g.name, value: lines.join('\n').slice(0, 1024), inline: picks.length > 1 });
