@@ -266,6 +266,35 @@ const events = parseEvents(pages['Events']).map(e => ({
   sites: e.sites.filter(knownSite),
 })).map(e => ({ ...e, global: e.global || e.sites.length === 0 }));
 
+/**
+ * When events actually fire.
+ *
+ * The wiki is precise about the regular ones — a roll every half hour, on the
+ * clock, the same in every server — which is enough to count down to. It is
+ * equally clear that Admin Abuse is not scheduled at all: a developer starts
+ * those by hand. Predicting one would be inventing a mechanic, so this records
+ * what is known and says plainly that AA is not part of it.
+ */
+const eventSchedule = (() => {
+  const intro = (pages['Events'] ?? '').split(/^== /m)[0];
+  const cadence = intro.match(/every (\d+) minutes? on the dot/i);
+  const slots = [...intro.matchAll(/XX:(\d{2})/g)].map(m => Number(m[1]));
+  return {
+    rollMinutes: cadence ? Number(cadence[1]) : 30,
+    /** Minutes past the hour a roll lands on, e.g. [0, 30]. */
+    slots: slots.length ? [...new Set(slots)].sort((a, b) => a - b) : [0, 30],
+    /** True when every server rolls the same event at the same moment. */
+    globalRoll: /same\s+''?globally''?/i.test(intro),
+    /** A roll is a chance, not a guarantee — the wiki says "have a chance to occur". */
+    guaranteed: !/chance to occur/i.test(intro),
+    adminAbuse: {
+      scheduled: false,
+      what: 'Developers start these by hand during "Admin Abuse". They are not on the timer, and the wiki gives no schedule for them.',
+      announced: 'https://discord.gg/prospecting',
+    },
+  };
+})();
+
 /* ---------- equipment --------------------------------------------------- */
 const equipment = parseEquipment(pages['Equipment']);
 
@@ -405,6 +434,7 @@ const db = {
   locations: locations.sort((a, b) => a.name.localeCompare(b.name)),
   pans, shovels, sluices,
   events,
+  eventSchedule,
   equipment,
   blueprints,
   quests,
@@ -470,6 +500,10 @@ console.log(`regions ${regions.length} · gear obtainability ${obtainMatched}/${
 console.log(`npcs ${npcs.length} (${npcs.filter(n => n.quests.length).length} give quests, ${npcs.filter(n => n.places.length).length} placed, ${npcs.filter(n => n.summary).length} described)`);
 console.log(`blueprints ${blueprints.length} (${blueprints.filter(b => b.kind === 'quest').length} quest, ${blueprints.filter(b => b.kind === 'purchase').length} bought, ${blueprints.filter(b => b.kind === 'found').length} found) · matched to ${equipment.filter(e => e.blueprint).length} items`);
 console.log(`equipment ${equipment.length} (${equipment.filter(e => e.limited).length} limited) · slots ${[...new Set(equipment.map(e => e.slot))].join('/')}`);
+console.log(
+  `event schedule: roll every ${eventSchedule.rollMinutes}m at :${eventSchedule.slots.join(' / :')}` +
+  `${eventSchedule.globalRoll ? ', global' : ''}${eventSchedule.guaranteed ? '' : ', chance-based'} · AA unscheduled`,
+);
 console.log(`luck events ${events.length} (${events.filter(e => e.kind === 'multiplicative').length} multiplicative, ${events.filter(e => e.kind === 'additive').length} additive, ${events.filter(e => e.kind === 'unknown').length} unquantified)`);
 console.log(`no chances: ${minerals.filter(m => !m.chances.length).map(m => m.name).join(', ') || 'none'}`);
 console.log(`no image:   ${minerals.filter(m => !m.image).map(m => m.name).join(', ') || 'none'}`);

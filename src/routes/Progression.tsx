@@ -1,6 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { levels, runes, mastery, permanentBuffs, rarityByName, events } from '../lib/db';
+import {
+  levels, runes, mastery, permanentBuffs, rarityByName, events,
+  eventSchedule, msToNextRoll, countdown,
+} from '../lib/db';
 import { NumberField, SectionTitle, SectionTitle as Title, cx, gradientVars } from '../components/ui';
 
 type Tab = 'levels' | 'mastery' | 'runes' | 'buffs' | 'events';
@@ -286,6 +289,92 @@ function Runes() {
  * additive boosts give ×3, not ×4 — so it leads each row rather than being a
  * footnote.
  */
+/**
+ * Time to the next roll.
+ *
+ * Rolls are on the clock and identical in every server, so this is a real
+ * countdown — but it counts down to the game *rolling*, not to an event. The
+ * wiki says events "have a chance to occur" at each one, and saying otherwise
+ * would promise something the game doesn't.
+ */
+function NextRoll() {
+  const [left, setLeft] = useState(() => msToNextRoll());
+
+  useEffect(() => {
+    const t = setInterval(() => setLeft(msToNextRoll()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div className="panel mb-6 flex flex-wrap items-center gap-x-6 gap-y-3 p-5">
+      <div>
+        <div className="text-[11px] font-semibold tracking-[0.12em] text-ink-500 uppercase">
+          Next roll
+        </div>
+        <div className="numeric text-3xl font-black text-ore-400">{countdown(left)}</div>
+      </div>
+      <p className="min-w-[16rem] flex-1 text-xs leading-relaxed text-ink-400">
+        The game rolls for an event every {eventSchedule.rollMinutes} minutes, on the clock —
+        at :{eventSchedule.slots.map((n) => String(n).padStart(2, '0')).join(' and :')}
+        {eventSchedule.globalRoll && ', the same in every server'}.{' '}
+        {!eventSchedule.guaranteed && (
+          <strong className="text-ink-200">
+            Each roll is a chance, not a guarantee — it can pass with nothing.
+          </strong>
+        )}
+      </p>
+    </div>
+  );
+}
+
+/** Admin Abuse: dev-triggered, and the wiki publishes no schedule for it. */
+function AdminAbuse() {
+  const adminEvents = events.filter((e) => e.admin);
+  const { adminAbuse } = eventSchedule;
+
+  return (
+    <div className="panel mt-8 p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="font-extrabold">Admin Abuse (AA)</h3>
+        <a
+          href={adminAbuse.announced}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="text-sm font-semibold text-ore-400 hover:underline"
+        >
+          Official Discord →
+        </a>
+      </div>
+      <p className="mt-1.5 max-w-2xl text-sm text-ink-300">
+        <strong className="text-ore-300">There is no AA timer.</strong> {adminAbuse.what} The only
+        warning is an announcement in the game's own Discord, so that's where to watch — no site
+        can count down to one.
+      </p>
+
+      {adminEvents.length > 0 && (
+        <>
+          <h4 className="mt-4 text-[10px] font-bold tracking-[0.12em] text-ink-500 uppercase">
+            What they can turn on
+          </h4>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {adminEvents.map((e) => (
+              <span
+                key={e.id}
+                className="rounded-lg bg-white/5 px-2.5 py-1 text-xs ring-1 ring-white/8"
+              >
+                <span className="font-semibold text-ink-200">{e.name}</span>
+                {e.value != null && (
+                  <span className="numeric ml-1.5 text-vein-400">×{e.value}</span>
+                )}
+              </span>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function Events() {
   const multiplicative = events.filter((e) => e.kind === 'multiplicative');
   const additive = events.filter((e) => e.kind === 'additive');
@@ -299,6 +388,8 @@ function Events() {
       </span>
       <span className="min-w-0 flex-1 text-[11px] text-ink-500">
         {e.global ? 'Everywhere' : e.sites.join(', ') || (e.note ?? '')}
+        {e.durationMinutes ? ` · runs ${e.durationMinutes} min` : ''}
+        {e.relic ? ` · start it with ${e.relic}` : ''}
       </span>
       {e.admin && (
         <span className="shrink-0 rounded bg-white/8 px-1.5 text-[10px] text-ink-400">admin</span>
@@ -308,6 +399,8 @@ function Events() {
 
   return (
     <>
+      <NextRoll />
+
       <SectionTitle
         title="Luck events"
         hint="These stack differently, which is why the site models them separately."
@@ -336,6 +429,8 @@ function Events() {
           )}
         </div>
       </div>
+
+      <AdminAbuse />
     </>
   );
 }

@@ -20,6 +20,7 @@ span 1% down to 0.0000000015%, so a bar chart is the only way to read them at a 
 | `/enchant <slot> [ore]` | Altar odds, re-ranked by which ore you'd feed it. |
 | `/quest <name>` | A quest's steps and rewards, or everything one NPC gives — the same box takes either. |
 | `/relic <name>` | What a relic does and every place it drops. |
+| `/events` | Time to the next roll, what can fire, and why AA can't be predicted. |
 
 ## Running it
 

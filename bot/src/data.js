@@ -27,6 +27,7 @@ const imageMap = read('src/data/images.json');
 
 export const {
   minerals, digSites, locations, pans, shovels, sluices, rarities, events,
+  eventSchedule,
   equipment, quests, npcs, museum, modifiers, codes, enchants, relics,
   potions, trinkets, excavations, levels, runes, mastery, permanentBuffs,
   currencies, regions, mutations, blueprints,

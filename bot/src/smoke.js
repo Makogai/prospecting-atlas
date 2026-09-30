@@ -86,6 +86,7 @@ const CASES = [
   ['relic', { name: 'meteor fragment' }, 'relic-event'],
   ['relic', { name: 'blessed enchant book' }, 'relic-book'], // table-shaped category
   ['relic', { name: 'zzzz-nope' }, 'relic-miss'],
+  ['events', {}, 'events-next'],
 ];
 
 for (const [name, options, label] of CASES) {

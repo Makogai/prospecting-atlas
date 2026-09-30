@@ -291,6 +291,10 @@ export interface LuckEvent {
   name: string;
   /** How it combines: additive bonuses sum, multiplicative ones multiply on top. */
   kind: 'additive' | 'multiplicative' | 'unknown';
+  /** How long it runs once it fires; null where the wiki doesn't say. */
+  durationMinutes?: number | null;
+  /** A relic that starts it on demand, instead of waiting for a roll. */
+  relic?: string | null;
   /** Bonus for additive, factor for multiplicative, null when the wiki omits it. */
   value: number | null;
   /** Dig sites it is restricted to; empty when it applies everywhere. */
@@ -515,6 +519,20 @@ export interface NavIcon {
   image: string;
 }
 
+/**
+ * When events fire. The regular roll is on the clock and the same in every
+ * server; Admin Abuse is not scheduled at all.
+ */
+export interface EventSchedule {
+  rollMinutes: number;
+  /** Minutes past the hour a roll lands on, e.g. [0, 30]. */
+  slots: number[];
+  globalRoll: boolean;
+  /** False — the wiki says events "have a chance to occur" at each roll. */
+  guaranteed: boolean;
+  adminAbuse: { scheduled: boolean; what: string; announced: string };
+}
+
 export interface Region {
   id: string;
   name: string;
@@ -556,6 +574,7 @@ export const db = raw as unknown as {
   treasureChests: { sections: Record<string, PageSection>; loot: { id: string; place: string; items: string[] }[]; wiki: string };
   currencies: Currency[];
   regions: Region[];
+  eventSchedule: EventSchedule;
   mutations: Mutations;
   navIcons: NavIcon[];
   builds: Build[];
@@ -568,7 +587,7 @@ export const {
   builds, buildGuide, blueprints, buildStages, quests, npcs, museum,
   modifiers, codes, enchants, enchantHowTo, excavations, relics, relicAcquisition,
   levels, runes, permanentBuffs, mastery, potions, trinkets, geodes, treasureChests,
-  currencies, regions, mutations, navIcons,
+  currencies, regions, mutations, navIcons, eventSchedule,
 } = db;
 
 export const npcByName = new Map(npcs.map((n) => [n.name, n]));
@@ -635,6 +654,40 @@ export const locationById = byId(locations);
 export const digSiteByName = new Map(digSites.map((s) => [s.name, s]));
 
 export const rarityByName = new Map(rarities.map((r) => [r.name, r]));
+
+/**
+ * Milliseconds until the next event roll.
+ *
+ * Rolls land on fixed minutes past the hour and are the same in every server,
+ * so this is real rather than an estimate — but it's the moment the game *rolls*,
+ * not a promise that something fires.
+ */
+export function msToNextRoll(now: Date = new Date()): number {
+  const slots = eventSchedule.slots.length ? eventSchedule.slots : [0, 30];
+  const mins = now.getMinutes();
+  const next = slots.find((s) => s > mins);
+  const target = new Date(now);
+  target.setSeconds(0, 0);
+  if (next == null) {
+    target.setHours(now.getHours() + 1, slots[0]);
+  } else {
+    target.setMinutes(next);
+  }
+  return target.getTime() - now.getTime();
+}
+
+/**
+ * `13m 11s` — time remaining.
+ *
+ * Deliberately not `13:11`, which reads as a clock time right next to a panel
+ * talking about :00 and :30.
+ */
+export function countdown(ms: number): string {
+  const total = Math.max(Math.ceil(ms / 1000), 0);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return m > 0 ? `${m}m ${String(s).padStart(2, '0')}s` : `${s}s`;
+}
 
 /* ---------- front-page tiles -------------------------------------------- */
 

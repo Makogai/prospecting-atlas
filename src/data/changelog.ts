@@ -26,6 +26,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-event-timer',
+    date: '2026-09-30',
+    title: 'A countdown to the next event roll',
+    tag: 'new',
+    body: 'Events roll every 30 minutes on the clock, the same in every server, so there is now a live timer for it. Admin Abuse is a different thing and nobody can predict it — the page says so rather than pretending.',
+    href: '/progression?tab=events',
+  },
+  {
     id: '2026-09-30-per-item-quality',
     date: '2026-09-30',
     title: 'Roll quality is per item, not one figure for everything',

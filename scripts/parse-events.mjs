@@ -69,6 +69,16 @@ export function parseEvents(wikitext) {
     const sites = [...new Set(refs(block))]
       .filter((r) => !/^(File|Stats?|Modifiers?|Relics)/i.test(r));
 
+    // "an every-30-minute event lasting 15 minutes" — how long you have once
+    // it fires, which is the difference between dropping everything and not.
+    // Three phrasings in the wild, and the number is usually bolded:
+    //   "lasting '''20 minutes'''" / "lasts '''15 minutes'''" / "a '''15 minute''' event"
+    // A bare bolded number isn't enough on its own — "an every-30-minute event
+    // lasting 15 minutes" would then report 30, which is the roll, not the run.
+    const lasts =
+      body.match(/last(?:ing|s)(?:\s+for)?\s+'*\s*(\d+)\s*'*\s*(minutes?|mins?|hours?|hrs?)/i) ??
+      body.match(/'''\s*(\d+)\s*(minute|min|hour|hr)s?\s*'''\s*event/i);
+
     events.push({
       name,
       kind: multiplicative ? 'multiplicative' : 'additive',
@@ -76,6 +86,11 @@ export function parseEvents(wikitext) {
       sites,
       global: sites.length === 0,
       admin: /admin[- ]?only/i.test(body),
+      durationMinutes: lasts
+        ? Number(lasts[1]) * (/hour|hr/i.test(lasts[2]) ? 60 : 1)
+        : null,
+      // Some events can be started on demand with a relic instead of waiting.
+      relic: (body.match(/\[\[Relics#tabber-([^\]|]+)/i) ?? [])[1]?.replace(/_/g, ' ') ?? null,
       note: null,
     });
   }
