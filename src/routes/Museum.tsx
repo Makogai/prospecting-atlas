@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  museum, museumOreById, museumTotals, bestMuseumPicks, scoreFor,
+  museum, museumOreById, museumTotals, bestMuseumPicks, scoreFor, soloCeiling,
   boostLabel, mineralById, rarityByName, money,
   type MuseumOre, type RarityName,
 } from '../lib/db';
@@ -60,6 +60,28 @@ export function MuseumPage() {
   // The first one leads the labels and the browse table; the rest come along.
   const stat = stats[0];
 
+  /**
+   * How much each selected stat matters, 0–100.
+   *
+   * Without this the planner has to guess, and any guess is wrong: two stats
+   * rarely matter equally, and the answer for "mostly Luck, a bit of Size
+   * Boost" is a different museum from "both please".
+   */
+  const weights = useMemo(() => {
+    const given = (params.get('w') ?? '')
+      .split(',')
+      .map((n) => Number(n))
+      .filter((n) => Number.isFinite(n) && n >= 0);
+    return stats.map((_, i) => (given[i] ?? 50));
+  }, [params, stats]);
+
+  const setWeights = (next: number[]) => {
+    const p = new URLSearchParams(params);
+    p.set('stat', stats.join(','));
+    p.set('w', next.map((n) => Math.round(n)).join(','));
+    setParams(p, { replace: true });
+  };
+
   const [saved, setSaved] = useSavedSlots();
 
   // A `?b=` link is somebody else's build. It's held apart from the saved one
@@ -73,9 +95,16 @@ export function MuseumPage() {
   const viewingShared = shared != null;
   const slots = viewingShared ? shared.slots : saved;
 
-  const setStats = (next: string[]) => {
+  const setStats = (next: string[], nextWeights?: number[]) => {
     const p = new URLSearchParams(params);
     p.set('stat', next.join(','));
+    // Keep each stat's weight with it as the selection changes; a new one
+    // starts at the midpoint rather than inheriting whatever was at its index.
+    const carried = nextWeights ?? next.map((name) => {
+      const at = stats.indexOf(name);
+      return at === -1 ? 50 : weights[at];
+    });
+    p.set('w', carried.map((n) => Math.round(n)).join(','));
     setParams(p, { replace: true });
   };
 
@@ -129,8 +158,11 @@ export function MuseumPage() {
   const shareUrl = useMemo(() => {
     const code = encodeBuild(slots);
     const origin = typeof window === 'undefined' ? '' : window.location.origin;
-    return `${origin}/museum?stat=${encodeURIComponent(stats.join(','))}&b=${code}`;
-  }, [slots, stats]);
+    return (
+      `${origin}/museum?stat=${encodeURIComponent(stats.join(','))}` +
+      `&w=${weights.map((n) => Math.round(n)).join(',')}&b=${code}`
+    );
+  }, [slots, stats, weights]);
 
   const placed = useMemo(
     () => Object.values(slots).map((id) => (id ? museumOreById.get(id) : null)),
@@ -140,7 +172,7 @@ export function MuseumPage() {
   const filled = placed.filter(Boolean).length;
 
   const fillBest = () => {
-    const picks = bestMuseumPicks(stats);
+    const picks = bestMuseumPicks(stats, weights);
     const next: Slots = {};
     for (const display of museum.displays) {
       (picks.get(display.rarity) ?? []).forEach((ore, i) => {
@@ -162,7 +194,7 @@ export function MuseumPage() {
 
   // Only six ores in the game boost Luck, so "Best for Luck" leaves most
   // displays empty. That looks broken unless it's said out loud.
-  const reachable = [...bestMuseumPicks(stats).values()].reduce((t, xs) => t + xs.length, 0);
+  const reachable = [...bestMuseumPicks(stats, weights).values()].reduce((t, xs) => t + xs.length, 0);
 
   /** "Luck", or "Luck + Capacity" — whatever the buttons and headings need. */
   const label = stats.join(' + ');
@@ -213,6 +245,53 @@ export function MuseumPage() {
               : 'Pick more than one and the planner balances them.'
           }
         />
+        {stats.length > 1 && (
+          <div className="panel mb-4 p-4">
+            <p className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-ink-500 uppercase">
+              How much does each one matter?
+            </p>
+            <div className="space-y-3">
+              {stats.map((name, i) => {
+                const ceiling = soloCeiling(name);
+                const got = totals[name] ?? 0;
+                return (
+                  <div key={name}>
+                    <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+                      <label htmlFor={`w-${name}`} className="text-xs font-semibold text-ink-300">
+                        {name}
+                      </label>
+                      <span className="numeric text-[11px] text-ink-500">
+                        {/* Against what this stat could reach on its own, which is
+                            the only way to see what a trade-off actually cost. */}
+                        <span className="text-vein-400">{boostLabel(got)}</span> of{' '}
+                        {boostLabel(ceiling)} possible
+                      </span>
+                    </div>
+                    <input
+                      id={`w-${name}`}
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={weights[i] ?? 50}
+                      onChange={(e) =>
+                        setWeights(
+                          weights.map((w, n) => (n === i ? Number(e.target.value) : w)),
+                        )
+                      }
+                      className="w-full accent-vein-500"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-2.5 text-[11px] leading-relaxed text-ink-500">
+              Each stat is scored against the best its rarity could manage, not its raw
+              multiplier — the best Mythic for Luck is 0.75× and for Size Boost 0.35×, so
+              without that an even split quietly becomes 80/20.
+            </p>
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-1.5">
           {museum.stats.map((s) => (
             <button

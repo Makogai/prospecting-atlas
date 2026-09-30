@@ -804,13 +804,20 @@ export const museumOresByStat = new Map<string, MuseumOre[]>(
  * What one ore is worth across several stats at once.
  *
  * Summed, and debuffs count against the total — an ore that gives +0.75x Luck
- * and takes 0.5x off Size Boost is worth +0.25 to someone who wants both, and
- * the full +0.75 to someone who only wants Luck. Adding multipliers from
- * different stats isn't a physical quantity, but it is the only neutral way to
- * rank "good at all of these" without inventing weights the game doesn't have.
+ * and takes 0.5x off Size Boost is worth +0.25 to someone who wants both.
  */
 export const scoreFor = (ore: MuseumOre | null | undefined, stats: string[]) =>
   stats.reduce((total, stat) => total + boostFor(ore, stat), 0);
+
+/** The best any ore of one rarity does for one stat. */
+function ceilingIn(rarity: RarityName, stat: string): number {
+  let best = 0;
+  for (const ore of museum.ores) {
+    if (ore.rarity !== rarity) continue;
+    best = Math.max(best, boostFor(ore, stat));
+  }
+  return best;
+}
 
 /**
  * The best ores you could slot for one or more stats, given how many displays
@@ -818,20 +825,55 @@ export const scoreFor = (ore: MuseumOre | null | undefined, stats: string[]) =>
  *
  * Displays only accept their own rarity, so this isn't "take the top 18" — it's
  * a separate pick per rarity, which is why a Common display can still be worth
- * filling when Exotics exist. Ores whose net effect is zero or negative are
- * left out; an empty display beats one that costs you more than it gives.
+ * filling when Exotics exist.
+ *
+ * With more than one stat, each is scored against the best that rarity could do
+ * for it rather than on its raw multiplier. The raw numbers aren't on the same
+ * scale — the best Mythic for Luck is 0.75x while the best for Size Boost is
+ * 0.35x — so summing them hands every good display to whichever stat happens to
+ * have bigger figures. Normalising first is what makes a 50/50 weighting
+ * actually come out balanced instead of 80/20.
+ *
+ * Ores whose weighted score is zero or negative are left out; an empty display
+ * beats one that costs you more than it gives.
  */
-export function bestMuseumPicks(stats: string | string[]): Map<RarityName, MuseumOre[]> {
+export function bestMuseumPicks(
+  stats: string | string[],
+  weights?: number[],
+): Map<RarityName, MuseumOre[]> {
   const wanted = Array.isArray(stats) ? stats : [stats];
+  const raw = weights?.length === wanted.length ? weights : wanted.map(() => 1);
+  const sum = raw.reduce((t, w) => t + Math.max(w, 0), 0) || 1;
+  const share = raw.map((w) => Math.max(w, 0) / sum);
+
   const out = new Map<RarityName, MuseumOre[]>();
   for (const display of museum.displays) {
-    const picks = museum.ores
-      .filter((o) => o.rarity === display.rarity && scoreFor(o, wanted) > 0)
-      .sort((a, b) => scoreFor(b, wanted) - scoreFor(a, wanted))
-      .slice(0, display.total);
-    out.set(display.rarity, picks);
+    const ceilings = wanted.map((stat) => ceilingIn(display.rarity, stat));
+    const score = (ore: MuseumOre) =>
+      wanted.reduce(
+        (total, stat, i) =>
+          total + (ceilings[i] > 0 ? share[i] * (boostFor(ore, stat) / ceilings[i]) : 0),
+        0,
+      );
+
+    out.set(
+      display.rarity,
+      museum.ores
+        .filter((o) => o.rarity === display.rarity && score(o) > 0)
+        .sort((a, b) => score(b) - score(a))
+        .slice(0, display.total),
+    );
   }
   return out;
+}
+
+/** What one stat totals if the whole museum is given over to it. */
+export function soloCeiling(stat: string): number {
+  let total = 0;
+  for (const picks of bestMuseumPicks([stat]).values()) {
+    for (const ore of picks) total += boostFor(ore, stat);
+  }
+  return total;
 }
 
 /** Summed stat totals for a set of slotted ores, including their debuffs. */

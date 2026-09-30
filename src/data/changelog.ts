@@ -30,8 +30,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-30',
     title: 'Plan a museum for more than one stat',
     tag: 'new',
-    body: 'Pick several stats and the planner balances them across all 18 displays, counting debuffs against the total. A Luck and Capacity build comes out at +4.1× combined.',
-    href: '/museum?stat=Luck,Capacity',
+    body: 'Pick several stats and drag a slider for how much each one matters. Every stat is scored against the best its rarity could manage, so an even split really is even — and each shows what it got against what it could have reached alone.',
+    href: '/museum?stat=Luck,Size Boost&w=50,50',
   },
   {
     id: '2026-09-30-npc-search',
