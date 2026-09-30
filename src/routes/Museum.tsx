@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  museum, museumOreById, museumOresByStat, museumTotals, bestMuseumPicks,
-  boostFor, boostLabel, mineralById, rarityByName, money,
+  museum, museumOreById, museumTotals, bestMuseumPicks, scoreFor,
+  boostLabel, mineralById, rarityByName, money,
   type MuseumOre, type RarityName,
 } from '../lib/db';
 import {
@@ -46,11 +46,19 @@ function useSavedSlots(): [Slots, (next: Slots) => void] {
 /* ---------- page -------------------------------------------------------- */
 
 export function MuseumPage() {
-  // The stat lives in the URL so ⌘K can land on "Museum — Luck" directly, and
-  // so a chosen stat survives a link being shared.
+  // The stats live in the URL so ⌘K can land on "Museum — Luck" directly, and
+  // so a chosen set survives a link being shared. Comma-separated, because a
+  // build is often for two things at once.
   const [params, setParams] = useSearchParams();
-  const fromUrl = params.get('stat');
-  const stat = fromUrl && museum.stats.includes(fromUrl) ? fromUrl : 'Luck';
+  const stats = useMemo(() => {
+    const picked = (params.get('stat') ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => museum.stats.includes(s));
+    return picked.length ? picked : ['Luck'];
+  }, [params]);
+  // The first one leads the labels and the browse table; the rest come along.
+  const stat = stats[0];
 
   const [saved, setSaved] = useSavedSlots();
 
@@ -65,9 +73,9 @@ export function MuseumPage() {
   const viewingShared = shared != null;
   const slots = viewingShared ? shared.slots : saved;
 
-  const setStat = (next: string) => {
+  const setStats = (next: string[]) => {
     const p = new URLSearchParams(params);
-    p.set('stat', next);
+    p.set('stat', next.join(','));
     setParams(p, { replace: true });
   };
 
@@ -121,8 +129,8 @@ export function MuseumPage() {
   const shareUrl = useMemo(() => {
     const code = encodeBuild(slots);
     const origin = typeof window === 'undefined' ? '' : window.location.origin;
-    return `${origin}/museum?stat=${encodeURIComponent(stat)}&b=${code}`;
-  }, [slots, stat]);
+    return `${origin}/museum?stat=${encodeURIComponent(stats.join(','))}&b=${code}`;
+  }, [slots, stats]);
 
   const placed = useMemo(
     () => Object.values(slots).map((id) => (id ? museumOreById.get(id) : null)),
@@ -132,7 +140,7 @@ export function MuseumPage() {
   const filled = placed.filter(Boolean).length;
 
   const fillBest = () => {
-    const picks = bestMuseumPicks(stat);
+    const picks = bestMuseumPicks(stats);
     const next: Slots = {};
     for (const display of museum.displays) {
       (picks.get(display.rarity) ?? []).forEach((ore, i) => {
@@ -142,12 +150,22 @@ export function MuseumPage() {
     setSlots(next);
   };
 
-  // Ranked once per stat and reused by both the picker and the browse table.
-  const ranked = museumOresByStat.get(stat) ?? [];
+  // Ranked by the combined score, so the browse table agrees with what the
+  // "best for" button just placed.
+  const ranked = useMemo(
+    () =>
+      museum.ores
+        .filter((o) => o.boosts.some((b) => stats.includes(b.stat)))
+        .sort((a, b) => scoreFor(b, stats) - scoreFor(a, stats)),
+    [stats],
+  );
 
   // Only six ores in the game boost Luck, so "Best for Luck" leaves most
   // displays empty. That looks broken unless it's said out loud.
-  const reachable = [...bestMuseumPicks(stat).values()].reduce((t, xs) => t + xs.length, 0);
+  const reachable = [...bestMuseumPicks(stats).values()].reduce((t, xs) => t + xs.length, 0);
+
+  /** "Luck", or "Luck + Capacity" — whatever the buttons and headings need. */
+  const label = stats.join(' + ');
 
   return (
     <div className="animate-rise">
@@ -189,17 +207,28 @@ export function MuseumPage() {
       <section className="mt-8">
         <SectionTitle
           title="Pick what you're building for"
-          hint="Everything below re-ranks around this stat."
+          hint={
+            stats.length > 1
+              ? `Optimising for ${stats.length} stats at once — an ore is ranked by what it adds across all of them.`
+              : 'Pick more than one and the planner balances them.'
+          }
         />
         <div className="flex flex-wrap gap-1.5">
           {museum.stats.map((s) => (
             <button
               key={s}
-              onClick={() => setStat(s)}
-              aria-pressed={stat === s}
+              onClick={() =>
+                setStats(
+                  stats.includes(s)
+                    // Never end up with nothing selected; there'd be nothing to plan for.
+                    ? (stats.length > 1 ? stats.filter((x) => x !== s) : stats)
+                    : [...stats, s],
+                )
+              }
+              aria-pressed={stats.includes(s)}
               className={cx(
                 'rounded-lg px-3 py-1.5 text-sm font-semibold transition',
-                stat === s
+                stats.includes(s)
                   ? 'bg-vein-500/25 text-vein-300 ring-1 ring-vein-500/50'
                   : 'bg-white/5 text-ink-400 hover:bg-white/10 hover:text-ink-100',
               )}
@@ -248,7 +277,7 @@ export function MuseumPage() {
             title="Your museum"
             hint={
               reachable < museum.slots
-                ? `${filled} of ${museum.slots} filled — only ${reachable} displays can boost ${stat} at all`
+                ? `${filled} of ${museum.slots} filled — only ${reachable} displays can help with ${label} at all`
                 : `${filled} of ${museum.slots} displays filled`
             }
             action={
@@ -257,7 +286,7 @@ export function MuseumPage() {
                   onClick={fillBest}
                   className="rounded-lg bg-ore-400 px-3 py-1.5 text-xs font-bold text-rock-950 transition hover:bg-ore-300"
                 >
-                  Best for {stat}
+                  Best for {label}
                 </button>
                 <button
                   onClick={() => setShareOpen((v) => !v)}
@@ -320,7 +349,7 @@ export function MuseumPage() {
                         ore={slots[slotKey(display.rarity, i)]
                           ? museumOreById.get(slots[slotKey(display.rarity, i)]!)
                           : null}
-                        stat={stat}
+                        stats={stats}
                         locked={i >= display.free}
                         onPick={() => setPicking({ rarity: display.rarity, index: i })}
                         onClear={() =>
@@ -336,22 +365,22 @@ export function MuseumPage() {
         </div>
 
         <div ref={totalsRef} className="order-first lg:order-none">
-          <Totals totals={totals} stat={stat} filled={filled} />
+          <Totals totals={totals} stats={stats} filled={filled} />
         </div>
       </section>
 
       {/* ---------- browse ---------- */}
       <section className="mt-10">
         <SectionTitle
-          title={`Every ore that changes ${stat}`}
+          title={stats.length > 1 ? `Every ore that helps with ${label}` : `Every ore that changes ${stat}`}
           hint={`${ranked.length} of ${museum.ores.length} ores, best first. Weight is what you need to hit for the full boost.`}
         />
         {ranked.length === 0 ? (
-          <Empty>No ore affects {stat}.</Empty>
+          <Empty>No ore affects {label}.</Empty>
         ) : (
           <div className="panel divide-y divide-white/6">
             {ranked.map((ore) => (
-              <OreRow key={ore.id} ore={ore} stat={stat} />
+              <OreRow key={ore.id} ore={ore} stats={stats} />
             ))}
           </div>
         )}
@@ -361,17 +390,17 @@ export function MuseumPage() {
 
       <MobileDock
         label="What you'd gain"
-        meta={`${filled} of ${museum.slots} displays · ${stat}`}
-        value={boostLabel(totals[stat] ?? 0)}
+        meta={`${filled} of ${museum.slots} displays · ${label}`}
+        value={boostLabel(stats.reduce((t, x) => t + (totals[x] ?? 0), 0))}
         anchorRef={totalsRef}
       >
-        <Totals totals={totals} stat={stat} filled={filled} />
+        <Totals totals={totals} stats={stats} filled={filled} />
       </MobileDock>
 
       {picking && (
         <OrePicker
           rarity={picking.rarity}
-          stat={stat}
+          stats={stats}
           chosen={Object.entries(slots)
             .filter(([k]) => k !== slotKey(picking.rarity, picking.index))
             .map(([, v]) => v)
@@ -390,15 +419,18 @@ export function MuseumPage() {
 /* ---------- pieces ------------------------------------------------------ */
 
 function Pedestal({
-  ore, stat, locked, onPick, onClear,
+  ore, stats, locked, onPick, onClear,
 }: {
   ore: MuseumOre | null | undefined;
-  stat: string;
+  stats: string[];
   locked: boolean;
   onPick: () => void;
   onClear: () => void;
 }) {
-  const value = boostFor(ore, stat);
+  // Across everything being optimised for, so a pedestal reads the same way the
+  // planner ranked it.
+  const value = scoreFor(ore, stats);
+  const label = stats.join(' + ');
 
   if (!ore) {
     return (
@@ -424,7 +456,7 @@ function Pedestal({
               value > 0 ? 'text-vein-400' : value < 0 ? 'text-red-400' : 'text-ink-500',
             )}
           >
-            {value !== 0 ? `${boostLabel(value)} ${stat}` : `no ${stat}`}
+            {value !== 0 ? `${boostLabel(value)} ${label}` : `no ${label}`}
           </span>
           {ore.minWeight != null && (
             <span className="numeric block text-[10px] text-ink-500">{ore.minWeight}kg needed</span>
@@ -450,12 +482,14 @@ function Pedestal({
  * outright, and a "Share" that silently does nothing is worse than no button.
  */
 function Totals({
-  totals, stat, filled,
+  totals, stats, filled,
 }: {
   totals: Record<string, number>;
-  stat: string;
+  stats: string[];
   filled: number;
 }) {
+  const label = stats.join(' + ');
+  const headline = stats.reduce((t, s) => t + (totals[s] ?? 0), 0);
   const rows = Object.entries(totals)
     .filter(([, v]) => v !== 0)
     .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
@@ -466,10 +500,10 @@ function Totals({
         What you'd gain
       </h2>
       <div className="numeric mt-1 text-3xl font-black text-vein-400">
-        {boostLabel(totals[stat] ?? 0)}
+        {boostLabel(headline)}
       </div>
       <p className="text-xs text-ink-400">
-        {stat} from {filled} display{filled === 1 ? '' : 's'}
+        {label} from {filled} display{filled === 1 ? '' : 's'}
       </p>
 
       {rows.length > 0 ? (
@@ -479,10 +513,10 @@ function Totals({
               key={s}
               className={cx(
                 'flex items-baseline justify-between gap-2 rounded-md px-2 py-1 text-sm',
-                s === stat && 'bg-vein-500/10',
+                stats.includes(s) && 'bg-vein-500/10',
               )}
             >
-              <dt className={cx('truncate', s === stat ? 'font-bold' : 'text-ink-300')}>{s}</dt>
+              <dt className={cx('truncate', stats.includes(s) ? 'font-bold' : 'text-ink-300')}>{s}</dt>
               <dd
                 className={cx(
                   'numeric shrink-0 font-bold',
@@ -496,7 +530,7 @@ function Totals({
         </dl>
       ) : (
         <p className="mt-4 text-sm text-ink-500">
-          Nothing placed yet. Hit <strong className="text-ink-300">Best for {stat}</strong> to see
+          Nothing placed yet. Hit <strong className="text-ink-300">Best for {label}</strong> to see
           the ceiling.
         </p>
       )}
@@ -510,10 +544,11 @@ function Totals({
   );
 }
 
-function OreRow({ ore, stat }: { ore: MuseumOre; stat: string }) {
+function OreRow({ ore, stats }: { ore: MuseumOre; stats: string[] }) {
   const mineral = mineralById.get(ore.id);
-  const value = boostFor(ore, stat);
-  const others = ore.boosts.filter((b) => b.stat !== stat);
+  const value = scoreFor(ore, stats);
+  // What it does outside the selection, so a hidden debuff is never a surprise.
+  const others = ore.boosts.filter((b) => !stats.includes(b.stat));
   // Log scaling isn't needed here — boosts run 0.04× to 1.2×, a 30× spread.
   const width = Math.min(Math.abs(value) / 1.2, 1) * 100;
 
@@ -559,10 +594,10 @@ function OreRow({ ore, stat }: { ore: MuseumOre; stat: string }) {
 
 /** Full-screen ore chooser for one display, ranked by the stat you picked. */
 function OrePicker({
-  rarity, stat, chosen, onClose, onChoose,
+  rarity, stats, chosen, onClose, onChoose,
 }: {
   rarity: RarityName;
-  stat: string;
+  stats: string[];
   /** Ores already sitting in another display, so they can't be double-placed. */
   chosen: string[];
   onClose: () => void;
@@ -580,8 +615,8 @@ function OrePicker({
     const needle = q.trim().toLowerCase();
     return museum.ores
       .filter((o) => o.rarity === rarity && (!needle || o.name.toLowerCase().includes(needle)))
-      .sort((a, b) => boostFor(b, stat) - boostFor(a, stat) || a.name.localeCompare(b.name));
-  }, [rarity, stat, q]);
+      .sort((a, b) => scoreFor(b, stats) - scoreFor(a, stats) || a.name.localeCompare(b.name));
+  }, [rarity, stats, q]);
 
   // Portalled for the same reason as the dock: `animate-rise` on the page root
   // leaves a transform behind, which would make `inset-0` cover the document
@@ -600,7 +635,7 @@ function OrePicker({
               </span>{' '}
               {rarity} <span className="text-ink-400">display</span>
             </h2>
-            <span className="text-[11px] text-ink-500">ranked by {stat}</span>
+            <span className="text-[11px] text-ink-500">ranked by {stats.join(' + ')}</span>
           </div>
           <input
             autoFocus
@@ -615,7 +650,7 @@ function OrePicker({
             <p className="px-4 py-8 text-center text-sm text-ink-500">No {rarity} ore matches.</p>
           )}
           {options.map((ore) => {
-            const value = boostFor(ore, stat);
+            const value = scoreFor(ore, stats);
             const taken = chosen.includes(ore.id);
             return (
               <button

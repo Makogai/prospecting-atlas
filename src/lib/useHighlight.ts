@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router-dom';
  * navigation: a link that points at something halfway down a page has to win
  * over the usual jump to the top, or the highlight lands off screen.
  */
-export const HIGHLIGHT_PARAMS = ['rune', 'potion', 'relic', 'e', 'mod', 'code', 'site'];
+export const HIGHLIGHT_PARAMS = ['rune', 'potion', 'relic', 'e', 'mod', 'code', 'site', 'who'];
 
 export const namesATarget = (search: string) => {
   const params = new URLSearchParams(search);

@@ -26,6 +26,22 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-museum-multi',
+    date: '2026-09-30',
+    title: 'Plan a museum for more than one stat',
+    tag: 'new',
+    body: 'Pick several stats and the planner balances them across all 18 displays, counting debuffs against the total. A Luck and Capacity build comes out at +4.1× combined.',
+    href: '/museum?stat=Luck,Capacity',
+  },
+  {
+    id: '2026-09-30-npc-search',
+    date: '2026-09-30',
+    title: 'Searching a character actually finds them',
+    tag: 'fixed',
+    body: 'It filtered the quest list by their name, so the 68 characters who give no quests came back empty. It now opens the directory on their card, which works for all 120.',
+    href: '/quests',
+  },
+  {
     id: '2026-09-30-search-tabs',
     date: '2026-09-30',
     title: 'Search results take you to the thing itself',

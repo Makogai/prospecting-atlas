@@ -77,7 +77,9 @@ export const searchIndex: SearchItem[] = [
     kind: 'npc' as const,
     id: n.id,
     name: n.name,
-    href: `/quests?npc=${encodeURIComponent(n.name)}`,
+    // `who` opens the directory on them; `npc` would filter the quest list,
+    // which is empty for the 68 characters that give no quests.
+    href: `/quests?who=${n.id}`,
     image: n.image,
     meta: n.places[0]?.name ?? n.regions[0] ?? 'NPC',
     tag: 'NPC',

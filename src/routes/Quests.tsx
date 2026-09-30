@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useHighlight } from '../lib/useHighlight';
 import {
   quests, npcs, npcByName, mineralByName, digSiteByName, locationByName,
   type Quest, type Npc,
@@ -31,6 +32,16 @@ export function QuestsPage() {
   const location = params.get('loc') ?? '';
   const npcFilter = params.get('npc') ?? '';
   const buffsOnly = params.get('buffs') === '1';
+
+  // `?who=` points at one character in the directory; `?npc=` filters the quest
+  // list by their name. They're separate on purpose: 68 of the 120 characters
+  // give no quests at all, so sending a search for one of those to a filtered
+  // quest list lands on "no quest matches that".
+  const who = params.get('who');
+
+  useEffect(() => {
+    if (who) setTab('npcs');
+  }, [who]);
 
   const patch = (next: Record<string, string>) => {
     const p = new URLSearchParams(params);
@@ -189,7 +200,7 @@ export function QuestsPage() {
         <NpcDirectory
           onPickNpc={(name) => {
             setTab('quests');
-            patch({ npc: name, loc: '', q: '' });
+            patch({ npc: name, loc: '', q: '', who: '' });
           }}
         />
       )}
@@ -310,20 +321,26 @@ function StepText({ text }: { text: string }) {
 }
 
 function NpcDirectory({ onPickNpc }: { onPickNpc: (name: string) => void }) {
+  const found = useHighlight('who');
   const [q, setQ] = useState('');
   const [questGiversOnly, setQuestGiversOnly] = useState(false);
+
+  // A searched character who gives no quests would be filtered out by the
+  // quest-giver toggle, so the toggle gives way rather than hiding the answer.
+  const target = found.wanted ? npcs.find((n) => n.id === found.wanted) : null;
+  const hideNonGivers = questGiversOnly && !(target && target.quests.length === 0);
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return npcs
       .filter((n) => {
-        if (questGiversOnly && n.quests.length === 0) return false;
+        if (hideNonGivers && n.quests.length === 0) return false;
         if (needle && !`${n.name} ${n.summary ?? ''} ${n.regions.join(' ')}`.toLowerCase().includes(needle))
           return false;
         return true;
       })
       .sort((a, b) => b.quests.length - a.quests.length || a.name.localeCompare(b.name));
-  }, [q, questGiversOnly]);
+  }, [q, hideNonGivers]);
 
   return (
     <>
@@ -355,7 +372,12 @@ function NpcDirectory({ onPickNpc }: { onPickNpc: (name: string) => void }) {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((npc) => (
-            <NpcCard key={npc.id} npc={npc} onPick={() => onPickNpc(npc.name)} />
+            <NpcCard
+              key={npc.id}
+              npc={npc}
+              mark={found.mark(npc.id)}
+              onPick={() => onPickNpc(npc.name)}
+            />
           ))}
         </div>
       )}
@@ -363,10 +385,16 @@ function NpcDirectory({ onPickNpc }: { onPickNpc: (name: string) => void }) {
   );
 }
 
-function NpcCard({ npc, onPick }: { npc: Npc; onPick: () => void }) {
+function NpcCard({
+  npc, onPick, mark,
+}: {
+  npc: Npc;
+  onPick: () => void;
+  mark?: Record<string, string>;
+}) {
   const givesQuests = npc.quests.length > 0;
   return (
-    <div className="panel overflow-hidden">
+    <div {...mark} className="panel overflow-hidden">
       <div className="relative h-28 overflow-hidden bg-rock-850">
         <Sprite file={npc.image} alt={npc.name} fit="cover" className="h-full w-full opacity-80" />
         <div className="absolute inset-0 bg-gradient-to-t from-rock-900 via-transparent to-transparent" />

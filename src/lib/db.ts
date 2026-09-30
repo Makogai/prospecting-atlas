@@ -801,19 +801,33 @@ export const museumOresByStat = new Map<string, MuseumOre[]>(
 );
 
 /**
- * The best ores you could slot for one stat, given how many displays each
- * rarity has.
+ * What one ore is worth across several stats at once.
+ *
+ * Summed, and debuffs count against the total — an ore that gives +0.75x Luck
+ * and takes 0.5x off Size Boost is worth +0.25 to someone who wants both, and
+ * the full +0.75 to someone who only wants Luck. Adding multipliers from
+ * different stats isn't a physical quantity, but it is the only neutral way to
+ * rank "good at all of these" without inventing weights the game doesn't have.
+ */
+export const scoreFor = (ore: MuseumOre | null | undefined, stats: string[]) =>
+  stats.reduce((total, stat) => total + boostFor(ore, stat), 0);
+
+/**
+ * The best ores you could slot for one or more stats, given how many displays
+ * each rarity has.
  *
  * Displays only accept their own rarity, so this isn't "take the top 18" — it's
  * a separate pick per rarity, which is why a Common display can still be worth
- * filling when Exotics exist. Ores whose net effect on the stat is zero or
- * negative are left out; an empty display beats one that costs you the stat.
+ * filling when Exotics exist. Ores whose net effect is zero or negative are
+ * left out; an empty display beats one that costs you more than it gives.
  */
-export function bestMuseumPicks(stat: string): Map<RarityName, MuseumOre[]> {
+export function bestMuseumPicks(stats: string | string[]): Map<RarityName, MuseumOre[]> {
+  const wanted = Array.isArray(stats) ? stats : [stats];
   const out = new Map<RarityName, MuseumOre[]>();
   for (const display of museum.displays) {
-    const picks = (museumOresByStat.get(stat) ?? [])
-      .filter((o) => o.rarity === display.rarity && boostFor(o, stat) > 0)
+    const picks = museum.ores
+      .filter((o) => o.rarity === display.rarity && scoreFor(o, wanted) > 0)
+      .sort((a, b) => scoreFor(b, wanted) - scoreFor(a, wanted))
       .slice(0, display.total);
     out.set(display.rarity, picks);
   }
