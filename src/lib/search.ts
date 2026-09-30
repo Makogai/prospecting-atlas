@@ -184,7 +184,9 @@ export const searchIndex: SearchItem[] = [
     kind: 'potion' as const,
     id: `potion-${p.id}`,
     name: p.name,
-    href: '/items',
+    // Tabbed page: without the tab you land on whatever is first, which is not
+    // what the result said it would show you.
+    href: '/items?tab=potions',
     image: p.image,
     meta: p.money != null ? money(p.money) : (p.priceLabel ?? ''),
     tag: 'Potion',
@@ -196,7 +198,7 @@ export const searchIndex: SearchItem[] = [
     kind: 'rune' as const,
     id: `rune-${r.id}`,
     name: r.name,
-    href: '/progression',
+    href: '/progression?tab=runes',
     image: r.image,
     meta: 'Rune',
     tag: 'Rune',
@@ -220,7 +222,8 @@ export const searchIndex: SearchItem[] = [
     kind: 'mastery' as const,
     id: `mastery-${t.id}`,
     name: `${t.name} mastery`,
-    href: '/progression',
+    // The Mastery tab has its own track picker, so name the track too.
+    href: `/progression?tab=mastery&track=${t.id}`,
     image: null,
     meta: t.boost ?? `${t.tiers.length} tiers`,
     tag: 'Mastery',

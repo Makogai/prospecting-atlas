@@ -26,6 +26,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-search-tabs',
+    date: '2026-09-30',
+    title: 'Search results open the right tab',
+    tag: 'fixed',
+    body: 'Searching a rune, a mastery track or a potion dropped you on the first tab of the page instead of the one holding what you searched for. Mastery results now open the exact track too.',
+  },
+  {
     id: '2026-09-30-event-timer',
     date: '2026-09-30',
     title: 'A countdown to the next event roll',

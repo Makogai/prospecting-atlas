@@ -168,8 +168,19 @@ function Levels() {
 /* ---------- mastery ------------------------------------------------------ */
 
 function MasteryTracks() {
-  const [openId, setOpenId] = useState<string | null>(mastery.tracks[0]?.id ?? null);
-  const track = mastery.tracks.find((t) => t.id === openId) ?? mastery.tracks[0];
+  // The track lives in the URL too, so a search result for "Rubble Creek
+  // mastery" opens that track rather than dropping you on whichever is first.
+  const [params, setParams] = useSearchParams();
+  const fromUrl = params.get('track');
+  const track =
+    mastery.tracks.find((t) => t.id === fromUrl) ?? mastery.tracks[0];
+
+  const setOpenId = (id: string) => {
+    const next = new URLSearchParams(params);
+    next.set('tab', 'mastery');
+    next.set('track', id);
+    setParams(next, { replace: true });
+  };
 
   return (
     <>

@@ -159,9 +159,13 @@ function masteryTrack(name, chunk) {
   const tiers = masteryTiers(chunk);
   if (!tiers.length) return null;
   const boost = chunk.match(BOOST_LINE);
+  // The location tabs are labelled "Rubble Creek" but the activity headings are
+  // "Geode Mastery", so the id is built from the cleaned name — otherwise half
+  // the tracks end up with a `-mastery` suffix in their URL and half don't.
+  const clean = name.replace(/\s*Mastery\s*$/i, '').trim() || name;
   return {
-    id: slug(name),
-    name: name.replace(/\s*Mastery\s*$/i, '').trim() || name,
+    id: slug(clean),
+    name: clean,
     boost: boost ? plain(boost[1]).replace(/\.$/, '') : null,
     tiers,
   };
