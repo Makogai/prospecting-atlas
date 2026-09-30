@@ -491,6 +491,30 @@ export interface Currency {
   spend: string[];
 }
 
+export interface Mutation {
+  id: string;
+  name: string;
+  /** Universal multiplier applied to every stat on the item. */
+  multiplier: number | null;
+  bonuses: string[];
+  stats: string[];
+}
+
+export interface Mutations {
+  summary: string | null;
+  /** Where you reroll one. */
+  forge: string | null;
+  mutations: Mutation[];
+  chanceTiers: { tier: string; counts: (number | null)[]; rows: { mutation: string; percents: (number | null)[] }[] }[];
+  wiki: string;
+}
+
+/** An entry from the wiki's own front-page icon grid. */
+export interface NavIcon {
+  target: string;
+  image: string;
+}
+
 export interface Region {
   id: string;
   name: string;
@@ -532,6 +556,8 @@ export const db = raw as unknown as {
   treasureChests: { sections: Record<string, PageSection>; loot: { id: string; place: string; items: string[] }[]; wiki: string };
   currencies: Currency[];
   regions: Region[];
+  mutations: Mutations;
+  navIcons: NavIcon[];
   builds: Build[];
   buildStages: { stage: string; area: string; highest: string | null }[];
   buildGuide: { title: string; url: string; authors: string[]; snapshot: string };
@@ -542,7 +568,7 @@ export const {
   builds, buildGuide, blueprints, buildStages, quests, npcs, museum,
   modifiers, codes, enchants, enchantHowTo, excavations, relics, relicAcquisition,
   levels, runes, permanentBuffs, mastery, potions, trinkets, geodes, treasureChests,
-  currencies, regions,
+  currencies, regions, mutations, navIcons,
 } = db;
 
 export const npcByName = new Map(npcs.map((n) => [n.name, n]));
@@ -609,6 +635,92 @@ export const locationById = byId(locations);
 export const digSiteByName = new Map(digSites.map((s) => [s.name, s]));
 
 export const rarityByName = new Map(rarities.map((r) => [r.name, r]));
+
+/* ---------- front-page tiles -------------------------------------------- */
+
+/**
+ * The wiki's own icon grid, pointed at our routes.
+ *
+ * Reusing their ordering and art rather than inventing our own: it's the one
+ * curated list of "what people actually come here for" the wiki publishes.
+ * A wiki target with no route here is dropped rather than linked somewhere
+ * approximate — two of them (Treasure Map, Ground Items) we genuinely don't
+ * cover yet, and a tile that lands on the wrong page is worse than no tile.
+ */
+const TILE_ROUTES: Record<string, { to: string; label: string; group: string }> = {
+  Minerals: { to: '/minerals', label: 'Minerals', group: 'Find' },
+  Locations: { to: '/locations', label: 'Locations', group: 'Find' },
+  Pans: { to: '/gear/pans', label: 'Pans', group: 'Gear' },
+  Shovels: { to: '/gear/shovels', label: 'Shovels', group: 'Gear' },
+  Sluices: { to: '/gear/sluices', label: 'Sluices', group: 'Gear' },
+  Equipment: { to: '/equipment', label: 'Equipment', group: 'Gear' },
+  Enchanting: { to: '/enchanting', label: 'Enchanting', group: 'Gear' },
+  Mutations: { to: '/equipment#mutations', label: 'Mutations', group: 'Gear' },
+  Quests: { to: '/quests', label: 'Quests', group: 'Progress' },
+  NPCs: { to: '/quests?view=npcs', label: 'NPCs', group: 'Progress' },
+  Museum: { to: '/museum', label: 'Museum', group: 'Progress' },
+  Excavations: { to: '/excavations', label: 'Excavations', group: 'Progress' },
+  Mastery: { to: '/progression', label: 'Mastery', group: 'Progress' },
+  Runes: { to: '/progression?tab=runes', label: 'Runes', group: 'Progress' },
+  Events: { to: '/progression?tab=events', label: 'Events', group: 'Progress' },
+  Relics: { to: '/relics', label: 'Relics', group: 'Items' },
+  Geodes: { to: '/items?tab=chests', label: 'Geodes', group: 'Items' },
+  'Traveling Merchant': { to: '/relics', label: 'Traveling Merchant', group: 'Items' },
+};
+
+export interface NavTile {
+  target: string;
+  /** Wiki icon file, when their front page has one for it. */
+  image: string | null;
+  /** Stroke paths for the pages the wiki has no icon for. */
+  paths?: string[];
+  to: string;
+  label: string;
+  group: string;
+}
+
+/**
+ * Tiles for our own pages, which the wiki's grid has no icon for — either
+ * because the page is our framing of their data (Compare, Builds) or because
+ * they never put it on the front page (Codes, Modifiers).
+ *
+ * Drawn as 24x24 stroke paths to sit alongside the wiki's line art rather than
+ * borrowing an icon that means something else.
+ */
+const EXTRA_TILES: NavTile[] = [
+  {
+    target: 'Dig Sites', to: '/sites', label: 'Dig Sites', group: 'Find', image: null,
+    paths: ['M12 3 3 8l9 5 9-5-9-5Z', 'm3 14 9 5 9-5'],
+  },
+  {
+    target: 'Compare', to: '/compare', label: 'Compare', group: 'Find', image: null,
+    paths: ['M4 20v-8', 'M10 20V4', 'M16 20v-6', 'M21 20v-11'],
+  },
+  {
+    target: 'Builds', to: '/builds', label: 'Builds', group: 'Gear', image: null,
+    paths: ['M3 5h18v14H3z', 'M3 10h18', 'M9 10v9'],
+  },
+  {
+    target: 'Codes', to: '/codes', label: 'Codes', group: 'Items', image: null,
+    paths: ['M3 7h18v10H3z', 'M7 11h.01', 'M11 11h.01', 'M15 11h.01', 'M8 14h8'],
+  },
+  {
+    target: 'Modifiers', to: '/modifiers', label: 'Modifiers', group: 'Items', image: null,
+    paths: ['M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2Z'],
+  },
+  {
+    target: 'Potions', to: '/items', label: 'Potions', group: 'Items', image: null,
+    paths: ['M9 3h6', 'M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3'],
+  },
+];
+
+export const navTiles: NavTile[] = [
+  ...navIcons.flatMap((icon): NavTile[] => {
+    const route = TILE_ROUTES[icon.target];
+    return route ? [{ ...icon, ...route }] : [];
+  }),
+  ...EXTRA_TILES,
+];
 
 /* ---------- museum ------------------------------------------------------ */
 

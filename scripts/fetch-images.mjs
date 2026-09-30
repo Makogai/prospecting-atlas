@@ -24,6 +24,7 @@ db.trinkets.forEach(t => add(t.image));
 db.relics.forEach(r => add(r.image));
 db.runes.runes.forEach(r => add(r.image));
 db.modifiers.forEach(m => add(m.image));
+db.navIcons.forEach(i => add(i.image));
 
 const files = [...wanted];
 console.log(`${files.length} distinct images referenced`);

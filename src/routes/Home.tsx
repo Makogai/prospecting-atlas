@@ -1,14 +1,20 @@
 import { Link, useOutletContext } from 'react-router-dom';
 import {
   minerals, digSites, locations, pans, shovels, sluices, rarities,
-  bestSiteFor, money, odds, mineralById,
+  bestSiteFor, money, odds, mineralById, navTiles, quests, equipment,
 } from '../lib/db';
 import { RarityTag, SectionTitle, Sprite, gradientVars } from '../components/ui';
+import { NavTile } from '../components/NavTile';
+import { CHANGELOG } from '../data/changelog';
 
 const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform);
 
+/** Same order as the nav menus, so the two agree. */
+const GROUPS = ['Find', 'Gear', 'Progress', 'Items'];
+
 export function Home() {
   const { openPalette } = useOutletContext<{ openPalette: () => void }>();
+  const latest = CHANGELOG[0];
 
   const topValue = [...minerals].sort((a, b) => (b.value ?? 0) - (a.value ?? 0)).slice(0, 6);
   const topSites = [...digSites].sort((a, b) => b.expectedValue - a.expectedValue).slice(0, 6);
@@ -40,7 +46,7 @@ export function Home() {
           </span>
 
           <h1 className="mt-5 text-4xl leading-[1.05] font-black tracking-tight sm:text-6xl">
-            Every drop rate in{' '}
+            All of{' '}
             <span className="bg-gradient-to-r from-ore-300 via-ore-400 to-ore-600 bg-clip-text text-transparent">
               Prospecting
             </span>
@@ -48,9 +54,9 @@ export function Home() {
           </h1>
 
           <p className="mx-auto mt-4 max-w-xl text-base text-ink-300 sm:text-lg">
-            {minerals.length} minerals, {digSites.length} dig sites and every pan, shovel and
-            sluice — cross-indexed so you can go from “what’s this worth?” to “where do I farm it?”
-            without opening ten tabs.
+            {minerals.length} minerals, {digSites.length} dig sites, {quests.length} quests,{' '}
+            {equipment.length} craftables and every code, enchant and relic — cross-indexed so you
+            can go from “what’s this worth?” to “where do I farm it?” without opening ten tabs.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -85,6 +91,47 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      {/* --- the hub: straight into anything, using the wiki's own icon set --- */}
+      <section className="mt-10">
+        <SectionTitle
+          title="Jump straight in"
+          hint="Everything the game has, grouped by what you came to find out."
+        />
+        <div className="space-y-6">
+          {GROUPS.map((group) => {
+            const tiles = navTiles.filter((t) => t.group === group);
+            if (!tiles.length) return null;
+            return (
+              <div key={group}>
+                <h3 className="mb-2 px-1 text-[10px] font-bold tracking-[0.16em] text-ink-500 uppercase">
+                  {group}
+                </h3>
+                <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6">
+                  {tiles.map((tile) => (
+                    <NavTile key={tile.target} tile={tile} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* --- newest change, so the front page shows the site is alive --- */}
+      {latest && (
+        <Link
+          to="/changelog"
+          className="panel panel-hover mt-10 flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-4"
+        >
+          <span className="rounded-md bg-ore-400/15 px-2 py-0.5 text-[10px] font-bold tracking-wider text-ore-300 uppercase ring-1 ring-ore-400/25">
+            New
+          </span>
+          <span className="text-sm font-bold">{latest.title}</span>
+          <span className="min-w-0 flex-1 truncate text-xs text-ink-400">{latest.body}</span>
+          <span className="text-xs font-semibold text-ore-400">What’s new →</span>
+        </Link>
+      )}
 
       {/* --- what makes this different --- */}
       <section className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">

@@ -20,6 +20,10 @@
   --color-vein-400: #3ee0d0;
   --color-vein-500: #12b5aa;
 
+  /* Two more accents so the four front-page groups read apart at a glance. */
+  --color-flux-400: #a78bfa;
+  --color-tide-400: #60a5fa;
+
   --color-ink-100: #eef2fb;
   --color-ink-300: #aab3c7;
   --color-ink-400: #7d879e;

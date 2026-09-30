@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   potions, trinkets, currencies, treasureChests, geodes, money,
 } from '../lib/db';
@@ -14,7 +15,11 @@ const TABS: { id: Tab; label: string; hint: string }[] = [
 ];
 
 export function ItemsPage() {
-  const [tab, setTab] = useState<Tab>('potions');
+  // In the URL so a front-page tile can land straight on chests or currency.
+  const [params, setParams] = useSearchParams();
+  const fromUrl = params.get('tab') as Tab | null;
+  const tab: Tab = fromUrl && TABS.some((t) => t.id === fromUrl) ? fromUrl : 'potions';
+  const setTab = (next: Tab) => setParams({ tab: next }, { replace: true });
 
   return (
     <div className="animate-rise">

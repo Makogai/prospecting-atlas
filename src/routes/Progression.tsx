@@ -1,18 +1,25 @@
 import { useMemo, useState } from 'react';
-import { levels, runes, mastery, permanentBuffs, rarityByName } from '../lib/db';
+import { useSearchParams } from 'react-router-dom';
+import { levels, runes, mastery, permanentBuffs, rarityByName, events } from '../lib/db';
 import { NumberField, SectionTitle, SectionTitle as Title, cx, gradientVars } from '../components/ui';
 
-type Tab = 'levels' | 'mastery' | 'runes' | 'buffs';
+type Tab = 'levels' | 'mastery' | 'runes' | 'buffs' | 'events';
 
 const TABS: { id: Tab; label: string; hint: string }[] = [
   { id: 'levels', label: 'Levels & titles', hint: 'XP, and what each level unlocks' },
   { id: 'mastery', label: 'Mastery', hint: 'Per-location and activity tracks' },
   { id: 'runes', label: 'Runes', hint: 'Passive buffs you equip' },
   { id: 'buffs', label: 'Permanent buffs', hint: 'Kept once earned' },
+  { id: 'events', label: 'Events', hint: 'Temporary luck, while they last' },
 ];
 
 export function ProgressionPage() {
-  const [tab, setTab] = useState<Tab>('levels');
+  // The tab lives in the URL so the front-page tiles can point straight at
+  // Runes or Events rather than dropping you on Levels every time.
+  const [params, setParams] = useSearchParams();
+  const fromUrl = params.get('tab') as Tab | null;
+  const tab: Tab = fromUrl && TABS.some((t) => t.id === fromUrl) ? fromUrl : 'levels';
+  const setTab = (next: Tab) => setParams({ tab: next }, { replace: true });
 
   return (
     <div className="animate-rise">
@@ -60,6 +67,7 @@ export function ProgressionPage() {
         {tab === 'mastery' && <MasteryTracks />}
         {tab === 'runes' && <Runes />}
         {tab === 'buffs' && <Buffs />}
+        {tab === 'events' && <Events />}
       </div>
     </div>
   );
@@ -264,6 +272,69 @@ function Runes() {
             {r.where && <p className="mt-1.5 text-[11px] text-ink-500">Found: {r.where}</p>}
           </div>
         ))}
+      </div>
+    </>
+  );
+}
+
+/* ---------- events ------------------------------------------------------- */
+
+/**
+ * Luck events, which are the temporary counterpart to permanent buffs.
+ *
+ * Whether one is additive or multiplicative is the whole story — two ×2
+ * additive boosts give ×3, not ×4 — so it leads each row rather than being a
+ * footnote.
+ */
+function Events() {
+  const multiplicative = events.filter((e) => e.kind === 'multiplicative');
+  const additive = events.filter((e) => e.kind === 'additive');
+  const unknown = events.filter((e) => e.kind === 'unknown');
+
+  const Row = ({ e }: { e: (typeof events)[number] }) => (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5">
+      <span className="w-40 shrink-0 text-sm font-bold">{e.name}</span>
+      <span className="numeric w-16 shrink-0 text-sm font-bold text-vein-400">
+        {e.value != null ? `×${e.value}` : '—'}
+      </span>
+      <span className="min-w-0 flex-1 text-[11px] text-ink-500">
+        {e.global ? 'Everywhere' : e.sites.join(', ') || (e.note ?? '')}
+      </span>
+      {e.admin && (
+        <span className="shrink-0 rounded bg-white/8 px-1.5 text-[10px] text-ink-400">admin</span>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      <SectionTitle
+        title="Luck events"
+        hint="These stack differently, which is why the site models them separately."
+      />
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <div>
+          <h3 className="mb-2 text-[11px] font-bold tracking-[0.12em] text-ink-500 uppercase">
+            Multiplicative — these stack on top of everything
+          </h3>
+          <div className="panel divide-y divide-white/6">
+            {multiplicative.map((e) => <Row key={e.id} e={e} />)}
+          </div>
+        </div>
+        <div>
+          <h3 className="mb-2 text-[11px] font-bold tracking-[0.12em] text-ink-500 uppercase">
+            Additive — two ×2 boosts give ×3, not ×4
+          </h3>
+          <div className="panel divide-y divide-white/6">
+            {additive.map((e) => <Row key={e.id} e={e} />)}
+          </div>
+          {unknown.length > 0 && (
+            <p className="mt-3 text-[11px] text-ink-500">
+              {unknown.map((e) => e.name).join(' and ')} also boost Luck, but the wiki doesn't say
+              by how much, so they aren't modelled.
+            </p>
+          )}
+        </div>
       </div>
     </>
   );

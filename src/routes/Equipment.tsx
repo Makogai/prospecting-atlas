@@ -2,11 +2,11 @@ import { useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   equipment, equipmentById, recipeMinerals, equipRarityColors, blueprintById,
-  EQUIP_RARITY_ORDER, SLOT_LIMITS, money,
+  EQUIP_RARITY_ORDER, SLOT_LIMITS, money, mutations,
   type Equipment as Item, type EquipSlot, type StatRange,
 } from '../lib/db';
 import { BlueprintPanel } from '../components/Blueprint';
-import { Empty, Sprite, cx, gradientVars } from '../components/ui';
+import { Empty, SectionTitle, Sprite, cx, gradientVars } from '../components/ui';
 import { useLoadout, LoadoutSummary, loadoutTotals, type LoadoutState } from '../components/Loadout';
 import { MobileDock } from '../components/MobileDock';
 import { BuildLibrary, ShareBox } from '../components/BuildLibrary';
@@ -357,6 +357,48 @@ export function EquipmentPage() {
           />
         </div>
       </div>
+
+      <section id="mutations" className="mt-12 scroll-mt-20">
+        <SectionTitle
+          title="Mutations"
+          hint={`Every piece can carry one, and it multiplies all of its stats. Reroll at the ${mutations.forge ?? 'forge'}.`}
+          action={
+            <a
+              href={mutations.wiki}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-semibold text-ore-400 hover:underline"
+            >
+              Wiki source →
+            </a>
+          }
+        />
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {mutations.mutations.map((mut) => (
+            <div key={mut.id} className="panel p-4">
+              <div className="flex items-baseline justify-between gap-2">
+                <h3 className="text-sm font-extrabold">{mut.name}</h3>
+                <span className="numeric text-lg font-black text-ore-400">
+                  {mut.multiplier}×
+                </span>
+              </div>
+              {mut.bonuses.length > 0 ? (
+                <ul className="mt-1.5 space-y-0.5">
+                  {mut.bonuses.map((b, i) => (
+                    <li key={i} className="numeric text-[11px] text-vein-400">+ {b}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-1.5 text-[11px] text-ink-500">Multiplier only</p>
+              )}
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-xs text-ink-500">
+          The odds depend on how many catalysts you feed the forge and which event is running —
+          the wiki publishes {mutations.chanceTiers.length} separate tables for it.
+        </p>
+      </section>
 
       <MobileDock
         label="Loadout"

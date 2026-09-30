@@ -15,6 +15,7 @@ import { parseRelics } from './parse-relics.mjs';
 import { parseLevels, parseRunes, parsePermanentBuffs, parseMastery } from './parse-progression.mjs';
 import { parsePotions, parseTrinkets, parseGeodes, parseTreasureChests } from './parse-items.mjs';
 import { parseRegions, parseCurrencies, gearObtainability } from './parse-world.mjs';
+import { parseMutations, parseNavIcons } from './parse-mutations.mjs';
 
 const raw = JSON.parse(readFileSync('data/raw/pages.json', 'utf8'));
 const { pages, templates, byCategory } = raw;
@@ -351,6 +352,10 @@ const trinkets = parseTrinkets(pages.Trinkets);
 const geodes = parseGeodes(pages.Geodes);
 const treasureChests = parseTreasureChests(pages['Treasure Chest']);
 const currencies = parseCurrencies(pages);
+const mutations = parseMutations(pages.Mutations);
+// The wiki's own front-page icon grid: a curated list of what people come for,
+// and art we can reuse rather than drawing our own.
+const navIcons = parseNavIcons(pages['Main Page']);
 
 // Reuses the place index built for NPC locations, so a region only ever lists
 // somewhere that exists.
@@ -422,6 +427,8 @@ const db = {
   treasureChests,
   currencies,
   regions,
+  mutations,
+  navIcons,
   builds,
   buildStages,
   buildGuide: {
@@ -458,6 +465,7 @@ console.log(`excavations ${excavations?.sites.length ?? 0} sites, ${excavations?
 console.log(`relics ${relicData.relics.length} (${[...new Set(relicData.relics.map(r => r.category))].join(', ')})`);
 console.log(`progression: ${levels?.maxLevel ?? 0} levels · ${levels?.titles.length ?? 0} titles · ${runes?.runes.length ?? 0} runes · ${mastery?.tracks.length ?? 0} mastery tracks · ${permanentBuffs.length} permanent buffs`);
 console.log(`items: ${potions.length} potions · ${trinkets.length} trinkets · ${treasureChests?.loot.length ?? 0} chest lootpools`);
+console.log(`mutations ${mutations?.mutations.length ?? 0} (forge at ${mutations?.forge ?? '?'}) · ${mutations?.chanceTiers.length ?? 0} chance tables · navIcons ${navIcons.length}`);
 console.log(`regions ${regions.length} · gear obtainability ${obtainMatched}/${allGear.length} (${allGear.filter(g => !g.obtainable).length} discontinued)`);
 console.log(`npcs ${npcs.length} (${npcs.filter(n => n.quests.length).length} give quests, ${npcs.filter(n => n.places.length).length} placed, ${npcs.filter(n => n.summary).length} described)`);
 console.log(`blueprints ${blueprints.length} (${blueprints.filter(b => b.kind === 'quest').length} quest, ${blueprints.filter(b => b.kind === 'purchase').length} bought, ${blueprints.filter(b => b.kind === 'found').length} found) · matched to ${equipment.filter(e => e.blueprint).length} items`);

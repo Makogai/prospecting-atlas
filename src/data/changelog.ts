@@ -26,6 +26,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-home-hub',
+    date: '2026-09-30',
+    title: 'A front page you can launch from',
+    tag: 'improved',
+    body: 'Twenty-four tiles covering everything the game has, using the wiki’s own icon set tinted to our palette, grouped by what you came to find out.',
+    href: '/',
+  },
+  {
+    id: '2026-09-30-mutations',
+    date: '2026-09-30',
+    title: 'Equipment mutations',
+    tag: 'new',
+    body: 'All seven, from Silver at 1.1× to Prismatic at 1.6×, with the extras some of them add on top. On the Equipment page, since that is what they apply to.',
+    href: '/equipment#mutations',
+  },
+  {
+    id: '2026-09-30-events-tab',
+    date: '2026-09-30',
+    title: 'Luck events have a page of their own',
+    tag: 'new',
+    body: 'The fifteen events the luck model already used were only visible inside the Luck panel. They now have a tab, split by whether they stack additively or multiplicatively.',
+    href: '/progression?tab=events',
+  },
+  {
     id: '2026-09-30-everything-else',
     date: '2026-09-30',
     title: 'Codes, enchanting, excavations, relics, progression and more',
