@@ -41,13 +41,16 @@ export function EquipmentPage() {
   // written to storage on its own: opening a friend's link must not replace the
   // loadout you put together. Taking it over is an explicit "Make this mine".
   const sharedCode = params.get('b');
+  // `qual` is the link's default roll; entries that rolled differently carry
+  // their own in the code itself.
+  const sharedDefault = decodeQuality(params.get('qual'));
   const shared = useMemo(
-    () => (sharedCode !== null ? decodeLoadout(sharedCode) : null),
-    [sharedCode],
+    () => (sharedCode !== null ? decodeLoadout(sharedCode, sharedDefault) : null),
+    [sharedCode, sharedDefault],
   );
   const viewingShared = shared != null;
   const loadout: LoadoutState = viewingShared
-    ? { items: shared.items, quality: decodeQuality(params.get('qual')) }
+    ? { items: shared.items, quality: sharedDefault }
     : saved;
 
   const clearShared = () => {
@@ -65,7 +68,7 @@ export function EquipmentPage() {
       return;
     }
     const p = new URLSearchParams(params);
-    p.set('b', encodeLoadout(next.items));
+    p.set('b', encodeLoadout(next.items, next.quality));
     p.set('qual', String(next.quality));
     setParams(p, { replace: true });
   };
@@ -77,13 +80,13 @@ export function EquipmentPage() {
   const shareUrl = useMemo(() => {
     const origin = typeof window === 'undefined' ? '' : window.location.origin;
     return (
-      `${origin}/equipment?b=${encodeLoadout(loadout.items)}` +
+      `${origin}/equipment?b=${encodeLoadout(loadout.items, loadout.quality)}` +
       `&qual=${loadout.quality}${sixStar ? '&six=1' : ''}`
     );
   }, [loadout, sixStar]);
 
   const saveBuild = (name: string) => {
-    const next = [makeBuild(name, encodeLoadout(loadout.items)), ...library];
+    const next = [makeBuild(name, encodeLoadout(loadout.items, loadout.quality)), ...library];
     setLibrary(next);
     writeBuilds(EQUIP_BUILDS_KEY, next);
   };
@@ -128,27 +131,45 @@ export function EquipmentPage() {
       });
   }, [slot, stat, q, sixStar, showLimited, needsBlueprint]);
 
-  const equipped = loadout.items.map((id) => equipmentById.get(id)).filter(Boolean) as Item[];
+  // One entry per equipped piece, each carrying the roll that piece got.
+  const placed = loadout.items
+    .map((entry) => {
+      const item = equipmentById.get(entry.id);
+      return item ? { item, quality: entry.quality } : null;
+    })
+    .filter((x): x is { item: Item; quality: number } => x !== null);
+  const equipped = placed.map((p) => p.item);
 
   // Luck is the number people watch while browsing, so it's what the phone
   // dock shows without being opened.
   const dockLuck = useMemo(() => {
-    const totals = loadoutTotals(equipped, { sixStar, quality: loadout.quality });
+    const totals = loadoutTotals(placed, { sixStar });
     return totals.find((t) => t.stat === 'Luck')?.value ?? null;
-  }, [equipped, sixStar, loadout.quality]);
+  }, [placed, sixStar]);
 
   const countInSlot = (s: EquipSlot) => equipped.filter((e) => e.slot === s).length;
   const canAdd = (item: Item) =>
     !item.slot || countInSlot(item.slot) < SLOT_LIMITS[item.slot];
 
-  const countOf = (item: Item) => loadout.items.filter((id) => id === item.id).length;
+  const countOf = (item: Item) => loadout.items.filter((e) => e.id === item.id).length;
 
   const addOne = (item: Item) => {
-    if (canAdd(item)) setLoadout({ ...loadout, items: [...loadout.items, item.id] });
+    // A newly equipped piece starts at the loadout's default roll; it can be
+    // corrected per piece in the list.
+    if (canAdd(item)) {
+      setLoadout({
+        ...loadout,
+        items: [...loadout.items, { id: item.id, quality: loadout.quality }],
+      });
+    }
   };
 
   const removeOne = (item: Item) => {
-    const i = loadout.items.lastIndexOf(item.id);
+    // Last copy first, so removing one from a stack takes the one you just added.
+    let i = -1;
+    for (let n = loadout.items.length - 1; n >= 0; n--) {
+      if (loadout.items[n].id === item.id) { i = n; break; }
+    }
     if (i !== -1) setLoadout({ ...loadout, items: loadout.items.filter((_, n) => n !== i) });
   };
 

@@ -4,13 +4,27 @@ import {
 } from '../lib/db';
 import { Sprite, cx, gradientVars } from './ui';
 
-export interface LoadoutState {
-  items: string[];
+/**
+ * One equipped piece, with the quality *it* rolled at.
+ *
+ * Quality belongs to the instance, not the loadout: two of the same ring are
+ * two different drops, and the one you got at 95% is not the one you got at
+ * 60%. A single figure across everything would flatter or punish the whole
+ * build on the strength of one item.
+ */
+export interface LoadoutItem {
+  id: string;
   /**
    * The wiki's "percentage" quality: how close a crafted item's rolled stats sit
-   * to the top of its range. Applied here as a straight interpolation between the
-   * range's ends, which the wiki does not spell out — so it's a slider, not a claim.
+   * to the top of its range. Applied as a straight interpolation between the
+   * range's ends, which the wiki does not spell out — so it's an input, not a claim.
    */
+  quality: number;
+}
+
+export interface LoadoutState {
+  items: LoadoutItem[];
+  /** Applied to the next thing equipped, and by the "set every item" control. */
   quality: number;
 }
 
@@ -18,11 +32,25 @@ export const DEFAULT_LOADOUT: LoadoutState = { items: [], quality: 100 };
 
 const STORAGE_KEY = 'atlas.loadout';
 
+export const clampQuality = (n: number) => Math.min(Math.max(Math.round(n), 1), 100);
+
+/** Loadouts saved before quality was per-item stored plain ids. */
+function migrate(raw: unknown): LoadoutState {
+  const state = { ...DEFAULT_LOADOUT, ...(raw as Partial<LoadoutState>) };
+  const quality = clampQuality(Number(state.quality) || 100);
+  const items = ((state.items as unknown[]) ?? []).map((entry) =>
+    typeof entry === 'string'
+      ? { id: entry, quality }
+      : { id: String((entry as LoadoutItem).id), quality: clampQuality(Number((entry as LoadoutItem).quality) || quality) },
+  );
+  return { items, quality };
+}
+
 export function useLoadout(): [LoadoutState, (next: LoadoutState) => void] {
   const [state, setState] = useState<LoadoutState>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return { ...DEFAULT_LOADOUT, ...JSON.parse(raw) };
+      if (raw) return migrate(JSON.parse(raw));
     } catch {
       /* blocked storage — defaults are fine */
     }
@@ -40,15 +68,21 @@ export function useLoadout(): [LoadoutState, (next: LoadoutState) => void] {
   return [state, setState];
 }
 
-/** Total each stat across the equipped items at a given roll quality. */
+/**
+ * Total each stat across the equipped pieces, each at its own roll quality.
+ *
+ * Takes the placed entries rather than a list of items, because the same item
+ * can appear twice at two different qualities and the two have to be summed
+ * separately.
+ */
 export function loadoutTotals(
-  equipped: Equipment[],
-  { sixStar = false, quality = 100 } = {},
+  placed: { item: Equipment; quality: number }[],
+  { sixStar = false } = {},
 ): { stat: string; value: number; unit: string | null }[] {
   const totals = new Map<string, { value: number; unit: string | null }>();
-  const t = Math.min(Math.max(quality, 0), 100) / 100;
 
-  for (const item of equipped) {
+  for (const { item, quality } of placed) {
+    const t = clampQuality(quality) / 100;
     for (const s of item.stats) {
       const range = sixStar ? s.sixStar : s.base;
       const value = range.min + (range.max - range.min) * t;
@@ -67,26 +101,6 @@ export function loadoutTotals(
 
 const SLOTS: EquipSlot[] = ['Necklace', 'Charm', 'Ring'];
 
-/**
- * Collapse repeats of the same item into one row.
- *
- * `lastIndex` is what the remove button acts on, so clicking it takes one copy
- * off the stack rather than all of them.
- */
-function groupById(entries: { id: string; index: number }[]) {
-  const out: { id: string; count: number; lastIndex: number }[] = [];
-  for (const { id, index } of entries) {
-    const hit = out.find((g) => g.id === id);
-    if (hit) {
-      hit.count++;
-      hit.lastIndex = Math.max(hit.lastIndex, index);
-    } else {
-      out.push({ id, count: 1, lastIndex: index });
-    }
-  }
-  return out;
-}
-
 export function LoadoutSummary({
   loadout, onChange, equipped, sixStar,
 }: {
@@ -95,11 +109,33 @@ export function LoadoutSummary({
   equipped: Equipment[];
   sixStar: boolean;
 }) {
-  const totals = loadoutTotals(equipped, { sixStar, quality: loadout.quality });
+  const placed = loadout.items
+    .map((entry) => {
+      const item = equipped.find((e) => e.id === entry.id);
+      return item ? { item, quality: entry.quality } : null;
+    })
+    .filter((x): x is { item: Equipment; quality: number } => x !== null);
+
+  const totals = loadoutTotals(placed, { sixStar });
   const luck = totals.find((t) => t.stat === 'Luck');
 
   const removeAt = (index: number) =>
     onChange({ ...loadout, items: loadout.items.filter((_, i) => i !== index) });
+
+  const setQualityAt = (index: number, quality: number) =>
+    onChange({
+      ...loadout,
+      items: loadout.items.map((it, i) =>
+        i === index ? { ...it, quality: clampQuality(quality) } : it,
+      ),
+    });
+
+  /** The header control sets every piece at once, and the default for new ones. */
+  const setAll = (quality: number) =>
+    onChange({
+      quality: clampQuality(quality),
+      items: loadout.items.map((it) => ({ ...it, quality: clampQuality(quality) })),
+    });
 
   return (
     <section className="panel overflow-hidden">
@@ -131,7 +167,7 @@ export function LoadoutSummary({
           <>
             {SLOTS.map((slot) => {
               const inSlot = loadout.items
-                .map((id, index) => ({ id, index }))
+                .map((entry, index) => ({ ...entry, index }))
                 .filter(({ id }) => equipped.find((e) => e.id === id)?.slot === slot);
               if (!inSlot.length) return null;
               return (
@@ -140,13 +176,13 @@ export function LoadoutSummary({
                     {slot} <span className="opacity-60">{inSlot.length}/{SLOT_LIMITS[slot]}</span>
                   </p>
                   <div className="space-y-1">
-                    {/* Eight of the same ring is a normal build, so duplicates
-                        are one row with a count rather than eight rows. */}
-                    {groupById(inSlot).map(({ id, count, lastIndex }) => {
+                    {/* One row per piece, not per item type: two copies of the
+                        same ring can have rolled very differently. */}
+                    {inSlot.map(({ id, quality, index }) => {
                       const item = equipped.find((e) => e.id === id)!;
                       return (
                         <div
-                          key={id}
+                          key={index}
                           className="flex items-center gap-2 rounded-lg bg-white/5 py-1 pr-1 pl-1.5"
                         >
                           <Sprite file={item.image} alt="" className="h-7 w-7 shrink-0" />
@@ -164,14 +200,25 @@ export function LoadoutSummary({
                               {item.rarity}
                             </span>
                           </span>
-                          {count > 1 && (
-                            <span className="numeric shrink-0 rounded bg-ore-400/15 px-1.5 text-[10px] font-black text-ore-300">
-                              ×{count}
-                            </span>
-                          )}
+
+                          <label className="flex shrink-0 items-center gap-0.5">
+                            <span className="sr-only">Roll quality for this {item.name}</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={quality}
+                              onChange={(e) => {
+                                const digits = e.target.value.replace(/[^0-9]/g, '');
+                                if (digits !== '') setQualityAt(index, Number(digits));
+                              }}
+                              className="w-8 rounded bg-white/6 px-1 py-0.5 text-center text-[11px] font-bold text-ink-100 outline-none focus:bg-white/12"
+                            />
+                            <span className="text-[10px] text-ink-500">%</span>
+                          </label>
+
                           <button
-                            onClick={() => removeAt(lastIndex)}
-                            aria-label={count > 1 ? `Remove one ${item.name}` : `Remove ${item.name}`}
+                            onClick={() => removeAt(index)}
+                            aria-label={`Remove ${item.name}`}
                             className="shrink-0 rounded px-1.5 py-0.5 text-ink-500 transition hover:bg-white/10 hover:text-ore-400"
                           >
                             ✕
@@ -187,7 +234,7 @@ export function LoadoutSummary({
             <div>
               <div className="mb-1.5 flex items-baseline justify-between">
                 <label htmlFor="quality" className="text-xs font-semibold text-ink-400">
-                  Roll quality
+                  Set every roll to
                 </label>
                 <span className="numeric text-[11px] text-ink-500">{loadout.quality}%</span>
               </div>
@@ -197,12 +244,13 @@ export function LoadoutSummary({
                 min={1}
                 max={100}
                 value={loadout.quality}
-                onChange={(e) => onChange({ ...loadout, quality: Number(e.target.value) })}
+                onChange={(e) => setAll(Number(e.target.value))}
                 className="w-full accent-vein-500"
               />
               <p className="mt-1.5 text-[11px] text-ink-500">
-                The reforge percentage. Interpolated across each stat’s range — the wiki gives the
-                ranges and the percentage but not exactly how they combine.
+                A shortcut — each piece keeps its own percentage above, because each one rolled
+                separately. Interpolated across each stat’s range; the wiki gives the ranges and
+                the percentage but not exactly how they combine.
               </p>
             </div>
 

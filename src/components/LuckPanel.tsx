@@ -120,8 +120,12 @@ export function LuckPanel({
   // Base Luck is pan + equipment + enchants, so offer the loadout's contribution
   // rather than making people add it up by hand.
   const loadoutLuck = loadoutTotals(
-    loadout.items.map((id) => equipmentById.get(id)).filter((e) => e != null),
-    { quality: loadout.quality },
+    loadout.items
+      .map((entry) => {
+        const item = equipmentById.get(entry.id);
+        return item ? { item, quality: entry.quality } : null;
+      })
+      .filter((x) => x != null),
   ).find((t) => t.stat === 'Luck')?.value ?? 0;
 
   const boosts = activeBoosts(luck);

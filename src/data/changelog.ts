@@ -26,6 +26,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-30-per-item-quality',
+    date: '2026-09-30',
+    title: 'Roll quality is per item, not one figure for everything',
+    tag: 'fixed',
+    body: 'One slider set the quality of your whole loadout, which is not how rolls work — each piece rolled separately, and two of the same ring can be 95% and 55%. Every piece now has its own, with a shortcut to set them all.',
+    href: '/equipment',
+  },
+  {
     id: '2026-09-30-stack-rings',
     date: '2026-09-30',
     title: 'You can equip the same ring more than once',

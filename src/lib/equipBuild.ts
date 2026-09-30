@@ -1,41 +1,48 @@
 import { SLOT_LIMITS, equipmentById, type EquipSlot } from './db';
-import type { LoadoutState } from '../components/Loadout';
+import { clampQuality, type LoadoutItem, type LoadoutState } from '../components/Loadout';
 
 export const EQUIP_BUILDS_KEY = 'atlas.loadout.builds';
 
 /**
  * A loadout as a URL-safe string: equipment ids in the order they were
- * equipped, `.`-separated.
+ * equipped, `.`-separated, each with its roll quality when that differs from
+ * the loadout default.
  *
- *   `ring-of-fortune.ring-of-fortune.amulet-of-life`
+ *   `ring-of-fortune~80.ring-of-fortune.amulet-of-life~95`
  *
  * Ids rather than indexes into the equipment list, for the same reason the
  * museum uses them: indexes shift when the wiki adds an item, which would
  * silently rewrite links people had already sent.
  *
- * Duplicates are meaningful here — eight ring slots means eight of the same
- * ring is a real build — so unlike the museum this is a plain list, not a
- * positional map.
+ * Duplicates are meaningful — eight ring slots means eight of the same ring is
+ * a real build, and each copy carries its own roll — so unlike the museum this
+ * is a plain list, not a positional map. `~` is unreserved in a URL, so the
+ * quality suffix needs no encoding.
  */
-export const encodeLoadout = (items: string[]) => items.join('.');
+export function encodeLoadout(items: LoadoutItem[], defaultQuality = 100): string {
+  return items
+    .map((it) => (it.quality === defaultQuality ? it.id : `${it.id}~${it.quality}`))
+    .join('.');
+}
 
 export interface DecodedLoadout {
-  items: string[];
+  items: LoadoutItem[];
   /** Ids in the link that no longer name an item. */
   dropped: string[];
   /** True when the link asked for more of a slot than the game allows. */
   overfilled: boolean;
 }
 
-export function decodeLoadout(code: string): DecodedLoadout {
-  const items: string[] = [];
+export function decodeLoadout(code: string, defaultQuality = 100): DecodedLoadout {
+  const items: LoadoutItem[] = [];
   const dropped: string[] = [];
   const used = {} as Record<EquipSlot, number>;
   let overfilled = false;
 
   for (const raw of code.split('.')) {
-    const id = raw.trim();
-    if (!id) continue;
+    const field = raw.trim();
+    if (!field) continue;
+    const [id, qualityText] = field.split('~');
     const item = equipmentById.get(id);
     // No slot means the wiki doesn't list it as something you wear, so it can
     // never have been part of a real loadout.
@@ -53,7 +60,11 @@ export function decodeLoadout(code: string): DecodedLoadout {
       continue;
     }
     used[slot] = at + 1;
-    items.push(id);
+    const parsed = Number(qualityText);
+    items.push({
+      id,
+      quality: qualityText && Number.isFinite(parsed) ? clampQuality(parsed) : defaultQuality,
+    });
   }
 
   return { items, dropped, overfilled };
