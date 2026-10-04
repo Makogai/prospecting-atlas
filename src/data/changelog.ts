@@ -26,6 +26,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-04-planner',
+    date: '2026-10-04',
+    title: 'One page for your whole build',
+    tag: 'new',
+    body: 'Pick your pan, shovel, enchants, equipment and museum, tick the buffs you have running, and get the stat panel the game would show you — except every number opens up to say where it came from. The wiki publishes the formula the game actually uses, and our numbers reproduce its measured examples exactly.',
+    href: '/planner',
+  },
+  {
+    id: '2026-10-04-mutations-applied',
+    date: '2026-10-04',
+    title: 'Mutations and museum modifiers now count',
+    tag: 'new',
+    body: 'A Prismatic piece is 1.6× its listed stats and a displayed ore’s modifier adds a rider on top of its own boost — both were listed as reference and neither fed any total. In the build planner they do, per item and per display.',
+    href: '/planner',
+  },
+  {
+    id: '2026-10-04-stat-search',
+    date: '2026-10-04',
+    title: 'Searching a stat explains the stat',
+    tag: 'improved',
+    body: 'Typing “shake speed” or “modifier boost” used to turn up whichever ore happened to mention it. All sixteen panel stats are now results of their own, and they open on what the stat does and how it is worked out.',
+    href: '/planner?stat=Modifier%20Boost',
+  },
+  {
     id: '2026-09-30-museum-multi',
     date: '2026-09-30',
     title: 'Plan a museum for more than one stat',

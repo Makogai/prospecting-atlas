@@ -750,6 +750,12 @@ const EXTRA_TILES: NavTile[] = [
     paths: ['M4 20v-8', 'M10 20V4', 'M16 20v-6', 'M21 20v-11'],
   },
   {
+    // A slider bank: the planner is where you dial every source in and watch
+    // one panel answer.
+    target: 'Build Planner', to: '/planner', label: 'Build Planner', group: 'Gear', image: null,
+    paths: ['M4 6h16', 'M4 12h16', 'M4 18h16', 'M9 4v4', 'M15 10v4', 'M7 16v4'],
+  },
+  {
     target: 'Builds', to: '/builds', label: 'Builds', group: 'Gear', image: null,
     paths: ['M3 5h18v14H3z', 'M3 10h18', 'M9 10v9'],
   },

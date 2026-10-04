@@ -21,6 +21,7 @@ const KIND_ICON: Record<SearchItem['kind'], string> = {
   rune: '⍟',
   excavation: '⛏',
   mastery: '◈',
+  stat: '▮',
 };
 
 /** Shown before the user types: the things people look up most. */

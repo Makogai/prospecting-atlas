@@ -4,10 +4,12 @@ import {
   modifiers, codes, enchants, relics, potions, runes, excavations, mastery,
   type GearKind, money, gearPrice, percent,
 } from './db';
+import { PANEL_STATS } from './stats';
 
 export type ResultKind =
   | 'mineral' | 'site' | 'location' | 'gear' | 'equipment' | 'npc' | 'quest' | 'museum'
-  | 'modifier' | 'code' | 'enchant' | 'relic' | 'potion' | 'rune' | 'excavation' | 'mastery';
+  | 'modifier' | 'code' | 'enchant' | 'relic' | 'potion' | 'rune' | 'excavation' | 'mastery'
+  | 'stat';
 
 export interface SearchItem {
   kind: ResultKind;
@@ -220,6 +222,33 @@ export const searchIndex: SearchItem[] = [
     haystack: `${s.name} excavation site ${s.code ?? ''} ${s.region} permit`.toLowerCase(),
   })),
 
+  // Every stat on the Settings panel, pointing at the planner that explains it.
+  // "shake speed" is a thing people search for and the site used to answer with
+  // whichever ore happened to mention it.
+  ...PANEL_STATS.map((s) => ({
+    kind: 'stat' as const,
+    id: `stat-${s.key}`,
+    name: s.key,
+    href: `/planner?stat=${encodeURIComponent(s.key)}`,
+    image: null,
+    meta: s.blurb,
+    tag: 'Stat',
+    colors: null,
+    haystack: `${s.key} stat panel ${s.group} ${s.blurb}`.toLowerCase(),
+  })),
+
+  {
+    kind: 'stat' as const,
+    id: 'build-planner',
+    name: 'Build planner',
+    href: '/planner',
+    image: null,
+    meta: 'Every stat, and where each point came from',
+    tag: 'Stat',
+    colors: null,
+    haystack: 'build planner loadout full build total stats base boosts calculator'.toLowerCase(),
+  },
+
   ...mastery.tracks.map((t) => ({
     kind: 'mastery' as const,
     id: `mastery-${t.id}`,
@@ -260,7 +289,7 @@ function fuzzyScore(needle: string, hay: string): number {
 const KIND_WEIGHT: Record<ResultKind, number> = {
   mineral: 30, site: 20, location: 10, npc: 8, museum: 6, equipment: 5,
   code: 12, modifier: 9, enchant: 7, relic: 7, rune: 6, potion: 5,
-  excavation: 5, mastery: 4, quest: 3, gear: 0,
+  excavation: 5, mastery: 4, quest: 3, gear: 0, stat: 11,
 };
 
 export function search(query: string, limit = 24): SearchItem[] {

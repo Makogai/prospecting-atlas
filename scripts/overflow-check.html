@@ -1,0 +1,74 @@
+<!doctype html>
+<meta charset="utf-8"><title>Narrow-width overflow check</title>
+<!--
+  Horizontal scroll at phone width, measured rather than eyeballed.
+
+  Browser device emulation has been unreliable here, and a page that overflows
+  by a few pixels looks fine in a screenshot. This loads each page in an iframe
+  at a real 390px and compares scrollWidth with clientWidth, then names the
+  element reaching furthest right and the chain of boxes that failed to contain
+  it — which is what actually tells you where the fix goes.
+
+  Copy into dist/ and open it next to `node scripts/serve-dist.mjs <port>`.
+-->
+<style>
+  body { margin: 0; background: #111; font: 12px/1.5 ui-monospace, monospace; color: #eee; }
+  #r { white-space: pre-wrap; padding: 10px; max-width: 1100px; }
+  iframe { width: 390px; height: 420px; border: 1px solid #555; }
+</style>
+<pre id="r">measuring…</pre>
+<div id="frames"></div>
+<script>
+  const PAGES = [
+    ['/planner?p=nebula-pan&pe=starstruck-pan&s=starcrusher&bo=luck-totem:2.xp-cookie:1&ru=purity&po=ambrosia&pm=dredge:400&ev=meteor-shower&stat=Luck', 'planner (full)'],
+    ['/planner', 'planner (bare)'],
+    ['/museum', 'museum'],
+    ['/equipment', 'equipment'],
+  ];
+
+  const out = document.getElementById('r');
+  const frames = document.getElementById('frames');
+  for (const [src] of PAGES) {
+    const f = document.createElement('iframe');
+    f.src = src;
+    frames.appendChild(f);
+  }
+
+  const describe = (n) => {
+    const r = n.getBoundingClientRect();
+    const cs = getComputedStyle(n);
+    const cls = (typeof n.className === 'string' ? n.className : '').slice(0, 68);
+    return `w=${String(Math.round(r.width)).padStart(5)} minW=${cs.minWidth.padEnd(6)} ` +
+      `<${n.tagName.toLowerCase()}> ${cls}`;
+  };
+
+  function measure() {
+    const lines = [];
+    [...frames.children].forEach((f, i) => {
+      try {
+        const d = f.contentDocument;
+        const el = d.documentElement;
+        const w = el.clientWidth;
+        const over = el.scrollWidth > w + 1;
+        lines.push(`${PAGES[i][1].padEnd(16)} ${String(el.scrollWidth).padStart(5)} / ${w}  ${over ? 'OVERFLOW' : 'ok'}`);
+        if (!over) return;
+
+        let far = null;
+        for (const n of d.querySelectorAll('*')) {
+          const r = n.getBoundingClientRect();
+          if (r.width < 1 && r.height < 1) continue;
+          if (!far || r.right > far.getBoundingClientRect().right) far = n;
+        }
+        const chain = [];
+        for (let n = far; n; n = n.parentElement) chain.unshift(n);
+        for (const n of chain) lines.push('    ' + describe(n));
+      } catch (e) {
+        lines.push(`${PAGES[i][1]} ERROR ${e.message}`);
+      }
+    });
+    out.textContent = lines.join('\n');
+  }
+
+  setTimeout(measure, 1600);
+  setTimeout(measure, 3200);
+</script>

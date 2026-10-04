@@ -13,6 +13,7 @@ import { EquipmentPage } from './routes/Equipment';
 import { BuildsPage } from './routes/Builds';
 import { QuestsPage } from './routes/Quests';
 import { MuseumPage } from './routes/Museum';
+import { PlannerPage } from './routes/Planner';
 import { ChangelogPage } from './routes/Changelog';
 import { CodesPage } from './routes/Codes';
 import { ModifiersPage } from './routes/Modifiers';
@@ -45,6 +46,7 @@ export function App() {
         <Route path="builds" element={<BuildsPage />} />
         <Route path="quests" element={<QuestsPage />} />
         <Route path="museum" element={<MuseumPage />} />
+        <Route path="planner" element={<PlannerPage />} />
         <Route path="changelog" element={<ChangelogPage />} />
         <Route path="codes" element={<CodesPage />} />
         <Route path="modifiers" element={<ModifiersPage />} />

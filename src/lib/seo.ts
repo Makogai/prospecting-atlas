@@ -113,6 +113,13 @@ const SECTIONS: PageMeta[] = [
     ),
   },
   {
+    path: '/planner',
+    title: `Build planner — every stat, and where each point came from | ${SITE_NAME}`,
+    description: clip(
+      `Pick your pan, shovel, enchants, equipment and museum, add the buffs you have running, and see the stat panel the game would show you — with every contribution traced back to its source.`,
+    ),
+  },
+  {
     path: '/museum',
     title: `Museum planner — best ore for all ${museum.slots} displays | ${SITE_NAME}`,
     description: clip(

@@ -35,6 +35,7 @@ const NAV: { label: string; items: NavItem[] }[] = [
   {
     label: 'Gear',
     items: [
+      { to: '/planner', label: 'Build Planner', hint: 'Every stat, and where it came from' },
       { to: '/gear/pans', label: 'Pans, Shovels & Sluices', hint: 'Stats side by side' },
       { to: '/equipment', label: 'Equipment', hint: 'Rings, charms, necklaces' },
       { to: '/enchanting', label: 'Enchanting', hint: 'Altar odds per ore' },
