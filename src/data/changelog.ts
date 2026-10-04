@@ -26,6 +26,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-04-museum-tile-stats',
+    date: '2026-10-04',
+    title: 'A museum display says which stat it moves',
+    tag: 'fixed',
+    body: 'A filled display showed a bare number — Voidstone +0.4×, with no clue what of. Every display now names the stats it moves, grouped by value so an ore that lifts four of them by the same amount reads as one line, and debuffs show in red.',
+    href: '/planner',
+  },
+  {
     id: '2026-10-04-museum-weight',
     date: '2026-10-04',
     title: 'Set the weight of what is on each museum display',

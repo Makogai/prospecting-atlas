@@ -238,6 +238,27 @@ const SHORT_STAT: Record<string, string> = {
 const shortStat = (stat: string) => SHORT_STAT[stat] ?? stat;
 
 /**
+ * An ore's boosts, gathered by the value they share.
+ *
+ * Several ores move four stats by the same amount — Prismara is +0.25× on
+ * four, the Cryonic Artifact is +1.2× on two and −0.8× on two more — so
+ * listing them one per line says the same number four times and does not fit a
+ * tile. Grouping turns that into one line per distinct value.
+ */
+export function groupedBoosts(ore: MuseumOre) {
+  const groups = new Map<number, string[]>();
+  for (const b of ore.boosts) {
+    const at = groups.get(b.value);
+    if (at) at.push(shortStat(b.stat));
+    else groups.set(b.value, [shortStat(b.stat)]);
+  }
+  return [...groups.entries()]
+    .map(([value, names]) => ({ value, names }))
+    // Biggest gain first; debuffs last, where they read as the caveat they are.
+    .sort((x, y) => y.value - x.value);
+}
+
+/**
  * A display as a tile rather than a row.
  *
  * The build planner shows all eighteen at once inside a column half the page
@@ -262,7 +283,7 @@ export function PedestalTile({
     return (
       <button
         onClick={onPick}
-        className="group flex h-[5.4rem] w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-white/12 transition hover:border-ore-400/50 hover:bg-ore-400/5"
+        className="group flex h-full min-h-[5.4rem] w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-white/12 transition hover:border-ore-400/50 hover:bg-ore-400/5"
       >
         <span
           aria-hidden
@@ -277,7 +298,6 @@ export function PedestalTile({
     );
   }
 
-  const value = scoreFor(ore, stats);
   const mineral = mineralById.get(ore.id);
 
   return (
@@ -290,7 +310,7 @@ export function PedestalTile({
       >
         <button
           onClick={onPick}
-          className="flex h-[5.4rem] w-full flex-col items-center justify-center gap-0.5 px-1.5"
+          className="flex min-h-[5.4rem] w-full flex-col items-center justify-center gap-0.5 px-1.5 py-1.5"
         >
           <Sprite file={mineral?.image} alt="" className="h-8 w-8 shrink-0" />
           <span className="w-full truncate text-center text-[11px] font-bold">{ore.name}</span>
@@ -302,24 +322,26 @@ export function PedestalTile({
               under weight
             </span>
           )}
-          {value !== 0 ? (
-            <span
-              className={cx(
-                'numeric text-[10px] font-semibold',
-                value > 0 ? 'text-vein-400' : 'text-red-400',
-              )}
-            >
-              {boostLabel(value)}
-            </span>
-          ) : (
-            <span className="numeric w-full truncate text-center text-[10px] text-ink-600">
-              {ore.boosts.length > 0
-                ? ore.boosts
-                  .map((b) => `${boostLabel(b.value)} ${shortStat(b.stat)}`)
-                  .join(' ')
-                : 'no boost'}
-            </span>
-          )}
+          {/* Always named, never a bare number. "+0.4×" on its own tells you
+              nothing about a display you are deciding whether to keep, and the
+              stat being ranked by is not necessarily the one the ore moves. */}
+          <span className="w-full">
+            {groupedBoosts(ore).map((g) => (
+              <span
+                key={g.value}
+                className={cx(
+                  'numeric block text-center text-[10px] leading-tight',
+                  g.value < 0
+                    ? 'text-red-400'
+                    : g.names.some((n) => stats.some((st) => shortStat(st) === n))
+                      ? 'font-semibold text-vein-400'
+                      : 'text-ink-500',
+                )}
+              >
+                {boostLabel(g.value)} {g.names.join(', ')}
+              </span>
+            ))}
+          </span>
         </button>
         <button
           onClick={onClear}

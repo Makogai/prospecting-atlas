@@ -41,11 +41,11 @@ const signed = (n: number) => `${n > 0 ? '+' : ''}${fmt(n)}`;
 /**
  * A multiplier at enough precision to not read as nothing.
  *
- * Two decimals is right for the ×7.15 a stacked build shows, but it renders a
- * single Common rider's ×1.005 as "×1.00", which looks like the boost was
- * ignored. Small multipliers get the digits they need.
+ * Two decimals is right for the ×7.15 a stacked build shows, and for the ×0.20
+ * a debuff pile produces, but it renders a single Common rider's ×1.005 as
+ * "×1.00", which looks like the boost was ignored. Only that band needs more.
  */
-const mult = (n: number) => (n < 1.01 ? n.toFixed(3) : n.toFixed(2));
+const mult = (n: number) => (n > 1 && n < 1.01 ? n.toFixed(3) : n.toFixed(2));
 
 export function StatPanel({
   lines, dense, openStat,
@@ -67,7 +67,7 @@ export function StatPanel({
    * museum multiplies what your gear provides, so with no gear there is
    * nothing for it to multiply. Saying so is more use than any number here.
    */
-  const stranded = lines.some((l) => l.boosts > 0) && lines.every((l) => l.base + l.flats === 0);
+  const stranded = lines.some((l) => l.boosts !== 0) && lines.every((l) => l.base + l.flats === 0);
 
   // Opening from a link should also bring the row into view. Keyed on the
   // wanted stat rather than firing once, so searching a second stat from this
@@ -183,8 +183,17 @@ function StatRow({
                 museum, sees every row read 0, and concludes the page is
                 broken. The chip says the boost landed; the row below says why
                 it bought nothing yet. */}
-            {boosts > 0 && (
-              <span className="numeric shrink-0 text-[10px] font-bold text-vein-400">
+            {boosts !== 0 && (
+              <span
+                className={cx(
+                  'numeric shrink-0 text-[10px] font-bold',
+                  // A pile can go negative: the Cryonic Artifact alone is
+                  // -0.8 on both speeds, which turns 125 Shake Speed into 25.
+                  // That is the most surprising number on the panel and the
+                  // least excusable one to leave unexplained.
+                  boosts > 0 ? 'text-vein-400' : 'text-red-400',
+                )}
+              >
                 ×{mult(1 + boosts)}
               </span>
             )}
@@ -207,7 +216,7 @@ function StatRow({
           <span className="numeric block text-sm font-black text-ink-100">
             {fmt(total)}{unit}
           </span>
-          {total > 0 && (flats !== 0 || boosts > 0 || eventMult > 1) && (
+          {total > 0 && (flats !== 0 || boosts !== 0 || eventMult > 1) && (
             <span className="numeric block text-[10px] text-ink-500">({fmt(base)}{unit})</span>
           )}
         </span>
@@ -245,7 +254,15 @@ function Breakdown({ line }: { line: StatLine }) {
                 <div key={`${c.source}-${i}`}>
                   <div className="flex items-baseline justify-between gap-3 text-[11px]">
                     <dt className="min-w-0 flex-1 text-ink-300">{c.source}</dt>
-                    <dd className={cx('numeric shrink-0 font-bold', BAND_TINT[band])}>
+                    <dd
+                      className={cx(
+                        'numeric shrink-0 font-bold',
+                        // A band colour says where a contribution lands; a
+                        // negative one has to say it is taking something away
+                        // first, or a museum debuff reads as a gain.
+                        c.value < 0 ? 'text-red-400' : BAND_TINT[band],
+                      )}
+                    >
                       {band === 'boost'
                         ? `${c.value > 0 ? '+' : ''}${c.value.toFixed(3).replace(/0+$/, '').replace(/\.$/, '')}`
                         : band === 'event'
