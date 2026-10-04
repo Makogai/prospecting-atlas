@@ -26,6 +26,22 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-04-planner-pickers',
+    date: '2026-10-04',
+    title: 'Pick gear by what it is worth, not by its name',
+    tag: 'improved',
+    body: 'The planner’s plain dropdowns are now proper pickers: every pan, shovel and enchant shows its art, its price and the stat lines it will actually put on your panel, and you can search them by effect. Empty equipment slots are tiles with a plus in them, so the shape of a build is visible before you have finished it.',
+    href: '/planner',
+  },
+  {
+    id: '2026-10-04-museum-shelf',
+    date: '2026-10-04',
+    title: 'The museum reads as a shelf again',
+    tag: 'fixed',
+    body: 'In the build planner the three displays of a rarity were laid out two across, which wrapped and stranded the third on a row of its own. They are three across now, and a display that does nothing for the stat you are ranking by says what it does do instead of showing a dash.',
+    href: '/planner',
+  },
+  {
     id: '2026-10-04-planner',
     date: '2026-10-04',
     title: 'One page for your whole build',

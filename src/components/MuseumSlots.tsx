@@ -217,3 +217,104 @@ export function OrePicker({
     document.body,
   );
 }
+
+/**
+ * Stat names short enough to sit on a tile beside their number.
+ *
+ * A display that does nothing for the stat you are ranking by is not useless,
+ * it is useful for something else — and "-" tells you nothing, while "+0.04
+ * Size" tells you why the ore is in your museum at all.
+ */
+const SHORT_STAT: Record<string, string> = {
+  'Size Boost': 'Size',
+  'Sell Boost': 'Sell',
+  'Modifier Boost': 'Mod',
+  'Shake Strength': 'Shake Str',
+  'Shake Speed': 'Shake Spd',
+  'Dig Strength': 'Dig Str',
+  'Dig Speed': 'Dig Spd',
+};
+
+const shortStat = (stat: string) => SHORT_STAT[stat] ?? stat;
+
+/**
+ * A display as a tile rather than a row.
+ *
+ * The build planner shows all eighteen at once inside a column half the page
+ * wide, where the museum page's full-width rows wrap to two per line and leave
+ * the third stranded on its own. A rarity has three displays, so they want to
+ * read as three across.
+ */
+export function PedestalTile({
+  ore, stats, locked, onPick, onClear, children,
+}: {
+  ore: MuseumOre | null | undefined;
+  stats: string[];
+  locked: boolean;
+  onPick: () => void;
+  onClear: () => void;
+  /** The modifier control, shown under a filled display. */
+  children?: React.ReactNode;
+}) {
+  if (!ore) {
+    return (
+      <button
+        onClick={onPick}
+        className="group flex h-[5.4rem] w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-white/12 transition hover:border-ore-400/50 hover:bg-ore-400/5"
+      >
+        <span
+          aria-hidden
+          className="text-lg leading-none font-light text-ink-600 transition group-hover:text-ore-400"
+        >
+          +
+        </span>
+        <span className="px-1 text-center text-[9px] font-semibold tracking-wide text-ink-600 uppercase transition group-hover:text-ore-400">
+          {locked ? 'Locked' : 'Empty'}
+        </span>
+      </button>
+    );
+  }
+
+  const value = scoreFor(ore, stats);
+  const mineral = mineralById.get(ore.id);
+
+  return (
+    <div>
+      <div className="group relative rounded-xl bg-white/5 ring-1 ring-white/10">
+        <button
+          onClick={onPick}
+          className="flex h-[5.4rem] w-full flex-col items-center justify-center gap-0.5 px-1.5"
+        >
+          <Sprite file={mineral?.image} alt="" className="h-8 w-8 shrink-0" />
+          <span className="w-full truncate text-center text-[11px] font-bold">{ore.name}</span>
+          {value !== 0 ? (
+            <span
+              className={cx(
+                'numeric text-[10px] font-semibold',
+                value > 0 ? 'text-vein-400' : 'text-red-400',
+              )}
+            >
+              {boostLabel(value)}
+            </span>
+          ) : (
+            <span className="numeric w-full truncate text-center text-[10px] text-ink-600">
+              {ore.boosts.length > 0
+                ? ore.boosts
+                  .map((b) => `${boostLabel(b.value)} ${shortStat(b.stat)}`)
+                  .join(' ')
+                : 'no boost'}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={onClear}
+          aria-label={`Remove ${ore.name}`}
+          className="absolute top-0.5 right-1 rounded px-1 text-[11px] text-ink-500 opacity-0 transition group-hover:opacity-100 hover:text-red-400 focus:opacity-100"
+        >
+          ✕
+        </button>
+      </div>
+      {children}
+    </div>
+  );
+}

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  equipment, equipmentById, equipRarityColors, events, museum, potions, runes,
-  SLOT_LIMITS, type Equipment, type EquipSlot, type RarityName,
+  equipment, equipmentById, equipRarityColors, events, gearPrice, museum, museumOreById,
+  mutations, pans, percent, potions, runes, shovels, SLOT_LIMITS,
+  type Enchant, type Equipment, type EquipSlot, type Gear, type RarityName,
 } from '../lib/db';
 import { slotKey } from '../lib/museumBuild';
 import {
@@ -13,14 +13,14 @@ import {
 } from '../lib/planner';
 import { decodePlanner, encodePlanner, plannerCode } from '../lib/plannerCode';
 import {
-  panById, PANEL_STATS, panEnchants, RIDER_MODIFIERS, shovelById, shovelEnchants,
+  gearLines, panById, PANEL_STATS, panEnchants, RIDER_MODIFIERS, shovelById, shovelEnchants,
   type StatKey,
 } from '../lib/stats';
-import { mutations, pans, shovels } from '../lib/db';
 import { makeBuild, readBuilds, writeBuilds, type SavedBuild } from '../lib/buildLibrary';
 import { BuildLibrary, ShareBox } from '../components/BuildLibrary';
 import { MobileDock } from '../components/MobileDock';
-import { OrePicker, Pedestal } from '../components/MuseumSlots';
+import { OrePicker, PedestalTile } from '../components/MuseumSlots';
+import { EmptySlot, PickerDialog, RichSelect, type PickerOption } from '../components/Picker';
 import { StatPanel, fmt } from '../components/StatPanel';
 import { NumberField, SectionTitle, Sprite, cx, gradientVars } from '../components/ui';
 
@@ -277,14 +277,43 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-const SELECT =
-  'w-full rounded-lg border border-white/10 bg-rock-850 px-3 py-2 text-sm text-ink-100 outline-none transition focus:border-ore-400/50';
-
 /* ---------- gear --------------------------------------------------------- */
+
+/**
+ * Gear as something you can judge at a glance.
+ *
+ * The meta line is the item's actual panel contribution rather than the wiki's
+ * table columns, so a pan reads as the lines it will put on your stat screen —
+ * passives included, which is where a third of a Nebula Pan's value lives.
+ */
+const gearOptions = (list: Gear[], kind: 'pan' | 'shovel'): PickerOption[] =>
+  list.map((g) => ({
+    id: g.id,
+    name: g.name,
+    image: g.image,
+    color: g.color,
+    meta: [...gearLines(g, kind)].map(([stat, v]) => `${fmt(v)} ${stat}`).join(' · '),
+    tag: gearPrice(g),
+    muted: !g.obtainable,
+    haystack: `${g.passive ?? ''} ${g.source}`,
+  }));
+
+const enchantOptions = (list: Enchant[]): PickerOption[] =>
+  list.map((e) => ({
+    id: e.id,
+    name: e.name,
+    meta: e.effect,
+    tag: e.bestChance != null ? `${percent(e.bestChance)} best roll` : undefined,
+    haystack: e.stats.join(' '),
+  }));
 
 function GearSection({ build, patch }: SectionProps) {
   const pan = build.pan ? panById.get(build.pan) : null;
   const shovel = build.shovel ? shovelById.get(build.shovel) : null;
+  const panOptions = useMemo(() => gearOptions(pans, 'pan'), []);
+  const shovelOptions = useMemo(() => gearOptions(shovels, 'shovel'), []);
+  const panEnchantOptions = useMemo(() => enchantOptions(panEnchants), []);
+  const shovelEnchantOptions = useMemo(() => enchantOptions(shovelEnchants), []);
 
   return (
     <Section
@@ -293,72 +322,57 @@ function GearSection({ build, patch }: SectionProps) {
       hint="Your pan and shovel are most of your base. An enchant only ever changes the item it sits on — it multiplies that item’s own line, then adds its points."
       summary={[pan?.name, shovel?.name].filter(Boolean).join(' · ')}
     >
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-3">
-          <Field label="Pan">
-            <select
-              className={SELECT}
-              value={build.pan ?? ''}
-              onChange={(e) => patch({ pan: e.target.value || null })}
-            >
-              <option value="">No pan</option>
-              {pans.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.name}{!g.obtainable && ' (removed)'}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Pan enchant">
-            <select
-              className={SELECT}
-              value={build.panEnchant ?? ''}
-              onChange={(e) => patch({ panEnchant: e.target.value || null })}
-            >
-              <option value="">None</option>
-              {panEnchants.map((e) => (
-                <option key={e.id} value={e.id}>{e.name}</option>
-              ))}
-            </select>
-          </Field>
-          {pan && <GearCard gear={pan} />}
+          <RichSelect
+            label="Pan"
+            title="Choose a pan"
+            value={build.pan}
+            options={panOptions}
+            placeholder="Choose a pan"
+            clearLabel="No pan"
+            onChange={(pan) => patch({ pan })}
+          />
+          <RichSelect
+            label="Pan enchant"
+            title="Choose a pan enchant"
+            value={build.panEnchant}
+            options={panEnchantOptions}
+            placeholder="No enchant"
+            clearLabel="No enchant"
+            onChange={(panEnchant) => patch({ panEnchant })}
+          />
+          {pan?.passive && <Passive text={pan.passive} />}
         </div>
 
         <div className="space-y-3">
-          <Field label="Shovel">
-            <select
-              className={SELECT}
-              value={build.shovel ?? ''}
-              onChange={(e) => patch({ shovel: e.target.value || null })}
-            >
-              <option value="">No shovel</option>
-              {shovels.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.name}{!g.obtainable && ' (removed)'}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Shovel enchant">
-            <select
-              className={SELECT}
-              value={build.shovelEnchant ?? ''}
-              onChange={(e) => patch({ shovelEnchant: e.target.value || null })}
-            >
-              <option value="">None</option>
-              {shovelEnchants.map((e) => (
-                <option key={e.id} value={e.id}>{e.name}</option>
-              ))}
-            </select>
-          </Field>
-          {shovel && <GearCard gear={shovel} />}
+          <RichSelect
+            label="Shovel"
+            title="Choose a shovel"
+            value={build.shovel}
+            options={shovelOptions}
+            placeholder="Choose a shovel"
+            clearLabel="No shovel"
+            onChange={(shovel) => patch({ shovel })}
+          />
+          <RichSelect
+            label="Shovel enchant"
+            title="Choose a shovel enchant"
+            value={build.shovelEnchant}
+            options={shovelEnchantOptions}
+            placeholder="No enchant"
+            clearLabel="No enchant"
+            onChange={(shovelEnchant) => patch({ shovelEnchant })}
+          />
+          {shovel?.passive && <Passive text={shovel.passive} />}
         </div>
       </div>
 
       <p className="mt-4 rounded-lg bg-white/4 px-3 py-2 text-[11px] leading-relaxed text-ink-500">
-        Shovel enchants change how digging behaves rather than what the panel reads — Mythical
-        duplicates Mythic and Exotic finds, Mastered brings auto-panning to full quality. Only
-        Toughened moves a stat. <Link to="/enchanting" className="text-ore-400 hover:underline">
+        Shovel enchants mostly change how digging behaves rather than what the panel reads —
+        Mythical duplicates Mythic and Exotic finds, Mastered brings auto-panning to full quality.
+        Only Toughened and Treasure Hunter move a stat.{' '}
+        <Link to="/enchanting" className="text-ore-400 hover:underline">
           All the odds are on the enchanting page.
         </Link>
       </p>
@@ -366,17 +380,11 @@ function GearSection({ build, patch }: SectionProps) {
   );
 }
 
-function GearCard({ gear }: { gear: { name: string; image: string | null; color: string | null; passive: string | null } }) {
+function Passive({ text }: { text: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-white/4 p-2.5">
-      <Sprite file={gear.image} alt="" className="h-11 w-11 shrink-0" />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-bold" style={gear.color ? { color: gear.color } : undefined}>
-          {gear.name}
-        </p>
-        {gear.passive && <p className="mt-0.5 text-[11px] leading-snug text-ink-500">{gear.passive}</p>}
-      </div>
-    </div>
+    <p className="rounded-lg bg-white/4 px-2.5 py-1.5 text-[11px] leading-snug text-ink-500">
+      <span className="font-semibold text-ink-400">Passive</span> — {text}
+    </p>
   );
 }
 
@@ -384,13 +392,31 @@ function GearCard({ gear }: { gear: { name: string; image: string | null; color:
 
 const EQUIP_SLOTS: EquipSlot[] = ['Necklace', 'Charm', 'Ring'];
 
+const equipOptions = (slot: EquipSlot): PickerOption[] =>
+  equipment
+    .filter((e) => e.slot === slot)
+    .map((e) => ({
+      id: e.id,
+      name: e.name,
+      image: e.image,
+      color: e.color,
+      meta:
+        e.stats
+          .map((st) => `${st.base.min}–${st.base.max}${st.base.unit ?? ''} ${st.stat}`)
+          .join(' · ') || 'no stats listed',
+      tag: e.rarity,
+      haystack: `${e.rarity} ${e.description} ${e.limited ? 'limited event' : ''}`,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
 function EquipSection({ build, patch }: SectionProps) {
   const [picking, setPicking] = useState<EquipSlot | null>(null);
+  const options = useMemo(() => (picking ? equipOptions(picking) : []), [picking]);
 
-  const add = (item: Equipment) => {
-    patch({
-      equips: [...build.equips, { id: item.id, quality: build.quality, mutation: null }],
-    });
+  const add = (id: string | null) => {
+    if (id) {
+      patch({ equips: [...build.equips, { id, quality: build.quality, mutation: null }] });
+    }
     setPicking(null);
   };
 
@@ -403,9 +429,11 @@ function EquipSection({ build, patch }: SectionProps) {
     <Section
       title="What you’re wearing"
       hint="One necklace, one charm and eight rings. Each piece rolled on its own, so quality is per item — two of the same ring can be 95% and 55%. A mutation multiplies everything on that piece."
-      summary={build.equips.length > 0
-        ? `${build.equips.length}/10 equipped${build.sixStar ? ' · ★6' : ''}`
-        : ''}
+      summary={
+        build.equips.length > 0
+          ? `${build.equips.length}/10 equipped${build.sixStar ? ' · ★6' : ''}`
+          : ''
+      }
     >
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2 text-xs font-semibold text-ink-300">
@@ -433,7 +461,9 @@ function EquipSection({ build, patch }: SectionProps) {
         </label>
         {build.equips.length > 0 && (
           <button
-            onClick={() => patch({ equips: build.equips.map((e) => ({ ...e, quality: build.quality })) })}
+            onClick={() =>
+              patch({ equips: build.equips.map((e) => ({ ...e, quality: build.quality })) })
+            }
             className="text-[11px] font-semibold text-ink-500 underline underline-offset-2 hover:text-ore-400"
           >
             Set every piece to that
@@ -446,35 +476,39 @@ function EquipSection({ build, patch }: SectionProps) {
           const rows = build.equips
             .map((e, at) => ({ ...e, at, item: equipmentById.get(e.id) }))
             .filter((r) => r.item?.slot === slot);
-          const full = rows.length >= SLOT_LIMITS[slot];
+          const free = (SLOT_LIMITS[slot] ?? 0) - rows.length;
           return (
             <div key={slot}>
-              <div className="mb-1.5 flex items-baseline justify-between">
-                <p className="text-[11px] font-bold tracking-[0.1em] text-ink-500 uppercase">
-                  {slot} <span className="opacity-60">{rows.length}/{SLOT_LIMITS[slot]}</span>
-                </p>
-                <button
-                  onClick={() => setPicking(slot)}
-                  disabled={full}
-                  className="text-[11px] font-semibold text-ore-400 transition hover:text-ore-300 disabled:cursor-not-allowed disabled:text-ink-600"
-                >
-                  {full ? 'Slot full' : `Add ${slot.toLowerCase()}`}
-                </button>
+              <p className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-ink-500 uppercase">
+                {slot} <span className="opacity-60">{rows.length}/{SLOT_LIMITS[slot]}</span>
+              </p>
+
+              {/* An equipped piece is a row because it carries two controls that
+                  need the width. The slots you have not filled are tiles, so the
+                  shape of the build is legible before it is finished — six empty
+                  ring slots should look like six empty ring slots. */}
+              <div className="space-y-1.5">
+                {rows.map((r) => (
+                  <EquipRow
+                    key={r.at}
+                    item={r.item!}
+                    entry={r}
+                    onChange={(bits) => update(r.at, bits)}
+                    onRemove={() => remove(r.at)}
+                  />
+                ))}
               </div>
-              {rows.length === 0 ? (
-                <p className="rounded-lg border border-dashed border-white/10 px-3 py-2.5 text-[11px] text-ink-600">
-                  Nothing in this slot.
-                </p>
-              ) : (
-                <div className="space-y-1.5">
-                  {rows.map((r) => (
-                    <EquipRow
-                      key={r.at}
-                      item={r.item!}
-                      entry={r}
-                      onChange={(bits) => update(r.at, bits)}
-                      onRemove={() => remove(r.at)}
-                    />
+
+              {free > 0 && (
+                <div
+                  className={cx(
+                    'grid gap-2',
+                    rows.length > 0 && 'mt-2',
+                    slot === 'Ring' ? 'grid-cols-3 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3',
+                  )}
+                >
+                  {Array.from({ length: free }, (_, i) => (
+                    <EmptySlot key={i} label={slot} onClick={() => setPicking(slot)} />
                   ))}
                 </div>
               )}
@@ -484,16 +518,18 @@ function EquipSection({ build, patch }: SectionProps) {
       </div>
 
       <p className="mt-4 text-[11px] leading-relaxed text-ink-500">
-        A piece’s stats sit in a range and the roll decides where in it you land. The wiki gives the
-        ranges and the percentage but not exactly how the two meet, so this interpolates straight
-        across — treat it as close, not exact. <Link to="/equipment" className="text-ore-400 hover:underline">
-          Browse all 67 craftables.
+        A piece’s stats sit in a range and the roll decides where in it you land. The wiki gives
+        the ranges and the percentage but not exactly how the two meet, so this interpolates
+        straight across — treat it as close, not exact.{' '}
+        <Link to="/equipment" className="text-ore-400 hover:underline">
+          Browse all {equipment.length} craftables.
         </Link>
       </p>
 
       {picking && (
-        <EquipPicker
-          slot={picking}
+        <PickerDialog
+          title={`Add a ${picking.toLowerCase()}`}
+          options={options}
           onClose={() => setPicking(null)}
           onChoose={add}
         />
@@ -514,7 +550,10 @@ function EquipRow({
     <div className="flex flex-wrap items-center gap-2 rounded-lg bg-white/5 p-1.5">
       <Sprite file={item.image} alt="" className="h-9 w-9 shrink-0" />
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-xs font-bold" style={item.color ? { color: item.color } : undefined}>
+        <span
+          className="block truncate text-xs font-bold"
+          style={item.color ? { color: item.color } : undefined}
+        >
           {item.name}
         </span>
         <span
@@ -565,89 +604,6 @@ function EquipRow({
   );
 }
 
-/** Searchable chooser for one equipment slot, portalled like the ore picker. */
-function EquipPicker({
-  slot, onClose, onChoose,
-}: {
-  slot: EquipSlot;
-  onClose: () => void;
-  onChoose: (item: Equipment) => void;
-}) {
-  const [q, setQ] = useState('');
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
-  const options = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    return equipment
-      .filter((e) => e.slot === slot && (!needle || e.name.toLowerCase().includes(needle)))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [slot, q]);
-
-  // Portalled: every route root carries `animate-rise`, whose animation leaves
-  // an identity transform behind, and a transformed ancestor becomes the
-  // containing block for `fixed` children.
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-rock-950/80 p-4 pt-[10vh] backdrop-blur-sm">
-      <button aria-label="Close" onClick={onClose} className="fixed inset-0 cursor-default" />
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-rock-900 shadow-2xl">
-        <div className="border-b border-white/8 p-4">
-          <h2 className="font-extrabold">
-            Add a <span className="text-ore-400">{slot.toLowerCase()}</span>
-          </h2>
-          <input
-            autoFocus
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={`Search ${slot.toLowerCase()}s…`}
-            className="mt-3 w-full rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-sm outline-none transition focus:border-ore-400/50 focus:bg-white/7"
-          />
-        </div>
-        <div className="max-h-[55vh] divide-y divide-white/6 overflow-y-auto">
-          {options.length === 0 && (
-            <p className="px-4 py-8 text-center text-sm text-ink-500">Nothing matches.</p>
-          )}
-          {options.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => onChoose(item)}
-              className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition hover:bg-white/5"
-            >
-              <Sprite file={item.image} alt="" className="h-9 w-9 shrink-0" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-bold">
-                  {item.name}
-                  {item.limited && (
-                    <span className="ml-2 rounded bg-white/8 px-1.5 text-[10px] font-semibold text-ink-400">
-                      limited
-                    </span>
-                  )}
-                </span>
-                <span className="numeric block truncate text-[11px] text-ink-500">
-                  {item.stats
-                    .map((s) => `${s.base.min}–${s.base.max}${s.base.unit ?? ''} ${s.stat}`)
-                    .join(' · ') || 'no stats listed'}
-                </span>
-              </span>
-              <span
-                className="gradient-text shrink-0 text-[10px] font-bold uppercase"
-                style={gradientVars(equipRarityColors(item.rarity))}
-              >
-                {item.rarity}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>,
-    document.body,
-  );
-}
-
 /* ---------- museum ------------------------------------------------------- */
 
 function MuseumSection({ build, patch }: SectionProps) {
@@ -658,12 +614,18 @@ function MuseumSection({ build, patch }: SectionProps) {
   const chosen = Object.values(build.museum).filter(Boolean) as string[];
 
   const setSlot = (key: string, oreId: string | null) => {
-    const museumNext = { ...build.museum, [key]: oreId };
-    // A display with nothing in it can't carry a rider either.
+    // A display with nothing in it cannot carry a modifier either.
     const riders = { ...build.riders };
     if (!oreId) delete riders[key];
-    patch({ museum: museumNext, riders });
+    patch({ museum: { ...build.museum, [key]: oreId }, riders });
   };
+
+  const setRider = (key: string, name: string) =>
+    patch({
+      riders: name
+        ? { ...build.riders, [key]: name }
+        : Object.fromEntries(Object.entries(build.riders).filter(([k]) => k !== key)),
+    });
 
   return (
     <Section
@@ -678,56 +640,48 @@ function MuseumSection({ build, patch }: SectionProps) {
           onChange={(e) => setRankBy(e.target.value)}
           className="rounded-lg border border-white/10 bg-rock-850 px-2.5 py-1.5 text-xs outline-none"
         >
-          {museum.stats.map((s) => <option key={s} value={s}>{s}</option>)}
+          {museum.stats.map((st) => <option key={st} value={st}>{st}</option>)}
         </select>
         <Link to="/museum" className="text-[11px] font-semibold text-ore-400 hover:underline">
           Or let the museum planner fill it for you →
         </Link>
       </div>
 
-      <div className="space-y-4">
+      {/* A rarity owns three displays, so they read as three across. Laid out
+          two-wide they wrap, which strands the third on a row of its own and
+          makes an even shelf look broken. */}
+      <div className="space-y-3">
         {museum.displays.map((display) => (
           <div key={display.rarity}>
             <p className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-ink-500 uppercase">
               {display.rarity} <span className="opacity-60">×{display.total}</span>
             </p>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid grid-cols-3 gap-2">
               {Array.from({ length: display.total }, (_, index) => {
                 const key = slotKey(display.rarity, index);
                 const oreId = build.museum[key];
+                const ore = oreId ? museumOreById.get(oreId) : null;
                 return (
-                  // A filled display carries a modifier select and an empty
-                  // one doesn't, so without a floor the grid rows stagger.
-                  <div key={key} className="min-h-[6.6rem] space-y-1">
-                    <Pedestal
-                      ore={oreId ? museum.ores.find((o) => o.id === oreId) : null}
-                      stats={[rankBy]}
-                      locked={index >= display.free}
-                      onPick={() => setPicking({ rarity: display.rarity, index })}
-                      onClear={() => setSlot(key, null)}
-                    />
-                    {oreId && (
-                      <select
-                        aria-label={`Modifier on the ${display.rarity} display ${index + 1}`}
-                        value={build.riders[key] ?? ''}
-                        onChange={(e) =>
-                          patch({
-                            riders: e.target.value
-                              ? { ...build.riders, [key]: e.target.value }
-                              : Object.fromEntries(Object.entries(build.riders).filter(([k]) => k !== key)),
-                          })
-                        }
-                        className="w-full rounded border border-white/10 bg-rock-850 px-2 py-1 text-[11px] text-ink-300 outline-none"
-                      >
-                        <option value="">No modifier</option>
-                        {RIDER_MODIFIERS.map((m) => (
-                          <option key={m.name} value={m.name}>
-                            {m.name} — {m.stats.join(', ')}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
+                  <PedestalTile
+                    key={key}
+                    ore={ore}
+                    stats={[rankBy]}
+                    locked={index >= display.free}
+                    onPick={() => setPicking({ rarity: display.rarity, index })}
+                    onClear={() => setSlot(key, null)}
+                  >
+                    <select
+                      aria-label={`Modifier on ${ore?.name ?? 'this display'}`}
+                      value={build.riders[key] ?? ''}
+                      onChange={(e) => setRider(key, e.target.value)}
+                      className="mt-1 w-full truncate rounded border border-white/10 bg-rock-850 px-1 py-0.5 text-[10px] text-ink-400 outline-none"
+                    >
+                      <option value="">No modifier</option>
+                      {RIDER_MODIFIERS.map((m) => (
+                        <option key={m.name} value={m.name}>{m.name}</option>
+                      ))}
+                    </select>
+                  </PedestalTile>
                 );
               })}
             </div>
@@ -737,7 +691,7 @@ function MuseumSection({ build, patch }: SectionProps) {
 
       <p className="mt-4 text-[11px] leading-relaxed text-ink-500">
         An ore only gives its full display value at or above its listed minimum weight. The wiki
-        doesn’t publish the curve below that, so a lighter ore is worth less than shown here by an
+        does not publish the curve below that, so a lighter ore is worth less than shown here by an
         amount nobody has measured.
       </p>
 
