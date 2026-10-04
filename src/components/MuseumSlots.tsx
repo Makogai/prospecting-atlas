@@ -267,13 +267,20 @@ export function groupedBoosts(ore: MuseumOre) {
  * read as three across.
  */
 export function PedestalTile({
-  ore, stats, locked, under, onPick, onClear, children,
+  ore, stats, locked, under, factor = 1, factorKind = 'full', onPick, onClear, children,
 }: {
   ore: MuseumOre | null | undefined;
   stats: string[];
   locked: boolean;
   /** The ore on it is below the weight its full boost needs. */
   under?: boolean;
+  /**
+   * How much of the ore's listed boost this display is paying, 0–1, with
+   * where that number came from. Scaled values are shown rather than the
+   * listed maximum, so the tile says what the display is worth to you now.
+   */
+  factor?: number;
+  factorKind?: 'full' | 'estimated' | 'measured';
   onPick: () => void;
   onClear: () => void;
   /** The modifier and weight controls, shown under a filled display. */
@@ -316,10 +323,19 @@ export function PedestalTile({
           <span className="w-full truncate text-center text-[11px] font-bold">{ore.name}</span>
           {under && (
             <span
-              className="text-[9px] font-bold tracking-wide text-ore-400 uppercase"
-              title={`Needs ${ore.minWeight}kg for its full boost`}
+              className={cx(
+                'text-[9px] font-bold tracking-wide uppercase',
+                factorKind === 'measured' ? 'text-tide-400' : 'text-ore-400',
+              )}
+              title={
+                factorKind === 'measured'
+                  ? `Measured: ${Math.round(factor * 100)}% of its full boost`
+                  : `Needs ${ore.minWeight}kg for its full boost — this is an estimate`
+              }
             >
-              under weight
+              {factorKind === 'measured'
+                ? `measured ${Math.round(factor * 100)}%`
+                : `est ${Math.round(factor * 100)}%`}
             </span>
           )}
           {/* Always named, never a bare number. "+0.4×" on its own tells you
@@ -337,8 +353,9 @@ export function PedestalTile({
                       ? 'font-semibold text-vein-400'
                       : 'text-ink-500',
                 )}
+                title={factor < 1 ? `${boostLabel(g.value)} at full weight` : undefined}
               >
-                {boostLabel(g.value)} {g.names.join(', ')}
+                {boostLabel(g.value * factor)} {g.names.join(', ')}
               </span>
             ))}
           </span>

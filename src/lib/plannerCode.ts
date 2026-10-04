@@ -146,6 +146,32 @@ function decodeWeights(raw: string | null): Record<string, number> {
   return out;
 }
 
+/**
+ * Measured boosts as `slotIndex:thousandths`.
+ *
+ * Stored as integers because the separator between entries is a `.`, and a
+ * decimal point in the value would split a field in half.
+ */
+function encodeMeasured(measured: Record<string, number>) {
+  return SLOT_ORDER.map(({ rarity, index }, at) => {
+    const v = measured[slotKey(rarity, index)];
+    return v != null && v > 0 ? `${at}:${Math.round(v * 1000)}` : null;
+  })
+    .filter(Boolean)
+    .join('.');
+}
+
+function decodeMeasured(raw: string | null): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const field of (raw ?? '').split('.')) {
+    const [at, milli] = field.split(':');
+    const slot = SLOT_ORDER[Number(at)];
+    const n = num(milli, 0);
+    if (slot && n > 0) out[slotKey(slot.rarity, slot.index)] = n / 1000;
+  }
+  return out;
+}
+
 function decodeRiders(raw: string | null): Record<string, string> {
   const out: Record<string, string> = {};
   for (const field of (raw ?? '').split('.')) {
@@ -214,6 +240,7 @@ export function encodePlanner(state: PlannerState): URLSearchParams {
   set('mu', encodeBuild(state.museum));
   set('rd', encodeRiders(state.riders));
   set('wt', encodeWeights(state.weights));
+  set('ms', encodeMeasured(state.measured));
 
   set('bo', encodeCounts(state.boosts, new Set(BOOST_SOURCES.map((b) => b.id))));
   set('ru', encodeIds(state.runes, (id) => runeEffectById.has(id)));
@@ -260,6 +287,7 @@ export function decodePlanner(q: URLSearchParams): DecodedPlanner {
       museum: slots,
       riders: decodeRiders(q.get('rd')),
       weights: decodeWeights(q.get('wt')),
+      measured: decodeMeasured(q.get('ms')),
       boosts: decodeCounts(q.get('bo'), new Set(BOOST_SOURCES.map((b) => b.id)), 9),
       runes: decodeIds(q.get('ru'), (id) => runeEffectById.has(id) && runeById.has(id), maxRuneSlots),
       mastery: decodeCounts(q.get('ma'), new Set(MASTERY_TRACKS.map((t) => t.id)), 5),

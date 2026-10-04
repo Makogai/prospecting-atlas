@@ -3,12 +3,12 @@ import { Link, useSearchParams } from 'react-router-dom';
 import {
   equipment, equipmentById, equipRarityColors, events, gearPrice, museum, museumOreById,
   mutations, pans, percent, potions, runes, shovels, SLOT_LIMITS,
-  type Enchant, type Equipment, type EquipSlot, type Gear, type RarityName,
+  type Enchant, type Equipment, type EquipSlot, type Gear, type MuseumOre, type RarityName,
 } from '../lib/db';
 import { slotKey } from '../lib/museumBuild';
 import {
   BOOST_SOURCES, computeBuild, DEFAULT_BUILD, isEmptyBuild, MASTERY_TRACKS, PERMANENTS,
-  PLANNER_BUILDS_KEY, PLANNER_KEY, runeEffectById, underweightDisplays, weightCheck,
+  PLANNER_BUILDS_KEY, PLANNER_KEY, runeEffectById, underweightDisplays, weightCheck, weightFactor,
   type CustomEntry, type PlannerEquip, type PlannerState,
 } from '../lib/planner';
 import { decodePlanner, encodePlanner, plannerCode } from '../lib/plannerCode';
@@ -59,7 +59,7 @@ export function PlannerPage() {
   // A link carrying any build parameter is somebody else's build. It's held
   // apart from your own and never written to storage on its own — opening a
   // friend's link must not quietly replace the build you spent an evening on.
-  const sharedKeys = ['p', 's', 'eq', 'mu', 'rd', 'wt', 'bo', 'ru', 'ma', 'po', 'ev', 'pm', 'cu', 'ft', 'fo'];
+  const sharedKeys = ['p', 's', 'eq', 'mu', 'rd', 'wt', 'ms', 'bo', 'ru', 'ma', 'po', 'ev', 'pm', 'cu', 'ft', 'fo'];
   const viewingShared = sharedKeys.some((k) => params.has(k));
   const decoded = useMemo(() => (viewingShared ? decodePlanner(params) : null), [params, viewingShared]);
   const build = decoded ? decoded.state : saved;
@@ -621,11 +621,13 @@ function MuseumSection({ build, patch }: SectionProps) {
     // A display with nothing on it carries neither a modifier nor a weight.
     const riders = { ...build.riders };
     const weights = { ...build.weights };
+    const measured = { ...build.measured };
     if (!oreId) {
       delete riders[key];
       delete weights[key];
+      delete measured[key];
     }
-    patch({ museum: { ...build.museum, [key]: oreId }, riders, weights });
+    patch({ museum: { ...build.museum, [key]: oreId }, riders, weights, measured });
   };
 
   const setRider = (key: string, name: string) =>
@@ -640,6 +642,13 @@ function MuseumSection({ build, patch }: SectionProps) {
       weights: kg != null
         ? { ...build.weights, [key]: kg }
         : Object.fromEntries(Object.entries(build.weights).filter(([k]) => k !== key)),
+    });
+
+  const setMeasured = (key: string, v: number | null) =>
+    patch({
+      measured: v != null
+        ? { ...build.measured, [key]: v }
+        : Object.fromEntries(Object.entries(build.measured).filter(([k]) => k !== key)),
     });
 
   return (
@@ -669,10 +678,10 @@ function MuseumSection({ build, patch }: SectionProps) {
           <span className="font-bold">
             {under.length} display{under.length > 1 ? 's are' : ' is'} under weight.
           </span>{' '}
-          {under.map((u) => `${u.name} ${u.have}kg of ${u.need}kg`).join(', ')}. Those ores still
-          give something, but less than the full figure, and the wiki never says how much less — so
-          the totals on the right are a ceiling, not your real stats. Their modifier riders are
-          unaffected.
+          {under.map((u) => `${u.name} ${u.have}kg of ${u.need}kg`).join(', ')}. The wiki never says
+          what a light ore pays, so those are scaled down in proportion to their weight and marked
+          as estimates. For an exact figure, hover the display in game and type what the tooltip
+          shows into the box under the tile. Modifier riders are unaffected either way.
         </p>
       )}
 
@@ -696,6 +705,7 @@ function MuseumSection({ build, patch }: SectionProps) {
                   const oreId = build.museum[key];
                   const ore = oreId ? museumOreById.get(oreId) : null;
                   const gate = weightCheck(ore, build.weights[key]);
+                  const { factor, kind } = weightFactor(ore, build.weights[key], build.measured[key]);
                   return (
                     <PedestalTile
                       key={key}
@@ -703,6 +713,8 @@ function MuseumSection({ build, patch }: SectionProps) {
                       stats={[rankBy]}
                       locked={index >= display.free}
                       under={gate.under}
+                      factor={factor}
+                      factorKind={kind}
                       onPick={() => setPicking({ rarity: display.rarity, index })}
                       onClear={() => setSlot(key, null)}
                     >
@@ -730,6 +742,18 @@ function MuseumSection({ build, patch }: SectionProps) {
                           need={ore.minWeight}
                           value={build.weights[key]}
                           onChange={(kg) => setWeight(key, kg)}
+                        />
+                      )}
+
+                      {/* Only on a display that is short, which is the only
+                          case where the site is guessing and a real reading
+                          has anything to correct. */}
+                      {ore && gate.under && (
+                        <MeasuredField
+                          ore={ore}
+                          estimate={(ore.boosts[0]?.value ?? 0) * factor}
+                          value={build.measured[key]}
+                          onChange={(v) => setMeasured(key, v)}
                         />
                       )}
                     </PedestalTile>
@@ -802,6 +826,65 @@ function WeightField({
     </label>
   );
 }
+
+/**
+ * The boost a light display is really paying, read off the tooltip in game.
+ *
+ * This is the only exact number available for an underweight ore. The wiki
+ * gives a display's maximum and the weight that earns it and nothing in
+ * between, so without a reading the planner can only scale down in proportion
+ * and say that it guessed.
+ *
+ * Entered against the ore's first listed stat and turned into a percentage of
+ * full, which then applies to every stat the ore moves: the gate belongs to the
+ * display, not to one of its lines.
+ */
+function MeasuredField({
+  ore, estimate, value, onChange,
+}: {
+  ore: MuseumOre;
+  estimate: number;
+  value: number | undefined;
+  onChange: (v: number | null) => void;
+}) {
+  const stat = ore.boosts[0]?.stat;
+  if (!stat) return null;
+  return (
+    <label className="mt-1 flex items-center gap-1">
+      <span className="sr-only">
+        Measured boost for {ore.name}, as the game shows it for {stat}
+      </span>
+      <input
+        type="text"
+        inputMode="decimal"
+        value={value ?? ''}
+        placeholder={estimate.toFixed(3).replace(/0+$/, '').replace(/\.$/, '')}
+        title={`Hover this display in game: the tooltip minus 1 is what it adds. Type that ${stat} figure here.`}
+        onChange={(e) => {
+          const raw = e.target.value.replace(/[^0-9.]/g, '');
+          const n = Number(raw);
+          onChange(raw === '' || !Number.isFinite(n) || n <= 0 ? null : n);
+        }}
+        className={cx(
+          'numeric w-full min-w-0 rounded border bg-white/5 px-1 py-0.5 text-center text-[10px] font-bold outline-none',
+          value != null
+            ? 'border-tide-400/50 text-tide-300'
+            : 'border-white/10 text-ink-400 placeholder:text-ink-600',
+        )}
+      />
+      <span className="numeric shrink-0 text-[9px] text-ink-600" title={`Measured against ${stat}`}>
+        ×{shortLabel(stat)}
+      </span>
+    </label>
+  );
+}
+
+const SHORT_LABELS: Record<string, string> = {
+  'Size Boost': 'Size', 'Sell Boost': 'Sell', 'Modifier Boost': 'Mod',
+  'Shake Strength': 'ShkStr', 'Shake Speed': 'ShkSpd',
+  'Dig Strength': 'DigStr', 'Dig Speed': 'DigSpd',
+};
+const shortLabel = (stat: string) => SHORT_LABELS[stat] ?? stat;
 
 /** What each modifier actually adds, since the tile only has room for a name. */
 function RiderReference() {

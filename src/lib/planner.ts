@@ -9,7 +9,7 @@
  * Where a source's own wiki page and the tested stat guide disagree, the note
  * on the contribution says so rather than the site quietly picking a side.
  */
-import { events, mastery, museum, type RarityName } from './db';
+import { events, mastery, museum, type MuseumOre, type RarityName } from './db';
 import { SLOT_ORDER, slotKey, type Slots } from './museumBuild';
 import {
   PANEL_STATS, applyEnchant, displayBoosts, enchantById, equipLines, gearLines,
@@ -208,6 +208,16 @@ export interface PlannerState {
    * before this existed — every display paying its full listed boost.
    */
   weights: Record<string, number>;
+  /**
+   * Slot key → the boost an underweight display is really paying, read off
+   * the tooltip in game, for the ore's first listed stat.
+   *
+   * The wiki publishes a display's maximum and the weight that earns it, and
+   * nothing about the ground in between, so this is the only exact figure
+   * available for a light ore. One stat is enough: the gate belongs to the
+   * display, so the same shortfall applies to every stat the ore moves.
+   */
+  measured: Record<string, number>;
   /** Boost source id → how many are running. */
   boosts: Record<string, number>;
   runes: string[];
@@ -228,7 +238,7 @@ export interface PlannerState {
 export const DEFAULT_BUILD: PlannerState = {
   pan: null, panEnchant: null, shovel: null, shovelEnchant: null,
   equips: [], sixStar: false, quality: 100,
-  museum: {}, riders: {}, weights: {},
+  museum: {}, riders: {}, weights: {}, measured: {},
   boosts: {}, runes: [], mastery: {}, potions: [], events: [],
   friendship: 0, friends: 0, permanents: {}, custom: [],
 };
@@ -260,14 +270,44 @@ export function weightCheck(
   return { under: need != null && have != null && have < need, need, have };
 }
 
+/**
+ * How much of its listed boost a display is actually paying.
+ *
+ * `full` is a display at or over its minimum — the only case the wiki gives a
+ * number for. `measured` is a figure read off the tooltip in game, which is
+ * exact. `estimated` is ours: the boost scaled straight down by how short of
+ * the minimum the ore is, which is the simplest shape that fits the two points
+ * the wiki does give (nothing at no weight, everything at the minimum) and is
+ * labelled an estimate everywhere it appears, because no source backs it.
+ */
+export function weightFactor(
+  ore: MuseumOre | null | undefined,
+  weight: number | undefined,
+  measured: number | undefined,
+): { factor: number; kind: 'full' | 'estimated' | 'measured' } {
+  if (!ore) return { factor: 1, kind: 'full' };
+
+  const top = ore.boosts[0]?.value ?? 0;
+  if (measured != null && top !== 0) {
+    // Read against the ore's first listed stat, and never above its maximum:
+    // a display cannot pay more than the wiki's figure for being heavy.
+    return { factor: Math.min(Math.max(measured / top, 0), 1), kind: 'measured' };
+  }
+
+  const { under, need, have } = weightCheck(ore, weight);
+  if (!under || need == null || have == null || need === 0) return { factor: 1, kind: 'full' };
+  return { factor: Math.min(Math.max(have / need, 0), 1), kind: 'estimated' };
+}
+
 /** Displays whose ore is below the weight its full boost needs. */
 export function underweightDisplays(state: PlannerState): {
   key: string;
   name: string;
   need: number;
   have: number;
+  kind: 'estimated' | 'measured';
 }[] {
-  const out: { key: string; name: string; need: number; have: number }[] = [];
+  const out: { key: string; name: string; need: number; have: number; kind: 'estimated' | 'measured' }[] = [];
   for (const { rarity, index } of SLOT_ORDER) {
     const key = slotKey(rarity as RarityName, index);
     const oreId = state.museum[key];
@@ -275,7 +315,11 @@ export function underweightDisplays(state: PlannerState): {
     const ore = museum.ores.find((o) => o.id === oreId);
     const { under, need, have } = weightCheck(ore, state.weights[key]);
     if (under && need != null && have != null) {
-      out.push({ key, name: ore?.name ?? oreId, need, have });
+      const { kind } = weightFactor(ore, state.weights[key], state.measured[key]);
+      out.push({
+        key, name: ore?.name ?? oreId, need, have,
+        kind: kind === 'measured' ? 'measured' : 'estimated',
+      });
     }
   }
   return out;
@@ -358,22 +402,26 @@ export function computeBuild(state: PlannerState): StatLine[] {
     if (!oreId) continue;
     const ore = museum.ores.find((o) => o.id === oreId);
     const gate = weightCheck(ore, state.weights[key]);
+    const { factor, kind } = weightFactor(ore, state.weights[key], state.measured[key]);
     for (const b of displayBoosts(oreId, rarity as RarityName, state.riders[key] ?? null)) {
+      // Only the ore's own half is gated. The Museum page is explicit that
+      // modifier bonuses apply to every ore of that rarity regardless of weight.
+      const scaled = b.rider ? b.value : b.value * factor;
       push(acc, b.stat, {
         band: 'boost',
         source: b.rider
           ? `Museum · ${state.riders[key]} rider (${rarity})`
           : `Museum · ${ore?.name ?? oreId}`,
-        value: b.value,
+        value: scaled,
         note: b.rider
-          // Riders ignore the weight gate entirely, which is worth saying on a
-          // display whose ore is under it: the rider half still pays in full.
           ? gate.under ? 'Riders apply at any weight, so this half is unaffected.' : undefined
-          : gate.under
-            ? `Your ${gate.have}kg is under the ${gate.need}kg this ore needs for its full boost, so this is a ceiling — the wiki does not publish how much it loses below the line.`
-            : gate.need != null
-              ? `${gate.have != null ? `${gate.have}kg` : 'assumed'} — needs ${gate.need}kg`
-              : undefined,
+          : kind === 'measured'
+            ? `Measured in game at ${gate.have}kg — ${Math.round(factor * 100)}% of this ore's full boost.`
+            : kind === 'estimated'
+              ? `Estimated: ${gate.have}kg of the ${gate.need}kg this ore needs, scaled straight down. The wiki does not publish the real falloff — read the tooltip in game and enter it for an exact figure.`
+              : gate.need != null
+                ? `${gate.have != null ? `${gate.have}kg` : 'assumed'} — needs ${gate.need}kg`
+                : undefined,
       });
     }
   }

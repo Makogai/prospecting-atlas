@@ -26,6 +26,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-04-underweight-value',
+    date: '2026-10-04',
+    title: 'An underweight museum display gets a number',
+    tag: 'new',
+    body: 'A light ore used to just say “under weight”. It now gets a figure — scaled down in proportion to how short it is, so a 6kg Diamond of the 20kg it wants reads +0.09x instead of its full +0.3x. That is our estimate, not the wiki’s: it only publishes the maximum and the weight that earns it. Hover the display in game and the tooltip gives the real number, which you can type in to replace the guess.',
+    href: '/planner',
+  },
+  {
     id: '2026-10-04-museum-tile-stats',
     date: '2026-10-04',
     title: 'A museum display says which stat it moves',
