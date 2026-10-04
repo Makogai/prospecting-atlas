@@ -26,6 +26,22 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-04-museum-weight',
+    date: '2026-10-04',
+    title: 'Set the weight of what is on each museum display',
+    tag: 'new',
+    body: 'The planner assumed every display was heavy enough to pay its full boost. You can now enter what your ore actually weighs, and it flags the ones under the bar. A light ore still pays its modifier rider in full, which the wiki is explicit about, so only its own half is affected.',
+    href: '/planner',
+  },
+  {
+    id: '2026-10-04-museum-riders',
+    date: '2026-10-04',
+    title: 'Museum modifiers say what they give',
+    tag: 'improved',
+    body: 'Choosing a modifier for a display meant picking a name and hoping. Each one now shows the stats it lands on and exactly what it adds at that rarity row, with the full scale from Common to Exotic alongside.',
+    href: '/planner',
+  },
+  {
     id: '2026-10-04-planner-pickers',
     date: '2026-10-04',
     title: 'Pick gear by what it is worth, not by its name',

@@ -246,14 +246,16 @@ const shortStat = (stat: string) => SHORT_STAT[stat] ?? stat;
  * read as three across.
  */
 export function PedestalTile({
-  ore, stats, locked, onPick, onClear, children,
+  ore, stats, locked, under, onPick, onClear, children,
 }: {
   ore: MuseumOre | null | undefined;
   stats: string[];
   locked: boolean;
+  /** The ore on it is below the weight its full boost needs. */
+  under?: boolean;
   onPick: () => void;
   onClear: () => void;
-  /** The modifier control, shown under a filled display. */
+  /** The modifier and weight controls, shown under a filled display. */
   children?: React.ReactNode;
 }) {
   if (!ore) {
@@ -280,13 +282,26 @@ export function PedestalTile({
 
   return (
     <div>
-      <div className="group relative rounded-xl bg-white/5 ring-1 ring-white/10">
+      <div
+        className={cx(
+          'group relative rounded-xl bg-white/5 ring-1',
+          under ? 'ring-ore-400/50' : 'ring-white/10',
+        )}
+      >
         <button
           onClick={onPick}
           className="flex h-[5.4rem] w-full flex-col items-center justify-center gap-0.5 px-1.5"
         >
           <Sprite file={mineral?.image} alt="" className="h-8 w-8 shrink-0" />
           <span className="w-full truncate text-center text-[11px] font-bold">{ore.name}</span>
+          {under && (
+            <span
+              className="text-[9px] font-bold tracking-wide text-ore-400 uppercase"
+              title={`Needs ${ore.minWeight}kg for its full boost`}
+            >
+              under weight
+            </span>
+          )}
           {value !== 0 ? (
             <span
               className={cx(

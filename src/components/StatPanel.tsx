@@ -38,6 +38,15 @@ export function fmt(n: number): string {
 
 const signed = (n: number) => `${n > 0 ? '+' : ''}${fmt(n)}`;
 
+/**
+ * A multiplier at enough precision to not read as nothing.
+ *
+ * Two decimals is right for the ×7.15 a stacked build shows, but it renders a
+ * single Common rider's ×1.005 as "×1.00", which looks like the boost was
+ * ignored. Small multipliers get the digits they need.
+ */
+const mult = (n: number) => (n < 1.01 ? n.toFixed(3) : n.toFixed(2));
+
 export function StatPanel({
   lines, dense, openStat,
 }: {
@@ -49,6 +58,16 @@ export function StatPanel({
 }) {
   const [open, setOpen] = useState<string | null>(openStat ?? null);
   const scrolled = useRef<string | null>(null);
+
+  /**
+   * Boosts without a base buy nothing, and that surprises people.
+   *
+   * Filling a museum is the usual way in: eighteen displays go in, every row
+   * still reads 0, and it looks like the page ignored them. It did not — the
+   * museum multiplies what your gear provides, so with no gear there is
+   * nothing for it to multiply. Saying so is more use than any number here.
+   */
+  const stranded = lines.some((l) => l.boosts > 0) && lines.every((l) => l.base + l.flats === 0);
 
   // Opening from a link should also bring the row into view. Keyed on the
   // wanted stat rather than firing once, so searching a second stat from this
@@ -89,6 +108,13 @@ export function StatPanel({
         </h2>
         <span className="text-[11px] text-ink-500">total (base)</span>
       </div>
+
+      {stranded && (
+        <p className="border-b border-ore-400/25 bg-ore-400/8 px-5 py-2.5 text-[11px] leading-relaxed text-ink-200">
+          Your boosts are landing, but there is nothing to multiply yet. The museum, totems and
+          runes all scale what your gear gives you — pick a pan and these come alive.
+        </p>
+      )}
 
       <div className="divide-y divide-white/6">
         {STAT_GROUPS.map((group) => {
@@ -152,15 +178,17 @@ function StatRow({
         <span className="min-w-0 flex-1">
           <span className="flex items-baseline gap-2">
             <span className="truncate text-[13px] font-semibold text-ink-200">{stat.key}</span>
-            {/* A multiplier on nothing is still nothing. The XP Cookie reaches
-                almost every stat, so without this every stat you have no gear
-                for would advertise a x2 that buys you zero. */}
-            {total > 0 && boosts > 0 && (
+            {/* Shown even when the total is zero. A multiplier on nothing is
+                still nothing, but hiding it is how someone fills their whole
+                museum, sees every row read 0, and concludes the page is
+                broken. The chip says the boost landed; the row below says why
+                it bought nothing yet. */}
+            {boosts > 0 && (
               <span className="numeric shrink-0 text-[10px] font-bold text-vein-400">
-                ×{(1 + boosts).toFixed(2)}
+                ×{mult(1 + boosts)}
               </span>
             )}
-            {total > 0 && eventMult > 1 && (
+            {eventMult > 1 && (
               <span className="numeric shrink-0 text-[10px] font-bold text-flux-400">
                 ×{eventMult}
               </span>

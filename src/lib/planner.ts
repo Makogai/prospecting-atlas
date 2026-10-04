@@ -201,6 +201,13 @@ export interface PlannerState {
   museum: Slots;
   /** Slot key → modifier name, for the rider a displayed ore carries. */
   riders: Record<string, string>;
+  /**
+   * Slot key → the weight in kg of the ore actually sitting on that display.
+   *
+   * Absent means "at least the minimum", which is what the planner assumed
+   * before this existed — every display paying its full listed boost.
+   */
+  weights: Record<string, number>;
   /** Boost source id → how many are running. */
   boosts: Record<string, number>;
   runes: string[];
@@ -221,13 +228,58 @@ export interface PlannerState {
 export const DEFAULT_BUILD: PlannerState = {
   pan: null, panEnchant: null, shovel: null, shovelEnchant: null,
   equips: [], sixStar: false, quality: 100,
-  museum: {}, riders: {},
+  museum: {}, riders: {}, weights: {},
   boosts: {}, runes: [], mastery: {}, potions: [], events: [],
   friendship: 0, friends: 0, permanents: {}, custom: [],
 };
 
 export const PLANNER_KEY = 'atlas.planner';
 export const PLANNER_BUILDS_KEY = 'atlas.planner.builds';
+
+/* ---------- the weight gate ---------------------------------------------- */
+
+/**
+ * Whether a display is paying its full listed boost.
+ *
+ * An ore's own boost is the minimum weight "required to achieve the max
+ * bonus", so under that line it still gives something — the wiki simply never
+ * says how much, and no one has measured it. We therefore show the full figure
+ * and say plainly that it is a ceiling, rather than inventing a curve or
+ * pretending an underweight ore is worth nothing.
+ *
+ * The modifier rider is a separate matter: the Museum page is explicit that
+ * modifier bonuses "apply to all ores of that rarity, regardless of weight", so
+ * a rider is never gated and a light ore still pays it in full.
+ */
+export function weightCheck(
+  ore: { minWeight: number | null } | null | undefined,
+  weight: number | undefined,
+): { under: boolean; need: number | null; have: number | null } {
+  const need = ore?.minWeight ?? null;
+  const have = weight ?? null;
+  return { under: need != null && have != null && have < need, need, have };
+}
+
+/** Displays whose ore is below the weight its full boost needs. */
+export function underweightDisplays(state: PlannerState): {
+  key: string;
+  name: string;
+  need: number;
+  have: number;
+}[] {
+  const out: { key: string; name: string; need: number; have: number }[] = [];
+  for (const { rarity, index } of SLOT_ORDER) {
+    const key = slotKey(rarity as RarityName, index);
+    const oreId = state.museum[key];
+    if (!oreId) continue;
+    const ore = museum.ores.find((o) => o.id === oreId);
+    const { under, need, have } = weightCheck(ore, state.weights[key]);
+    if (under && need != null && have != null) {
+      out.push({ key, name: ore?.name ?? oreId, need, have });
+    }
+  }
+  return out;
+}
 
 /* ---------- the calculation ---------------------------------------------- */
 
@@ -305,6 +357,7 @@ export function computeBuild(state: PlannerState): StatLine[] {
     const oreId = state.museum[key];
     if (!oreId) continue;
     const ore = museum.ores.find((o) => o.id === oreId);
+    const gate = weightCheck(ore, state.weights[key]);
     for (const b of displayBoosts(oreId, rarity as RarityName, state.riders[key] ?? null)) {
       push(acc, b.stat, {
         band: 'boost',
@@ -312,7 +365,15 @@ export function computeBuild(state: PlannerState): StatLine[] {
           ? `Museum · ${state.riders[key]} rider (${rarity})`
           : `Museum · ${ore?.name ?? oreId}`,
         value: b.value,
-        note: b.rider ? undefined : ore?.minWeight != null ? `needs ${ore.minWeight}kg` : undefined,
+        note: b.rider
+          // Riders ignore the weight gate entirely, which is worth saying on a
+          // display whose ore is under it: the rider half still pays in full.
+          ? gate.under ? 'Riders apply at any weight, so this half is unaffected.' : undefined
+          : gate.under
+            ? `Your ${gate.have}kg is under the ${gate.need}kg this ore needs for its full boost, so this is a ceiling — the wiki does not publish how much it loses below the line.`
+            : gate.need != null
+              ? `${gate.have != null ? `${gate.have}kg` : 'assumed'} — needs ${gate.need}kg`
+              : undefined,
       });
     }
   }

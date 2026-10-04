@@ -123,6 +123,29 @@ function encodeRiders(riders: Record<string, string>) {
     .join('.');
 }
 
+/** Weights as `slotIndex:kg`, positional against the same display order. */
+function encodeWeights(weights: Record<string, number>) {
+  return SLOT_ORDER.map(({ rarity, index }, at) => {
+    const kg = weights[slotKey(rarity, index)];
+    return kg != null && kg > 0 ? `${at}:${Math.round(kg)}` : null;
+  })
+    .filter(Boolean)
+    .join('.');
+}
+
+function decodeWeights(raw: string | null): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const field of (raw ?? '').split('.')) {
+    const [at, kg] = field.split(':');
+    const slot = SLOT_ORDER[Number(at)];
+    const n = Math.round(num(kg, 0));
+    // No upper bound worth enforcing: Size Boost puts ore weights into the
+    // thousands, and a figure the game can produce is a figure a link can hold.
+    if (slot && n > 0) out[slotKey(slot.rarity, slot.index)] = n;
+  }
+  return out;
+}
+
 function decodeRiders(raw: string | null): Record<string, string> {
   const out: Record<string, string> = {};
   for (const field of (raw ?? '').split('.')) {
@@ -190,6 +213,7 @@ export function encodePlanner(state: PlannerState): URLSearchParams {
 
   set('mu', encodeBuild(state.museum));
   set('rd', encodeRiders(state.riders));
+  set('wt', encodeWeights(state.weights));
 
   set('bo', encodeCounts(state.boosts, new Set(BOOST_SOURCES.map((b) => b.id))));
   set('ru', encodeIds(state.runes, (id) => runeEffectById.has(id)));
@@ -235,6 +259,7 @@ export function decodePlanner(q: URLSearchParams): DecodedPlanner {
       quality,
       museum: slots,
       riders: decodeRiders(q.get('rd')),
+      weights: decodeWeights(q.get('wt')),
       boosts: decodeCounts(q.get('bo'), new Set(BOOST_SOURCES.map((b) => b.id)), 9),
       runes: decodeIds(q.get('ru'), (id) => runeEffectById.has(id) && runeById.has(id), maxRuneSlots),
       mastery: decodeCounts(q.get('ma'), new Set(MASTERY_TRACKS.map((t) => t.id)), 5),

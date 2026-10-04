@@ -8,13 +8,13 @@ import {
 import { slotKey } from '../lib/museumBuild';
 import {
   BOOST_SOURCES, computeBuild, DEFAULT_BUILD, isEmptyBuild, MASTERY_TRACKS, PERMANENTS,
-  PLANNER_BUILDS_KEY, PLANNER_KEY, runeEffectById,
+  PLANNER_BUILDS_KEY, PLANNER_KEY, runeEffectById, underweightDisplays, weightCheck,
   type CustomEntry, type PlannerEquip, type PlannerState,
 } from '../lib/planner';
 import { decodePlanner, encodePlanner, plannerCode } from '../lib/plannerCode';
 import {
-  gearLines, panById, PANEL_STATS, panEnchants, RIDER_MODIFIERS, shovelById, shovelEnchants,
-  type StatKey,
+  gearLines, panById, PANEL_STATS, panEnchants, RIDER_MODIFIERS, riderByRarity, shovelById,
+  shovelEnchants, type StatKey,
 } from '../lib/stats';
 import { makeBuild, readBuilds, writeBuilds, type SavedBuild } from '../lib/buildLibrary';
 import { BuildLibrary, ShareBox } from '../components/BuildLibrary';
@@ -59,7 +59,7 @@ export function PlannerPage() {
   // A link carrying any build parameter is somebody else's build. It's held
   // apart from your own and never written to storage on its own — opening a
   // friend's link must not quietly replace the build you spent an evening on.
-  const sharedKeys = ['p', 's', 'eq', 'mu', 'bo', 'ru', 'ma', 'po', 'ev', 'pm', 'cu', 'ft', 'fo'];
+  const sharedKeys = ['p', 's', 'eq', 'mu', 'rd', 'wt', 'bo', 'ru', 'ma', 'po', 'ev', 'pm', 'cu', 'ft', 'fo'];
   const viewingShared = sharedKeys.some((k) => params.has(k));
   const decoded = useMemo(() => (viewingShared ? decodePlanner(params) : null), [params, viewingShared]);
   const build = decoded ? decoded.state : saved;
@@ -606,18 +606,26 @@ function EquipRow({
 
 /* ---------- museum ------------------------------------------------------- */
 
+/** `+0.005`, `+0.08` — rider values are small and the trailing zeros matter. */
+const rider = (v: number) => `+${v.toFixed(v < 0.01 ? 4 : 3).replace(/0+$/, '').replace(/\.$/, '')}`;
+
 function MuseumSection({ build, patch }: SectionProps) {
   const [picking, setPicking] = useState<{ rarity: RarityName; index: number } | null>(null);
   const [rankBy, setRankBy] = useState<string>('Luck');
 
   const filled = Object.values(build.museum).filter(Boolean).length;
   const chosen = Object.values(build.museum).filter(Boolean) as string[];
+  const under = underweightDisplays(build);
 
   const setSlot = (key: string, oreId: string | null) => {
-    // A display with nothing in it cannot carry a modifier either.
+    // A display with nothing on it carries neither a modifier nor a weight.
     const riders = { ...build.riders };
-    if (!oreId) delete riders[key];
-    patch({ museum: { ...build.museum, [key]: oreId }, riders });
+    const weights = { ...build.weights };
+    if (!oreId) {
+      delete riders[key];
+      delete weights[key];
+    }
+    patch({ museum: { ...build.museum, [key]: oreId }, riders, weights });
   };
 
   const setRider = (key: string, name: string) =>
@@ -627,11 +635,20 @@ function MuseumSection({ build, patch }: SectionProps) {
         : Object.fromEntries(Object.entries(build.riders).filter(([k]) => k !== key)),
     });
 
+  const setWeight = (key: string, kg: number | null) =>
+    patch({
+      weights: kg != null
+        ? { ...build.weights, [key]: kg }
+        : Object.fromEntries(Object.entries(build.weights).filter(([k]) => k !== key)),
+    });
+
   return (
     <Section
       title="Museum"
-      hint="Each display adds twice: the ore’s own fixed boost, plus a rider from the modifier that ore carries. Riders scale with the row — 0.005 at Common up to 0.08 at Exotic. All of it lands in the boost pile."
-      summary={filled > 0 ? `${filled}/18 displays filled` : ''}
+      hint="Each display adds twice: the ore’s own boost, which needs a minimum weight to pay in full, plus a rider from the modifier that ore carries, which pays at any weight. All of it lands in the boost pile."
+      summary={filled > 0
+        ? `${filled}/18 displays filled${under.length > 0 ? ` · ${under.length} under weight` : ''}`
+        : ''}
     >
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <span className="text-[11px] font-semibold text-ink-400">Rank ores by</span>
@@ -647,53 +664,84 @@ function MuseumSection({ build, patch }: SectionProps) {
         </Link>
       </div>
 
+      {under.length > 0 && (
+        <p className="mb-4 rounded-xl border border-ore-400/30 bg-ore-400/8 px-3 py-2 text-[11px] leading-relaxed text-ink-200">
+          <span className="font-bold">
+            {under.length} display{under.length > 1 ? 's are' : ' is'} under weight.
+          </span>{' '}
+          {under.map((u) => `${u.name} ${u.have}kg of ${u.need}kg`).join(', ')}. Those ores still
+          give something, but less than the full figure, and the wiki never says how much less — so
+          the totals on the right are a ceiling, not your real stats. Their modifier riders are
+          unaffected.
+        </p>
+      )}
+
       {/* A rarity owns three displays, so they read as three across. Laid out
           two-wide they wrap, which strands the third on a row of its own and
           makes an even shelf look broken. */}
       <div className="space-y-3">
-        {museum.displays.map((display) => (
-          <div key={display.rarity}>
-            <p className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-ink-500 uppercase">
-              {display.rarity} <span className="opacity-60">×{display.total}</span>
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {Array.from({ length: display.total }, (_, index) => {
-                const key = slotKey(display.rarity, index);
-                const oreId = build.museum[key];
-                const ore = oreId ? museumOreById.get(oreId) : null;
-                return (
-                  <PedestalTile
-                    key={key}
-                    ore={ore}
-                    stats={[rankBy]}
-                    locked={index >= display.free}
-                    onPick={() => setPicking({ rarity: display.rarity, index })}
-                    onClear={() => setSlot(key, null)}
-                  >
-                    <select
-                      aria-label={`Modifier on ${ore?.name ?? 'this display'}`}
-                      value={build.riders[key] ?? ''}
-                      onChange={(e) => setRider(key, e.target.value)}
-                      className="mt-1 w-full truncate rounded border border-white/10 bg-rock-850 px-1 py-0.5 text-[10px] text-ink-400 outline-none"
+        {museum.displays.map((display) => {
+          const each = riderByRarity.get(display.rarity) ?? 0;
+          return (
+            <div key={display.rarity}>
+              <p className="mb-1.5 flex items-baseline gap-2 text-[11px] font-bold tracking-[0.1em] text-ink-500 uppercase">
+                {display.rarity} <span className="opacity-60">×{display.total}</span>
+                <span className="numeric ml-auto text-[10px] font-semibold tracking-normal normal-case opacity-70">
+                  riders {rider(each)} per stat
+                </span>
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {Array.from({ length: display.total }, (_, index) => {
+                  const key = slotKey(display.rarity, index);
+                  const oreId = build.museum[key];
+                  const ore = oreId ? museumOreById.get(oreId) : null;
+                  const gate = weightCheck(ore, build.weights[key]);
+                  return (
+                    <PedestalTile
+                      key={key}
+                      ore={ore}
+                      stats={[rankBy]}
+                      locked={index >= display.free}
+                      under={gate.under}
+                      onPick={() => setPicking({ rarity: display.rarity, index })}
+                      onClear={() => setSlot(key, null)}
                     >
-                      <option value="">No modifier</option>
-                      {RIDER_MODIFIERS.map((m) => (
-                        <option key={m.name} value={m.name}>{m.name}</option>
-                      ))}
-                    </select>
-                  </PedestalTile>
-                );
-              })}
+                      <select
+                        aria-label={`Modifier on ${ore?.name ?? 'this display'}`}
+                        value={build.riders[key] ?? ''}
+                        onChange={(e) => setRider(key, e.target.value)}
+                        className="mt-1 w-full truncate rounded border border-white/10 bg-rock-850 px-1 py-0.5 text-[10px] text-ink-400 outline-none"
+                      >
+                        <option value="">No modifier</option>
+                        {RIDER_MODIFIERS.map((m) => {
+                          // Treasured is the one exception the Museum page
+                          // calls out: twice the Luck that Iridescent gives.
+                          const v = m.name === 'Treasured' ? each * museum.treasuredMultiplier : each;
+                          return (
+                            <option key={m.name} value={m.name}>
+                              {m.name} {rider(v)} {m.stats.join(', ')}
+                            </option>
+                          );
+                        })}
+                      </select>
+
+                      {ore && (
+                        <WeightField
+                          need={ore.minWeight}
+                          value={build.weights[key]}
+                          onChange={(kg) => setWeight(key, kg)}
+                        />
+                      )}
+                    </PedestalTile>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      <p className="mt-4 text-[11px] leading-relaxed text-ink-500">
-        An ore only gives its full display value at or above its listed minimum weight. The wiki
-        does not publish the curve below that, so a lighter ore is worth less than shown here by an
-        amount nobody has measured.
-      </p>
+      <RiderReference />
 
       {picking && (
         <OrePicker
@@ -708,6 +756,98 @@ function MuseumSection({ build, patch }: SectionProps) {
         />
       )}
     </Section>
+  );
+}
+
+/**
+ * The weight of the ore you actually have on a display.
+ *
+ * Left blank it means "at least the minimum", which is the assumption the
+ * planner made before this field existed — so an untouched build keeps reading
+ * exactly as it did, and typing a number is what opts you into the warning.
+ */
+function WeightField({
+  need, value, onChange,
+}: {
+  need: number | null;
+  value: number | undefined;
+  onChange: (kg: number | null) => void;
+}) {
+  const under = need != null && value != null && value < need;
+  return (
+    <label className="mt-1 flex items-center gap-1">
+      <span className="sr-only">Weight of this ore in kilograms</span>
+      <input
+        type="text"
+        inputMode="numeric"
+        value={value ?? ''}
+        placeholder={need != null ? String(need) : '—'}
+        onChange={(e) => {
+          const digits = e.target.value.replace(/[^0-9]/g, '');
+          onChange(digits === '' ? null : Number(digits));
+        }}
+        className={cx(
+          'numeric w-full min-w-0 rounded border bg-white/5 px-1 py-0.5 text-center text-[10px] font-bold outline-none',
+          under
+            ? 'border-ore-400/50 text-ore-300'
+            : 'border-white/10 text-ink-300 placeholder:text-ink-600',
+        )}
+      />
+      <span
+        className={cx('numeric shrink-0 text-[9px]', under ? 'text-ore-400' : 'text-ink-600')}
+        title={need != null ? `Needs ${need}kg for the full boost` : 'No weight requirement'}
+      >
+        /{need ?? '—'}kg
+      </span>
+    </label>
+  );
+}
+
+/** What each modifier actually adds, since the tile only has room for a name. */
+function RiderReference() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-4 rounded-xl border border-white/8 bg-white/3">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 px-3 py-2 text-left"
+      >
+        <span className="flex-1 text-[11px] font-semibold text-ink-300">
+          What a modifier adds on top
+        </span>
+        <span aria-hidden className={cx('text-[9px] text-ink-500 transition', open && 'rotate-180')}>
+          ▼
+        </span>
+      </button>
+      {open && (
+        <div className="border-t border-white/8 px-3 py-2.5">
+          <p className="mb-2.5 text-[11px] leading-relaxed text-ink-500">
+            A displayed ore pays its own boost plus a rider from its modifier. The rider is the same
+            size for every modifier — what changes is the rarity row it sits in, and which stats it
+            lands on. Unlike the ore’s own boost, a rider pays at any weight.
+          </p>
+          <p className="numeric mb-3 rounded-lg bg-rock-950/50 px-2.5 py-2 text-[11px] text-ink-400">
+            {museum.modifierMultipliers.map((m) => `${m.rarity} ${rider(m.value)}`).join('  ·  ')}
+          </p>
+          <dl className="grid gap-x-4 gap-y-1 sm:grid-cols-2">
+            {RIDER_MODIFIERS.map((m) => (
+              <div key={m.name} className="flex items-baseline justify-between gap-2 text-[11px]">
+                <dt className="font-semibold text-ink-300">{m.name}</dt>
+                <dd className="truncate text-right text-ink-500">{m.stats.join(', ')}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-2.5 text-[11px] leading-relaxed text-ink-500">
+            Treasured is the exception: {museum.treasuredMultiplier}× the Luck that Iridescent gives.
+            Several modifiers can only come from one place — Crystalline from geodes, Voidtorn from
+            The Void or a Voidtouched shovel — which the{' '}
+            <Link to="/modifiers" className="text-ore-400 hover:underline">modifiers page</Link>{' '}
+            lists in full.
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 
