@@ -26,6 +26,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-05-data-refresh',
+    date: '2026-10-05',
+    title: 'Data caught up with the game',
+    tag: 'data',
+    body: 'Three new shovel enchants — Crystal Touch, Overdrive and Tempered — which shifts the odds on every other shovel enchant, Mastered most of all. Five craftables were buffed: the Lapis Armband, Moon Ring, Gravity Coil, Guiding Light and Dragon Claw. Plus a new community build for selling.',
+    href: '/enchanting',
+  },
+  {
     id: '2026-10-05-rarity-filter',
     date: '2026-10-05',
     title: 'Filter the equipment picker by rarity',

@@ -464,6 +464,86 @@ Museum
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
 * “amount” is sometimes called “strength”
 	bosnia123123 (@CzystyWegiel)
+Sell Boost V. – SELLING ONLY
+Highest possible sell boost; †Optional limited equipment; ⚠ Not suitable for Fungal Marsh
+* Equip this build right before selling a full backpack’s worth of ores.
+* For best results, use a size boost build to collect the ores.
+* If your equipment is not 100%, at least make sure the sell boost stat is maxed out – see the Notes column (these are maximum values for the Prismatic version of the item.) 
+* Buy Merchant's Potion from the Shard Merchant to further increase your sell boost.
+* If you have the Gingerbread pan and/or the Candy Cane shovel, you can optionally use them to trigger the 🍪 XP Cookie effect for an extra sell boost. Otherwise/in addition, you can use the consumable item to trigger the effect.
+* Blank museum slots can be filled with anything you want, or just leave them empty.
+Museum
+	Modifier: Any
+	Slot 1
+	Slot 2
+	Slot 3
+	Exotic
+	$ Eye of the Sands 50
+	
+
+	
+
+	Mythic
+	$ pick 2: Agate | Sunstone 40 | Radiant Gold 60
+	
+
+	Legendary
+	$ Palladium 40
+	$ Tourmaline 24
+	$ Jasper 30
+	Epic
+	$ Meteoric Gold 40
+	$ Pyronium 50
+	
+
+	Rare
+	$ Amber 20
+	$ Pyrelith 30
+	$ Sandsteel 30
+	Uncommon
+	$ Electrum 40
+	$ Glowberry 40
+	
+
+	Common
+	$ Gold 40
+	
+
+	
+
+	Equipment
+	Name
+	Notes
+	 Charm  
+	Royal Federation Crown
+	max $ 320% 
+	 Neck  
+	Venomshank
+	max $ 88%
+	 Rings  
+	1× Ring of Champions
+	max $ 256%
+	7×/5× Sun's Gift
+	max $ 104%
+	Runes  
+	Any
+	 Pan  
+	Gingerbread†🍪 | Any
+	enchant: Starstruck or Midas
+	 Shovel  
+	Candy Cane†🍪 | Any
+	enchant: any
+	Key
+	X OreName 23
+	X = boost type (see below), 23 = minimum weight for maximum boost
+	Item1 | Item2
+	Choose one꙳ of the items listed (꙳unless told to pick a different number)
+	#×/#× Ring
+	First # is for 8 ring slots, second # is for 6 ring slots
+	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
+$ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed
+* “amount” is sometimes called “strength”
+	Turbo (@TurboCharmander)
 Stage IV. Builds - Meteor Valley
 Highest location is Meteor Valley
 At this game stage, all equipment is assumed to be six-star and at least 95% quality. All or almost all should be Prismatic mutation (or Festive if appropriate).
@@ -1534,10 +1614,13 @@ $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake 
 
 
 Sell Boost III. – SELLING ONLY
+†limited equipment (optional)
 * Equip this build right before selling a full backpack’s worth of ores.
 * For best results, use a size boost build to collect the ores.
 * *Some of the Museum ores are not Stage III; they’re included because you might luck onto them in the Void.
 * You don't need everything listed here in order to make this build work: more parts of the build covered = bigger money.
+* Buy Merchant's Potion from the Shard Merchant to further increase your sell boost.
+* If you have the Gingerbread pan and/or the Candy Cane shovel, use them to trigger the 🍪 XP Cookie effect for an extra sell boost. Otherwise/in addition, you can use the consumable item to trigger the effect.
 * Blank museum slots can be filled with anything you want, or just leave them empty.
 Museum
 	Modifiers: any
@@ -1551,15 +1634,13 @@ Museum
 	
 
 	Mythic
-	$ Radiant Gold 60
-	$ Sunstone* 40
+	$ pick 2: Radiant Gold 60 | Sunstone* | Agate* 40
 	
 
 	Legendary
 	$ Palladium 40
 	$ Tourmaline 24
-	
-
+	$ Jasper* 30
 	Epic
 	$ Pyronium 50
 	$ Meteoric Gold* 40
@@ -1568,8 +1649,7 @@ Museum
 	Rare
 	$ Pyrelith 30
 	$ Amber 20
-	
-
+	$ Sandsteel* 30
 	Uncommon
 	$ Electrum 40
 	$ Glowberry 40
@@ -1601,24 +1681,22 @@ Museum
 	Runes    
 	Any
 	 Pan  
-	Any
-	enchant: Midas
+	Gingerbread†🍪 | Any
+	enchant: Starstruck or Midas
 	 Shovel  
-	Any
+	Candy Cane†🍪 | Any
 	enchant: any
 	Key
 	X OreName 23
 	X = boost type (see below), 23 = minimum weight for maximum boost
 	Item1 | Item2
-	Choose one of the items listed
+	Choose one꙳ of the items listed (꙳unless told to pick a different number)
 	#×/#× Ring
 	First # is for 8 ring slots, second # is for 6 ring slots
 	L = Luck         C = Capacity         W = Size boost (weight)         D = Dig amount*        S = Dig speed
 $ = Sell boost        K = Walk speed        M = Modifier boost        A = Shake amount*        P = Shake speed 
 * “amount” is sometimes called “strength”
-	bosnia123123 (@CzystyWegiel)
-
-
+	bosnia123123 (@CzystyWegiel) & Turbo (@TurboCharmander)
 Stage II. Builds - Overgrown Caves
 Highest-level location: Enchanted Ruins/Abyssal Depths
 At this game stage, all equipment is expected to be at least five-star and 85% quality. 
