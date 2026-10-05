@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Sprite, cx } from './ui';
+import { Sprite, cx, gradientVars } from './ui';
 
 /**
  * A chooser that shows you what you are choosing between.
@@ -30,6 +30,15 @@ export interface PickerOption {
   muted?: boolean;
   /** Extra text to match on, beyond the name. */
   haystack?: string;
+  /** Which band this belongs to — a rarity, usually. Drives the filter chips. */
+  group?: string;
+}
+
+/** A band the list can be filtered down to, in the order it should be offered. */
+export interface PickerGroup {
+  name: string;
+  /** The wiki's gradient for the band, for tinting its chip. */
+  colors?: string[] | null;
 }
 
 /**
@@ -57,7 +66,7 @@ function OptionArt({ option, size }: { option: PickerOption; size: string }) {
 }
 
 export function RichSelect({
-  label, value, options, onChange, placeholder, clearLabel, title,
+  label, value, options, onChange, placeholder, clearLabel, title, groups, compact,
 }: {
   label: string;
   value: string | null;
@@ -69,9 +78,61 @@ export function RichSelect({
   clearLabel?: string;
   /** Dialog heading; defaults to the field label. */
   title?: string;
+  /** Bands to offer as filter chips in the dialog. */
+  groups?: PickerGroup[];
+  /**
+   * A one-line trigger with no art, for somewhere there is no room for a card
+   * — under a museum tile, or beside an equipped ring. The dialog it opens is
+   * the full rich one either way, which is the point: the cramped spot is the
+   * trigger, not the choosing.
+   */
+  compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const chosen = options.find((o) => o.id === value) ?? null;
+
+  const dialog = open && (
+    <PickerDialog
+      title={title ?? label}
+      options={options}
+      value={value}
+      clearLabel={clearLabel}
+      groups={groups}
+      onClose={() => setOpen(false)}
+      onChoose={(id) => {
+        onChange(id);
+        setOpen(false);
+      }}
+    />
+  );
+
+  if (compact) {
+    return (
+      <>
+        <button
+          onClick={() => setOpen(true)}
+          aria-label={label}
+          className={cx(
+            'flex w-full items-center gap-1 rounded border px-1.5 py-1 text-left transition',
+            chosen
+              ? 'border-white/12 bg-white/6 hover:border-white/25'
+              : 'border-white/10 bg-rock-850 hover:border-white/20',
+          )}
+        >
+          <span
+            className={cx(
+              'min-w-0 flex-1 truncate text-[10px]',
+              chosen ? 'font-semibold text-ink-200' : 'text-ink-500',
+            )}
+          >
+            {chosen ? chosen.name : placeholder}
+          </span>
+          <span aria-hidden className="shrink-0 text-[7px] text-ink-500">▼</span>
+        </button>
+        {dialog}
+      </>
+    );
+  }
 
   return (
     <div>
@@ -112,25 +173,13 @@ export function RichSelect({
         <span aria-hidden className="shrink-0 text-[9px] text-ink-500">▼</span>
       </button>
 
-      {open && (
-        <PickerDialog
-          title={title ?? label}
-          options={options}
-          value={value}
-          clearLabel={clearLabel}
-          onClose={() => setOpen(false)}
-          onChoose={(id) => {
-            onChange(id);
-            setOpen(false);
-          }}
-        />
-      )}
+      {dialog}
     </div>
   );
 }
 
 export function PickerDialog({
-  title, options, value, clearLabel, onClose, onChoose, footer,
+  title, options, value, clearLabel, onClose, onChoose, footer, groups,
 }: {
   title: string;
   options: PickerOption[];
@@ -139,8 +188,17 @@ export function PickerDialog({
   onClose: () => void;
   onChoose: (id: string | null) => void;
   footer?: ReactNode;
+  /**
+   * Bands to offer as filter chips, in the order they should appear.
+   *
+   * Sixty-seven rings in one alphabetical column is a list you read rather than
+   * a list you choose from. Grouped by rarity, with the best first, it answers
+   * the question people actually arrive with.
+   */
+  groups?: PickerGroup[];
 }) {
   const [q, setQ] = useState('');
+  const [band, setBand] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -158,16 +216,41 @@ export function PickerDialog({
     row?.scrollIntoView({ block: 'center' });
   }, [value]);
 
+  /** How many options each band holds, so a chip can say whether it is worth a click. */
+  const counts = useMemo(() => {
+    const out = new Map<string, number>();
+    for (const o of options) {
+      if (o.group) out.set(o.group, (out.get(o.group) ?? 0) + 1);
+    }
+    return out;
+  }, [options]);
+
+  const bands = useMemo(
+    () => (groups ?? []).filter((g) => (counts.get(g.name) ?? 0) > 0),
+    [groups, counts],
+  );
+
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    if (!needle) return options;
-    return options.filter(
-      (o) =>
+    const matched = options.filter((o) => {
+      if (band && o.group !== band) return false;
+      if (!needle) return true;
+      return (
         o.name.toLowerCase().includes(needle) ||
         (o.meta ?? '').toLowerCase().includes(needle) ||
-        (o.haystack ?? '').toLowerCase().includes(needle),
+        (o.haystack ?? '').toLowerCase().includes(needle)
+      );
+    });
+    if (bands.length === 0) return matched;
+    // Best band first, then alphabetical inside it, so the list reads the way
+    // the game ranks things rather than the way the alphabet does.
+    const rank = new Map(bands.map((g, i) => [g.name, i]));
+    return [...matched].sort(
+      (x, y) =>
+        (rank.get(x.group ?? '') ?? 99) - (rank.get(y.group ?? '') ?? 99) ||
+        x.name.localeCompare(y.name),
     );
-  }, [options, q]);
+  }, [options, q, band, bands]);
 
   // Portalled: every route root carries `animate-rise`, whose animation leaves
   // an identity transform behind, and a transformed ancestor becomes the
@@ -190,6 +273,22 @@ export function PickerDialog({
             placeholder="Search by name, stat or effect…"
             className="mt-3 w-full rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-sm outline-none transition focus:border-ore-400/50 focus:bg-white/7"
           />
+
+          {bands.length > 1 && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              <BandChip on={band === null} onClick={() => setBand(null)} label="All" count={options.length} />
+              {bands.map((g) => (
+                <BandChip
+                  key={g.name}
+                  label={g.name}
+                  colors={g.colors}
+                  count={counts.get(g.name) ?? 0}
+                  on={band === g.name}
+                  onClick={() => setBand(band === g.name ? null : g.name)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div ref={listRef} className="max-h-[58vh] divide-y divide-white/6 overflow-y-auto">
@@ -254,6 +353,44 @@ export function PickerDialog({
       </div>
     </div>,
     document.body,
+  );
+}
+
+function BandChip({
+  label, count, on, onClick, colors,
+}: {
+  label: string;
+  count: number;
+  on: boolean;
+  onClick: () => void;
+  colors?: string[] | null;
+}) {
+  const [c1, c2] = colors ?? [];
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={on}
+      style={
+        on && c1
+          ? {
+            ...gradientVars(colors),
+            background: `linear-gradient(95deg, ${c1}2e, ${c2 ?? c1}2e)`,
+            boxShadow: `inset 0 0 0 1.5px ${c1}`,
+          }
+          : undefined
+      }
+      className={cx(
+        'rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase transition',
+        on
+          ? c1
+            ? ''
+            : 'bg-ore-400/20 text-ore-300 ring-1 ring-ore-400/50'
+          : 'bg-white/5 text-ink-400 hover:bg-white/10',
+      )}
+    >
+      {on && c1 ? <span className="gradient-text">{label}</span> : label}
+      <span className="ml-1 font-semibold opacity-50">{count}</span>
+    </button>
   );
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  equipment, equipmentById, equipRarityColors, events, gearPrice, museum, museumOreById,
+  equipment, equipmentById, EQUIP_RARITY_ORDER, equipRarityColors, events, gearPrice, museum, museumOreById,
   mutations, pans, percent, potions, runes, shovels, SLOT_LIMITS,
   type Enchant, type Equipment, type EquipSlot, type Gear, type MuseumOre, type RarityName,
 } from '../lib/db';
@@ -20,7 +20,9 @@ import { makeBuild, readBuilds, writeBuilds, type SavedBuild } from '../lib/buil
 import { BuildLibrary, ShareBox } from '../components/BuildLibrary';
 import { MobileDock } from '../components/MobileDock';
 import { OrePicker, PedestalTile } from '../components/MuseumSlots';
-import { EmptySlot, PickerDialog, RichSelect, type PickerOption } from '../components/Picker';
+import {
+  EmptySlot, PickerDialog, RichSelect, type PickerGroup, type PickerOption,
+} from '../components/Picker';
 import { StatPanel, fmt } from '../components/StatPanel';
 import { NumberField, SectionTitle, Sprite, cx, gradientVars } from '../components/ui';
 
@@ -404,10 +406,27 @@ const equipOptions = (slot: EquipSlot): PickerOption[] =>
         e.stats
           .map((st) => `${st.base.min}–${st.base.max}${st.base.unit ?? ''} ${st.stat}`)
           .join(' · ') || 'no stats listed',
-      tag: e.rarity,
+      tag: e.limited ? 'limited' : undefined,
+      group: e.rarity,
       haystack: `${e.rarity} ${e.description} ${e.limited ? 'limited event' : ''}`,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    }));
+
+/** Rarity bands for the equipment picker, best first. */
+const EQUIP_BANDS: PickerGroup[] = [...EQUIP_RARITY_ORDER]
+  .reverse()
+  .map((name) => ({ name, colors: equipRarityColors(name) }));
+
+/** Mutations as something you can read, since they are not just a multiplier. */
+const MUTATION_OPTIONS: PickerOption[] = mutations.mutations.map((m) => ({
+  id: m.id,
+  name: m.name,
+  meta: [
+    m.multiplier != null ? `×${m.multiplier} to every stat on the piece` : null,
+    ...m.bonuses,
+  ].filter(Boolean).join(' · '),
+  tag: m.multiplier != null ? `×${m.multiplier}` : undefined,
+  haystack: m.stats.join(' '),
+}));
 
 function EquipSection({ build, patch }: SectionProps) {
   const [picking, setPicking] = useState<EquipSlot | null>(null);
@@ -530,6 +549,7 @@ function EquipSection({ build, patch }: SectionProps) {
         <PickerDialog
           title={`Add a ${picking.toLowerCase()}`}
           options={options}
+          groups={EQUIP_BANDS}
           onClose={() => setPicking(null)}
           onChoose={add}
         />
@@ -564,19 +584,18 @@ function EquipRow({
         </span>
       </span>
 
-      <select
-        aria-label={`Mutation on this ${item.name}`}
-        value={entry.mutation ?? ''}
-        onChange={(e) => onChange({ mutation: e.target.value || null })}
-        className="shrink-0 rounded border border-white/10 bg-rock-850 px-1.5 py-1 text-[11px] text-ink-200 outline-none"
-      >
-        <option value="">No mutation</option>
-        {mutations.mutations.map((m) => (
-          <option key={m.id} value={m.id}>
-            {m.name} ×{m.multiplier}
-          </option>
-        ))}
-      </select>
+      <span className="w-28 shrink-0">
+        <RichSelect
+          compact
+          label={`Mutation on this ${item.name}`}
+          title="Choose a mutation"
+          value={entry.mutation}
+          options={MUTATION_OPTIONS}
+          placeholder="No mutation"
+          clearLabel="No mutation"
+          onChange={(mutation) => onChange({ mutation })}
+        />
+      </span>
 
       <label className="flex shrink-0 items-center gap-0.5">
         <span className="sr-only">Roll quality for this {item.name}</span>
@@ -691,6 +710,20 @@ function MuseumSection({ build, patch }: SectionProps) {
       <div className="space-y-3">
         {museum.displays.map((display) => {
           const each = riderByRarity.get(display.rarity) ?? 0;
+          // The rider is the same size for every modifier on a row, so the
+          // options only change when the rarity does.
+          const riderOptions: PickerOption[] = RIDER_MODIFIERS.map((m) => {
+            // Treasured is the one exception the Museum page calls out: twice
+            // the Luck that Iridescent gives.
+            const v = m.name === 'Treasured' ? each * museum.treasuredMultiplier : each;
+            return {
+              id: m.name,
+              name: m.name,
+              meta: `${rider(v)} to ${m.stats.join(', ')}`,
+              tag: m.diggable ? undefined : 'special',
+              haystack: `${m.source ?? ''} ${m.stats.join(' ')}`,
+            };
+          });
           return (
             <div key={display.rarity}>
               <p className="mb-1.5 flex items-baseline gap-2 text-[11px] font-bold tracking-[0.1em] text-ink-500 uppercase">
@@ -718,24 +751,18 @@ function MuseumSection({ build, patch }: SectionProps) {
                       onPick={() => setPicking({ rarity: display.rarity, index })}
                       onClear={() => setSlot(key, null)}
                     >
-                      <select
-                        aria-label={`Modifier on ${ore?.name ?? 'this display'}`}
-                        value={build.riders[key] ?? ''}
-                        onChange={(e) => setRider(key, e.target.value)}
-                        className="mt-1 w-full truncate rounded border border-white/10 bg-rock-850 px-1 py-0.5 text-[10px] text-ink-400 outline-none"
-                      >
-                        <option value="">No modifier</option>
-                        {RIDER_MODIFIERS.map((m) => {
-                          // Treasured is the one exception the Museum page
-                          // calls out: twice the Luck that Iridescent gives.
-                          const v = m.name === 'Treasured' ? each * museum.treasuredMultiplier : each;
-                          return (
-                            <option key={m.name} value={m.name}>
-                              {m.name} {rider(v)} {m.stats.join(', ')}
-                            </option>
-                          );
-                        })}
-                      </select>
+                      <span className="mt-1 block">
+                        <RichSelect
+                          compact
+                          label={`Modifier on ${ore?.name ?? 'this display'}`}
+                          title={`Modifier on a ${display.rarity} display`}
+                          value={build.riders[key] ?? null}
+                          options={riderOptions}
+                          placeholder="No modifier"
+                          clearLabel="No modifier"
+                          onChange={(name) => setRider(key, name ?? '')}
+                        />
+                      </span>
 
                       {ore && (
                         <WeightField

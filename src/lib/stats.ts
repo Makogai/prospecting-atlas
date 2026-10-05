@@ -324,9 +324,10 @@ export function equipLines(
   mutationId: string | null,
 ): GearLines {
   const t = Math.min(Math.max(quality, 1), 100) / 100;
+  const mutation = mutationId ? mutationById.get(mutationId) : null;
   // A fully upgraded mutated item provides exactly its multiplier × the listed
   // values — 1.6× at Prismatic.
-  const mult = (mutationId && mutationById.get(mutationId)?.multiplier) || 1;
+  const mult = mutation?.multiplier || 1;
   const lines: GearLines = new Map();
   for (const s of item.stats) {
     const key = toStatKey(s.stat);
@@ -334,6 +335,16 @@ export function equipLines(
     const range = sixStar ? s.sixStar : s.base;
     const value = (range.min + (range.max - range.min) * t) * mult;
     lines.set(key, (lines.get(key) ?? 0) + value);
+  }
+
+  // Three mutations carry lines of their own on top of the multiplier — Festive
+  // adds +50 Luck and +10% Size Boost, Granite and Overclocked their own pairs.
+  // They are added after the multiplier, the way an enchant's flat half follows
+  // its multiplier, and they land on stats the piece may not otherwise have.
+  for (const bonus of mutation?.bonuses ?? []) {
+    for (const term of parseEffect(bonus)) {
+      if (term.add != null) lines.set(term.stat, (lines.get(term.stat) ?? 0) + term.add);
+    }
   }
   return lines;
 }

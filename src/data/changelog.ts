@@ -26,6 +26,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-05-rarity-filter',
+    date: '2026-10-05',
+    title: 'Filter the equipment picker by rarity',
+    tag: 'improved',
+    body: 'Twenty-five rings in one alphabetical column is a list you read rather than one you choose from. The picker now has a rarity chip for each band with its count, and lists the best first.',
+    href: '/planner',
+  },
+  {
+    id: '2026-10-05-rich-mutation-modifier',
+    date: '2026-10-05',
+    title: 'Mutations and museum modifiers say what they do',
+    tag: 'improved',
+    body: 'Both were plain dropdowns offering a bare name. They now open the same rich chooser as everything else: a mutation shows its multiplier and the extra stats it carries, a museum modifier shows exactly what its rider adds on that rarity row.',
+    href: '/planner',
+  },
+  {
+    id: '2026-10-05-mutation-bonuses',
+    date: '2026-10-05',
+    title: 'Mutation extras now count',
+    tag: 'fixed',
+    body: 'Festive, Granite and Overclocked carry stats beyond their multiplier — Festive adds +50 Luck and +10% Size Boost on top of its 1.4x. Only the multiplier was being applied, so those three were worth less on the planner than in the game.',
+    href: '/planner',
+  },
+  {
     id: '2026-10-04-underweight-value',
     date: '2026-10-04',
     title: 'An underweight museum display gets a number',
