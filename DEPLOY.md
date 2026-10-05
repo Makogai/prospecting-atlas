@@ -55,6 +55,43 @@ Coolify rebuilds on push if you enabled auto-deploy; otherwise hit **Redeploy**.
 > builds non-reproducible — two deploys of the same commit could produce different sites. Refresh
 > locally, commit the result, and the build stays a pure function of the commit.
 
+### Scheduling the refresh — not a Coolify task
+
+**There is no Coolify scheduled task to add.** A Coolify schedule runs a command inside the
+running container, and the running container is nginx serving static files: no Node, no source,
+nothing to rebuild. Even if it could scrape, the HTML was rendered at build time, the result
+would not survive the next deploy, and the bot's container would never see it.
+
+The refresh has to happen *before* a build and has to be committed, so it belongs where the repo
+is. [`.github/workflows/refresh-data.yml`](.github/workflows/refresh-data.yml) does it daily:
+
+```
+npm run data:all   →   npm run build (the gate)   →   commit if changed   →   push
+```
+
+The push is what triggers the deploy, so with auto-deploy on, both the site and the bot rebuild
+from the new commit without anyone touching Coolify.
+
+What it needs:
+
+- **Repository → Settings → Actions → General → Workflow permissions: Read and write.** Without
+  it the push is rejected. No secrets — the wiki and the build guide are both public.
+- **Auto-deploy enabled on both Coolify resources**, if you want the rebuild to be automatic.
+
+Run it by hand any time from the **Actions** tab (`Run workflow`), which is also the quickest way
+to confirm the permission above is right.
+
+Two things worth knowing:
+
+- It commits straight to `main`, so `git pull` before your next local change or you will be behind.
+- The build step is deliberately a gate rather than a nicety. A parse can succeed and still produce
+  something the build refuses — a new route with no entry in `seo.ts` fails the prerender, and
+  `check-stats.mjs` fails if the stat engine stops reproducing the wiki's measured examples. Failing
+  in CI keeps `main` free of commits that cannot deploy.
+
+Codes are the reason the schedule is daily rather than weekly: whether a code is live is a boolean
+the wiki publishes and we bake in, so an expired one stays on the site until the next build.
+
 ### Resource notes
 
 The build needs roughly 1 GB of RAM for `npm ci` plus Vite. `sharp` is a devDependency used only

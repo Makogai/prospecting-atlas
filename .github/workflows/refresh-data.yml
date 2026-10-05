@@ -1,0 +1,79 @@
+# Keep the site's copy of the wiki current.
+#
+# This belongs here rather than in a Coolify scheduled task. The data is baked
+# into the bundle at build time, and the running container is nginx serving
+# static files — it has no Node, no source and nothing to rebuild. A refresh has
+# to happen before the build and be committed, which means it has to happen
+# where the repo is.
+#
+# Pushing to main is the point: Coolify's auto-deploy rebuilds the site and the
+# bot from the new commit. If auto-deploy is off, this still commits and you
+# redeploy by hand.
+name: Refresh wiki data
+
+on:
+  # Codes are the time-sensitive part: the wiki's own table says whether one is
+  # live, and that boolean is baked in, so a dead code stays on the site until
+  # the next build. Daily, off the hour, to be a quiet neighbour to the wiki.
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Two of these overlapping would race on the same branch.
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Scrapes every mainspace page, re-parses, and pulls any new images and
+      # sprites. Fails the run if the wiki is unreachable, which is the right
+      # outcome: better no commit than a half-written database.
+      - name: Fetch and parse
+        run: npm run data:all
+
+      # The gate. A parse can succeed and still produce something the build
+      # refuses — a new route with no SEO entry fails the prerender, and
+      # check-stats fails if the engine stops matching the wiki's measured
+      # examples. Catching that here means main never carries a commit that
+      # cannot deploy.
+      - name: Build it before trusting it
+        run: npm run build
+
+      - name: Commit if anything moved
+        run: |
+          if git diff --quiet; then
+            echo "Wiki unchanged — nothing to commit."
+            exit 0
+          fi
+
+          git config user.name 'prospecting-atlas[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          # The stat line goes in the message so the history says what moved
+          # without anyone having to open the diff.
+          summary=$(git diff --shortstat | sed 's/^ *//')
+          git add -A
+          git commit -m "data: refresh from wiki" -m "$summary"
+          git push
+
+          echo "### Data refreshed" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "$summary" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
