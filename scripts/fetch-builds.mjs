@@ -12,14 +12,24 @@ import { writeFileSync, existsSync } from 'node:fs';
 const keepGoing = process.argv.includes('--keep-going');
 const fail = (msg) => {
   console.error(msg);
-  if (keepGoing) {
-    console.warn(
-      existsSync('data/raw/builds.txt')
-        ? 'Keeping the existing build-guide snapshot and carrying on.'
-        : 'No snapshot on disk — the site will build without community builds.',
-    );
-  } else {
+  if (!keepGoing) {
     process.exitCode = 1;
+    return;
+  }
+  const kept = existsSync('data/raw/builds.txt');
+  console.warn(
+    kept
+      ? 'Keeping the existing build-guide snapshot and carrying on.'
+      : 'No snapshot on disk — the site will build without community builds.',
+  );
+  // On a schedule nobody reads the log of a run that passed, so a doc that has
+  // been unshared or moved would quietly freeze the build guide for weeks. An
+  // annotation puts it on the run's summary page without failing the refresh,
+  // which is the right trade: stale community builds are not worth blocking a
+  // wiki refresh over, but they are worth knowing about.
+  if (process.env.GITHUB_ACTIONS) {
+    const detail = kept ? 'using the previous snapshot' : 'no snapshot on disk';
+    console.log(`::warning title=Build guide not refreshed::${msg} — ${detail}.`);
   }
 };
 

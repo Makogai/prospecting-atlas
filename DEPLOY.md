@@ -92,6 +92,13 @@ Two things worth knowing:
 Codes are the reason the schedule is daily rather than weekly: whether a code is live is a boolean
 the wiki publishes and we bake in, so an expired one stays on the site until the next build.
 
+**The community build guide syncs too.** `data:all` pulls it from its Google Doc before touching the
+wiki, and `--keep-going` means a doc that has been unshared or moved is a warning rather than a
+failed run — a third party's document should not be able to block a wiki refresh. In CI that would
+otherwise be invisible, since nobody reads the log of a run that passed, so the fetcher raises a
+GitHub warning annotation on the run summary when it falls back to the previous snapshot. If you
+see it, check whether the doc moved; the site keeps serving the last good copy either way.
+
 ### Resource notes
 
 The build needs roughly 1 GB of RAM for `npm ci` plus Vite. `sharp` is a devDependency used only
